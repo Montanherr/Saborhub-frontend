@@ -1,0 +1,177 @@
+/* ----- Container geral ----- */
+.login-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 20px;
+  background: #fafafa;
+}
+
+/* ----- Título do app ----- */
+.app-title {
+  font-size: 34px;
+  font-weight: 800;
+  margin-bottom: 25px;
+  color: #ff6600;
+  text-align: center;
+  letter-spacing: -1px;
+}
+
+/* ----- Box do login ----- */
+.login-box {
+  background: #fff;
+  padding: 32px;
+  width: 100%;
+  max-width: 380px;
+  border-radius: 14px;
+  box-shadow: 0 6px 25px rgba(0,0,0,0.08);
+}
+
+.login-box h2 {
+  text-align: center;
+  margin-bottom: 22px;
+  color: #222;
+}
+
+/* ----- Inputs ----- */
+input {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 14px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  font-size: 15px;
+  transition: 0.2s;
+}
+
+input:focus {
+  border-color: #ff6600;
+  box-shadow: 0 0 0 3px rgba(255,102,0,0.15);
+  outline: none;
+}
+
+/* ----- Botão ----- */
+button {
+  width: 100%;
+  padding: 13px;
+  border: none;
+  border-radius: 10px;
+  background: #ff6600;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.25s ease;
+}
+
+button:hover {
+  background: #e65900;
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ----- Erro ----- */
+.error {
+  color: #ff3333;
+  font-size: 14px;
+  margin-bottom: 10px;
+  display: block;
+}
+
+/* ----- Link de cadastro ----- */
+.register-link {
+  margin-top: 18px;
+  text-align: center;
+}
+
+.register-link span {
+  color: #ff6600;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.register-link span:hover {
+  text-decoration: underline;
+}
+
+/* ----- Responsividade ----- */
+@media (max-width: 420px) {
+  .login-box {
+    padding: 26px;
+  }
+
+  .app-title {
+    font-size: 30px;
+  }
+}
+
+
+/* ===== MODAL OVERLAY ===== */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.2s ease;
+  z-index: 2000;
+}
+
+/* ===== MODAL BOX ===== */
+.modal-box {
+  background: #fff;
+  width: 90%;
+  max-width: 360px;
+  padding: 25px 22px;
+  border-radius: 14px;
+  text-align: center;
+  animation: slideUp 0.25s ease;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+  font-family: "Inter", sans-serif;
+}
+
+.modal-box h3 {
+  margin-bottom: 10px;
+  font-size: 20px;
+  font-weight: 600;
+  color: #111;
+}
+
+.modal-box p {
+  font-size: 15px;
+  margin-bottom: 20px;
+  color: #444;
+}
+
+/* ===== BOTÃO ===== */
+.modal-btn {
+  background: #ff3d32;
+  color: #fff;
+  padding: 10px 18px;
+  border: none;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  width: 100%;
+  transition: 0.2s;
+}
+
+.modal-btn:hover {
+  background: #e62d26;
+}
+
+/* ===== ANIMAÇÕES ===== */
+@keyframes slideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}

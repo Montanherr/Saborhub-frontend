@@ -1,24 +1,31 @@
-import logo from './logo.svg';
-import './App.css';
+import Header from "./components/Header/Header";
+import Footer from "./components/Footer/Footer";
+import AppRoutes from "./routes/routes";
+import { BrowserRouter as Router } from "react-router-dom";
+import { AuthProvider } from "./context/AuthContext";
+import "./App.css";
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <AuthProvider>  {/* ✔ Agora TUDO está dentro do AuthProvider */}
+
+        <div className="app-container">
+          <div className="content-area">
+
+            <Header />  {/* ✔ Agora useAuth() funciona */}
+
+            <main className="main-content">
+              <AppRoutes />
+            </main>
+
+            <Footer />
+
+          </div>
+        </div>
+
+      </AuthProvider>
+    </Router>
   );
 }
 

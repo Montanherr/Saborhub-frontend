@@ -1,0 +1,116 @@
+/* Container principal */
+.home-container {
+  padding: 30px 15px;
+  max-width: 1100px;
+  margin: auto;
+}
+
+/* Título */
+.home-title {
+  font-size: 26px;
+  margin-bottom: 20px;
+  text-align: center;
+  color: #2c2c2c;
+  font-weight: 700;
+}
+
+/* Grid responsivo */
+.restaurant-grid {
+  display: grid;
+  gap: 18px;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+/* Card */
+.restaurant-card {
+  background: #ffffff;
+  border-radius: 12px;
+  max-width: 220px;
+  margin: auto;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.07);
+  transition: 0.2s ease;
+}
+
+.restaurant-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+}
+
+/* Imagem */
+.restaurant-image {
+  height: 100px;
+  object-fit: cover;
+  width: 100%;
+  border-radius: 12px 12px 0 0;
+}
+
+/* Informações internas */
+.restaurant-info {
+  padding: 14px;
+}
+
+.restaurant-info h3 {
+  margin: 0 0 6px;
+  font-size: 18px;
+  color: #333;
+  font-weight: 600;
+}
+
+.restaurant-info p {
+  font-size: 14px;
+  margin: 0 0 12px;
+  color: #777;
+}
+
+/* Botão */
+.see-more {
+  width: 100%;
+  padding: 10px;
+  background: #2c2c2c;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: background 0.2s, transform 0.2s;
+}
+
+.see-more:hover {
+  background: #444;
+  transform: scale(1.02);
+}
+
+/* ========================================= */
+/* ✨ RESPONSIVIDADE */
+/* ========================================= */
+
+/* Tablets */
+@media (max-width: 1024px) {
+  .restaurant-image {
+    height: 120px;
+  }
+}
+
+/* Smartphones */
+@media (max-width: 768px) {
+  .home-title {
+    font-size: 24px;
+  }
+
+  .restaurant-grid {
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 16px;
+  }
+}
+
+/* Telas muito pequenas */
+@media (max-width: 480px) {
+  .restaurant-grid {
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  }
+
+  .restaurant-image {
+    height: 110px;
+  }
+}
