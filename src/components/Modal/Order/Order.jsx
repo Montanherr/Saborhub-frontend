@@ -27,6 +27,7 @@ export default function OrdersModal({ company, items, setItems, close }) {
 
     const payload = {
       companyId: company.id,
+      code,
       fullName,
       phone,
       address,
