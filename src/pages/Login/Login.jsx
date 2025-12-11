@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
-import userService from "../../services/userService"; // <-- IMPORTANTE
+import userService from "../../services/userService";
 import "./Login.css";
 
 export default function Login() {
@@ -19,17 +19,25 @@ export default function Login() {
     try {
       setLoading(true);
 
-      // 🔥 Agora realmente acessamos a API
+      // 🔥 Faz login na API
       const response = await userService.login({ email, password });
 
-      // Backend retorna { token, user }
+      const user = response.user;
+
+      // 🔥 Salva no localStorage (ESSENCIAL PARA O F5)
+      localStorage.setItem("token", response.token);
+      localStorage.setItem("userId", user.id);
+      localStorage.setItem("companyId", user.companyId);
+      localStorage.setItem("isAdmin", user.admin);
+
+      // 🔥 Salva também no AuthContext
       login({
-        ...response.user,
+        ...user,
         token: response.token,
       });
 
       navigate("/");
-    } catch {
+    } catch (err) {
       setError("E-mail ou senha inválidos.");
     } finally {
       setLoading(false);

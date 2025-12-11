@@ -1,36 +1,58 @@
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 
 const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
-  const isLoggedIn = !!user;
+  const [loading, setLoading] = useState(true); // 🔹 controla carregamento do localStorage
 
   useEffect(() => {
-    const stored = localStorage.getItem("user");
-    if (stored) {
-      const parsed = JSON.parse(stored);
-      parsed.admin = parsed.admin === true || parsed.admin === "true";
-      setUser(parsed);
+    const token = localStorage.getItem("token");
+    const companyId = localStorage.getItem("companyId");
+    const userId = localStorage.getItem("userId");
+    const isAdmin = localStorage.getItem("isAdmin");
+
+    if (token) {
+      setUser({
+        id: Number(userId),
+        companyId: Number(companyId),
+        admin: isAdmin === "true",
+        token,
+      });
     }
+    setLoading(false); // 🔹 terminou de carregar o user
   }, []);
 
-  const login = (userData) => {
-    userData.admin = userData.admin === true || userData.admin === "true";
-    setUser(userData);
-    localStorage.setItem("user", JSON.stringify(userData));
-  };
+  function login(data) {
+    // 🔹 salvar dados localmente
+    localStorage.setItem("token", data.token);
+    localStorage.setItem("companyId", data.companyId);
+    localStorage.setItem("userId", data.id);
+    localStorage.setItem("isAdmin", data.admin);
 
-  const logout = () => {
+    setUser(data);
+  }
+
+  function logout() {
+    localStorage.clear();
     setUser(null);
-    localStorage.removeItem("user");
-  };
+  }
 
   return (
-    <AuthContext.Provider value={{ user, isLoggedIn, login, logout }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        isLoggedIn: !!user,
+        login,
+        logout,
+        loading, // 🔹 exposto para ProtectedRoute
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
 }
 
-export const useAuth = () => useContext(AuthContext);
+export function useAuth() {
+  return useContext(AuthContext);
+}

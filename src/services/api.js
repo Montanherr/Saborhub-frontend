@@ -2,7 +2,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://localhost:5000/api", // ajuste se necessário
+  baseURL: "https://saborhub-backend-f7c4f594841a.herokuapp.com/api", // ajuste se necessário
 });
 
 export default api;

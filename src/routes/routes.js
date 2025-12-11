@@ -3,6 +3,7 @@ import ProtectedRoute from "./ProtectedRoutes";
 
 import Companies from "../components/Companies/Companies";
 import CategoriesScreen from "../components/Menu/Categories";
+import MenuCreate from "../pages/Menu/MenuCreate";
 
 import Login from "../pages/Login/Login";
 import Register from "../pages/Login/Register";
@@ -19,14 +20,11 @@ export default function AppRoutes() {
       <Route path="/companies" element={<Companies />} />
       <Route path="/companies/:companyId/categories" element={<CategoriesScreen />} />
 
-      <Route
-        path="/menu/create"
-        element={
-          <ProtectedRoute>
-            <h1>CRIAR CARDÁPIO</h1>
-          </ProtectedRoute>
-        }
-      />
+<Route path="/menu/create" element={
+  <ProtectedRoute>
+    <MenuCreate />
+  </ProtectedRoute>} />
+
 
       <Route path="*" element={<Navigate to="/" replace />} />
 
