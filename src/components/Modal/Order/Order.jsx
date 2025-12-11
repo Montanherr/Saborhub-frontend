@@ -55,7 +55,7 @@ export default function OrdersModal({ company, items, setItems, close }) {
       msg += `Total: R$ ${total}\n`;
       msg += `Nome: ${fullName}\nTelefone: ${phone}\nEndereço: ${address}\nObservações: ${observations}\nInformações adicionais: ${additionalInfo}\nPagamento: ${paymentMethod}\nTroco necessário: ${needChange ? "Sim, para R$ " + changeAmount : "Não"}`;
 
-      window.open(`https://wa.me/55997158776?text=${encodeURIComponent(msg)}`, "_blank");
+      window.open(`https://wa.me/997158776?text=${encodeURIComponent(msg)}`, "_blank");
 
       setItems([]);
       close();
