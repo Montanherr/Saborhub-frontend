@@ -27,7 +27,6 @@ export default function OrdersModal({ company, items, setItems, close }) {
 
     const payload = {
       companyId: company.id,
-      code,
       fullName,
       phone,
       address,
@@ -37,7 +36,6 @@ export default function OrdersModal({ company, items, setItems, close }) {
       needChange,
       changeAmount,
       total,
-      status: "pending",
       items: items.map(i => ({
         productId: i.id,
         quantity: i.quantity
@@ -47,36 +45,27 @@ export default function OrdersModal({ company, items, setItems, close }) {
     try {
       setLoading(true);
 
-      // Criar pedido
-      await orderService.createOrder(payload);
+      // Criar pedido e pegar a resposta
+      const response = await orderService.createOrder(payload);
+      const code = response.data.code; // ✅ pega o código retornado do backend
 
-      // Usar telefone da empresa recebido via props
+      // Garantir que o telefone da empresa tenha código do país (Brasil = 55)
       let companyPhone = company.phone;
-      // Garantir que o número tenha o código do país (Brasil = 55)
       if (!companyPhone.startsWith("55")) {
         companyPhone = "55" + companyPhone;
       }
 
       // Montar mensagem formatada para WhatsApp
       let msg = `*📦 Novo Pedido*\n\n`;
-
-      msg += `\n*📝 Código do Pedido ${code}\n\n`;
-
+      msg += `*📝 Código do Pedido:* ${code}\n\n`;
       msg += `*🛒 Itens:*\n`;
       items.forEach(item => {
         msg += `- ${item.name} x${item.quantity} = R$ ${(item.price * item.quantity).toFixed(2)}\n`;
       });
-
       msg += `\n*💰 Total:* R$ ${total}\n\n`;
-
-      msg += `*👤 Cliente:*\n`;
-      msg += `Nome: ${fullName}\n`;
-      msg += `Telefone: ${phone}\n`;
-      msg += `Endereço: ${address}\n\n`;
-
+      msg += `*👤 Cliente:*\nNome: ${fullName}\nTelefone: ${phone}\nEndereço: ${address}\n\n`;
       msg += `*📝 Observações:* ${observations || "Nenhuma"}\n`;
       msg += `*ℹ️ Informações adicionais:* ${additionalInfo || "Nenhuma"}\n`;
-
       msg += `*💳 Pagamento:* ${paymentMethod}\n`;
       msg += `Troco necessário: ${needChange ? "Sim, para R$ " + changeAmount : "Não"}`;
 
