@@ -59,6 +59,8 @@ export default function OrdersModal({ company, items, setItems, close }) {
       // Montar mensagem formatada para WhatsApp
       let msg = `*📦 Novo Pedido*\n\n`;
 
+      msg += `\n*📝 Código do Pedido ${code}\n\n`;
+
       msg += `*🛒 Itens:*\n`;
       items.forEach(item => {
         msg += `- ${item.name} x${item.quantity} = R$ ${(item.price * item.quantity).toFixed(2)}\n`;
