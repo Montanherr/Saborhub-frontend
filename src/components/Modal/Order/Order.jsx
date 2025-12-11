@@ -43,54 +43,54 @@ export default function OrdersModal({ company, items, setItems, close }) {
       }))
     };
 
-try {
-  setLoading(true);
+    try {
+      setLoading(true);
 
-  // Criar pedido
-  await orderService.createOrder(payload);
+      // Criar pedido
+      await orderService.createOrder(payload);
 
-  // Buscar telefone da empresa
-  const company = await companyService.getCompany();
-  // Garantir que o número tenha o código do país (Brasil = 55)
-  let companyPhone = company.phone;
-  if (!companyPhone.startsWith("55")) {
-    companyPhone = "55" + companyPhone;
-  }
+      // Usar telefone da empresa recebido via props
+      let companyPhone = company.phone;
+      // Garantir que o número tenha o código do país (Brasil = 55)
+      if (!companyPhone.startsWith("55")) {
+        companyPhone = "55" + companyPhone;
+      }
 
-  // Montar mensagem formatada para WhatsApp
-  let msg = `*📦 Novo Pedido*\n\n`;
-  
-  msg += `*🛒 Itens:*\n`;
-  items.forEach(item => {
-    msg += `- ${item.name} x${item.quantity} = R$ ${(item.price * item.quantity).toFixed(2)}\n`;
-  });
-  
-  msg += `\n*💰 Total:* R$ ${total}\n\n`;
-  
-  msg += `*👤 Cliente:*\n`;
-  msg += `Nome: ${fullName}\n`;
-  msg += `Telefone: ${phone}\n`;
-  msg += `Endereço: ${address}\n\n`;
-  
-  msg += `*📝 Observações:* ${observations || "Nenhuma"}\n`;
-  msg += `*ℹ️ Informações adicionais:* ${additionalInfo || "Nenhuma"}\n`;
-  
-  msg += `*💳 Pagamento:* ${paymentMethod}\n`;
-  msg += `Troco necessário: ${needChange ? "Sim, para R$ " + changeAmount : "Não"}`;
+      // Montar mensagem formatada para WhatsApp
+      let msg = `*📦 Novo Pedido*\n\n`;
 
-  // Abrir WhatsApp com a mensagem
-  window.open(`https://wa.me/${companyPhone}?text=${encodeURIComponent(msg)}`, "_blank");
+      msg += `*🛒 Itens:*\n`;
+      items.forEach(item => {
+        msg += `- ${item.name} x${item.quantity} = R$ ${(item.price * item.quantity).toFixed(2)}\n`;
+      });
 
-  // Limpar itens e fechar modal
-  setItems([]);
-  close();
+      msg += `\n*💰 Total:* R$ ${total}\n\n`;
 
-} catch (err) {
-  console.error(err);
-  alert("Erro ao criar pedido!");
-} finally {
-  setLoading(false);
-}
+      msg += `*👤 Cliente:*\n`;
+      msg += `Nome: ${fullName}\n`;
+      msg += `Telefone: ${phone}\n`;
+      msg += `Endereço: ${address}\n\n`;
+
+      msg += `*📝 Observações:* ${observations || "Nenhuma"}\n`;
+      msg += `*ℹ️ Informações adicionais:* ${additionalInfo || "Nenhuma"}\n`;
+
+      msg += `*💳 Pagamento:* ${paymentMethod}\n`;
+      msg += `Troco necessário: ${needChange ? "Sim, para R$ " + changeAmount : "Não"}`;
+
+      // Abrir WhatsApp com a mensagem
+      window.open(`https://wa.me/${companyPhone}?text=${encodeURIComponent(msg)}`, "_blank");
+
+      // Limpar itens e fechar modal
+      setItems([]);
+      close();
+
+    } catch (err) {
+      console.error(err);
+      alert("Erro ao criar pedido!");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="orders-modal-backdrop">
@@ -168,5 +168,4 @@ try {
       </div>
     </div>
   );
-}
 }
