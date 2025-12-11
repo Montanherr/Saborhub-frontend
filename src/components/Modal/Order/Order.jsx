@@ -46,8 +46,8 @@ export default function OrdersModal({ company, items, setItems, close }) {
       setLoading(true);
 
       // Criar pedido e pegar a resposta
-      const response = await orderService.createOrder(payload);
-      const code = response.data.code; // ✅ pega o código retornado do backend
+ const order = await orderService.createOrder(payload);
+const code = order.code;
 
       // Garantir que o telefone da empresa tenha código do país (Brasil = 55)
       let companyPhone = company.phone;
