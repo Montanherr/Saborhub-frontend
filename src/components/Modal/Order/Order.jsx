@@ -1,5 +1,6 @@
 // src/components/OrdersModal/OrdersModal.jsx
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import orderService from "../../../services/orderService";
 import "./Order.css";
 
@@ -14,10 +15,17 @@ export default function OrdersModal({ company, items, setItems, close }) {
   const [changeAmount, setChangeAmount] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const navigate = useNavigate();
+
   const total = items.reduce((sum, i) => sum + i.price * i.quantity, 0).toFixed(2);
 
   const handleRemove = (id) => {
     setItems(items.filter(i => i.id !== id));
+  };
+
+  const handleAddMore = () => {
+    close(); // fecha o modal
+    navigate(`/companies/${company.id}/categories`); // volta para o cardápio
   };
 
   const handleSubmit = async () => {
@@ -45,11 +53,10 @@ export default function OrdersModal({ company, items, setItems, close }) {
     try {
       setLoading(true);
 
-      // Criar pedido e pegar a resposta
- const order = await orderService.createOrder(payload);
-const code = order.code;
+      // Criar pedido e pegar o objeto retornado do backend
+      const order = await orderService.createOrder(payload);
+      const code = order.code;
 
-      // Garantir que o telefone da empresa tenha código do país (Brasil = 55)
       let companyPhone = company.phone;
       if (!companyPhone.startsWith("55")) {
         companyPhone = "55" + companyPhone;
@@ -153,6 +160,7 @@ const code = order.code;
 
         <div className="order-actions">
           <button onClick={close}>Fechar</button>
+          <button onClick={handleAddMore}>Adicionar mais produtos</button>
           <button onClick={handleSubmit} disabled={loading}>
             {loading ? "Enviando..." : "Enviar para WhatsApp"}
           </button>

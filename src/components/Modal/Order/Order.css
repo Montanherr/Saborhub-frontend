@@ -193,30 +193,91 @@
 /* ===========================
    MOBILE
 =========================== */
+/* ===========================
+   MOBILE RESPONSIVO
+=========================== */
 @media (max-width: 500px) {
   .orders-modal {
-    padding: 18px;
-    border-radius: 14px;
+    padding: 16px;
+    border-radius: 12px;
     max-height: 95vh;
+    width: 95%;
   }
 
   .orders-modal h3 {
-    font-size: 1.3rem;
-  }
-
-  .order-item {
-    font-size: 0.9rem;
-    padding: 8px 10px;
+    font-size: 1.2rem;
   }
 
   .order-fields input,
-  .order-fields textarea {
+  .order-fields textarea,
+  .order-fields select {
     font-size: 0.95rem;
+    padding: 10px;
+  }
+
+  .order-fields textarea {
+    min-height: 60px;
+  }
+
+  .order-item {
+    flex-direction: column;
+    align-items: flex-start;
+    font-size: 0.9rem;
+    padding: 8px 10px;
+    gap: 6px;
+  }
+
+  .order-item button {
+    align-self: flex-end;
+    padding: 4px 8px;
+    font-size: 0.8rem;
+  }
+
+  .order-total {
+    font-size: 1.1rem;
+  }
+
+  .order-actions {
+    flex-direction: column;
+    gap: 10px;
   }
 
   .order-actions button,
   .order-actions a {
-    font-size: 0.95rem;
+    flex: 1 1 100%;
     padding: 10px;
+    font-size: 0.95rem;
+  }
+}
+
+/* ===========================
+   TELEFONES MUITO PEQUENOS
+=========================== */
+@media (max-width: 375px) {
+  .orders-modal {
+    width: 98%;
+    padding: 14px;
+  }
+
+  .orders-modal h3 {
+    font-size: 1.1rem;
+  }
+
+  .order-fields input,
+  .order-fields textarea,
+  .order-fields select {
+    font-size: 0.9rem;
+    padding: 8px;
+  }
+
+  .order-item {
+    font-size: 0.85rem;
+    padding: 6px 8px;
+  }
+
+  .order-actions button,
+  .order-actions a {
+    padding: 8px;
+    font-size: 0.9rem;
   }
 }

@@ -1,4 +1,6 @@
-/* ===== CONTAINER PRINCIPAL ===== */
+/* =========================
+   CONTAINER PRINCIPAL
+========================= */
 .menu-create-container {
   max-width: 1100px;
   margin: auto;
@@ -14,36 +16,44 @@
 h1 {
   text-align: center;
   margin-bottom: 35px;
-  font-size: 32px;
+  font-size: 2rem;
   color: #1f1f1f;
   font-weight: 700;
 }
 
-/* ===== FORMS LADO A LADO ===== */
+/* =========================
+   FORMULÁRIOS LADO A LADO
+========================= */
 .forms-row {
   display: flex;
   gap: 20px;
-  flex-wrap: wrap; /* empilha no mobile */
+  flex-wrap: wrap;
 }
-
 
 .forms-row .form-box {
-  flex: 1 1 45%; /* ocupa ~45% da largura cada */
+  flex: 1 1 45%;
 }
 
-/* ===== FORM BOX ===== */
+/* =========================
+   FORM BOX
+========================= */
 .form-box {
   background: #fff;
   padding: 25px;
-  border-radius: 12px;
+  border-radius: 14px;
   margin-bottom: 40px;
   border: 1px solid #e2e2e2;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.05);
+  transition: box-shadow 0.3s ease;
+}
+
+.form-box:hover {
+  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
 }
 
 .form-box h2 {
   margin-bottom: 20px;
-  font-size: 22px;
+  font-size: 1.5rem;
   font-weight: 600;
   color: #222;
 }
@@ -62,55 +72,61 @@ select {
   margin-top: 6px;
   border-radius: 8px;
   border: 1px solid #ccc;
-  font-size: 15px;
-  transition: 0.2s;
+  font-size: 1rem;
+  transition: all 0.2s;
 }
 
 input:focus,
 select:focus {
   border-color: #2a75f3;
-  box-shadow: 0 0 0 2px rgba(42, 117, 243, 0.25);
+  box-shadow: 0 0 0 3px rgba(42, 117, 243, 0.2);
+  outline: none;
 }
 
-/* ===== BUTTON ===== */
+/* =========================
+   BOTÃO PRINCIPAL
+========================= */
 button {
   margin-top: 25px;
   padding: 14px;
   width: 100%;
-  font-size: 17px;
+  font-size: 1rem;
   background: #2a75f3;
-  color: white;
+  color: #fff;
   border: none;
-  border-radius: 8px;
+  border-radius: 10px;
   cursor: pointer;
   font-weight: 600;
-  transition: 0.25s;
+  transition: background 0.25s, transform 0.15s;
 }
 
 button:hover {
   background: #1f5fd4;
+  transform: translateY(-1px);
 }
 
-/* ===== WARNING BOX ===== */
+/* =========================
+   WARNING BOX
+========================= */
 .warning-box {
   background: #fff3cd;
   border: 1px solid #ffe08a;
   padding: 18px;
   border-radius: 10px;
-  font-size: 17px;
+  font-size: 1rem;
   text-align: center;
+  color: #856404;
 }
 
-/* ============================= */
-/*           PREVIEW             */
-/* ============================= */
-
+/* =========================
+   PREVIEW DE CATEGORIAS
+========================= */
 .preview-category {
   margin-bottom: 40px;
 }
 
 .preview-category h3 {
-  font-size: 22px;
+  font-size: 1.5rem;
   color: #222;
   margin-bottom: 15px;
   border-left: 5px solid #2a75f3;
@@ -118,59 +134,66 @@ button:hover {
   font-weight: 700;
 }
 
-/* ===== PRODUCTS GRID ===== */
+/* =========================
+   GRID DE PRODUTOS
+========================= */
 .preview-products {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 24px;
 }
 
-/* ===== PRODUCT CARD ===== */
+/* =========================
+   CARD DE PRODUTO
+========================= */
 .product-card {
   background: #fff;
   border: 1px solid #ddd;
   border-radius: 14px;
-  padding: 15px;
-  text-align: center;
-  box-shadow: 0 3px 12px rgba(0,0,0,0.07);
-  transition: 0.2s ease-in-out;
+  padding: 16px;
   display: flex;
   flex-direction: column;
+  text-align: center;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.05);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
 .product-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
 }
 
 .product-img {
   width: 100%;
   height: 170px;
   object-fit: cover;
-  border-radius: 10px;
+  border-radius: 12px;
   margin-bottom: 14px;
 }
 
 .product-card h4 {
-  margin-top: 5px;
-  font-size: 18px;
+  margin-top: 8px;
+  font-size: 1.125rem;
   font-weight: 600;
+  color: #111;
 }
 
 .product-card p {
-  font-size: 15px;
+  font-size: 0.9rem;
   color: #555;
   margin-top: 5px;
 }
 
 .price {
   margin-top: 10px;
-  font-size: 19px;
+  font-size: 1.125rem;
   font-weight: 700;
-  color: #1f5fd4;
+  color: #2a75f3;
 }
 
-/* ===== ACTION BUTTONS ===== */
+/* =========================
+   BOTÕES DE AÇÃO
+========================= */
 .actions {
   margin-top: auto;
   display: flex;
@@ -181,34 +204,37 @@ button:hover {
 .edit-btn,
 .delete-btn {
   flex: 1;
-  padding: 11px;
-  font-size: 15px;
+  padding: 12px;
+  font-size: 0.95rem;
   border: none;
-  border-radius: 8px;
+  border-radius: 10px;
   cursor: pointer;
   font-weight: 600;
-  transition: 0.25s;
-  white-space: nowrap; /* evita quebrar texto */
+  transition: all 0.2s;
+  white-space: nowrap;
 }
 
 .edit-btn {
   background: #ffe08a;
+  color: #856404;
 }
 
 .edit-btn:hover {
-  background: #ffcd4d;
+  background: #ffd659;
 }
 
 .delete-btn {
   background: #ff6464;
-  color: white;
+  color: #fff;
 }
 
 .delete-btn:hover {
   background: #e53939;
 }
 
-/* ===== RESPONSIVIDADE ===== */
+/* =========================
+   RESPONSIVIDADE
+========================= */
 @media (max-width: 768px) {
   .forms-row {
     flex-direction: column;
@@ -220,16 +246,9 @@ button:hover {
   }
 }
 
-
-@media (max-width: 900px) {
-  .forms-row .form-box {
-    flex: 1 1 100%;
-  }
-}
-
 @media (max-width: 480px) {
   .actions {
-    flex-direction: column; /* botões um embaixo do outro */
+    flex-direction: column;
   }
 
   .edit-btn,

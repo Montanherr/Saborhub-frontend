@@ -1,116 +1,156 @@
-/* Container principal */
+/* =========================
+   CONTAINER PRINCIPAL
+========================= */
 .home-container {
   padding: 30px 15px;
   max-width: 1100px;
   margin: auto;
+  animation: fadeIn 0.3s ease-in-out;
 }
 
-/* Título */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* =========================
+   TÍTULO
+========================= */
 .home-title {
-  font-size: 26px;
-  margin-bottom: 20px;
+  font-size: 2rem;
+  margin-bottom: 25px;
   text-align: center;
   color: #2c2c2c;
   font-weight: 700;
 }
 
-/* Grid responsivo */
+/* =========================
+   GRID DE RESTAURANTES
+========================= */
 .restaurant-grid {
   display: grid;
-  gap: 18px;
+  gap: 20px;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
 }
 
-/* Card */
+/* =========================
+   CARD DE RESTAURANTE
+========================= */
 .restaurant-card {
-  background: #ffffff;
-  border-radius: 12px;
-  max-width: 220px;
-  margin: auto;
-  box-shadow: 0 3px 10px rgba(0,0,0,0.07);
-  transition: 0.2s ease;
+  background: #fff;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  display: flex;
+  flex-direction: column;
 }
 
 .restaurant-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+  transform: translateY(-5px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
 }
 
-/* Imagem */
+/* =========================
+   IMAGEM
+========================= */
 .restaurant-image {
-  height: 100px;
-  object-fit: cover;
   width: 100%;
-  border-radius: 12px 12px 0 0;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 14px 14px 0 0;
+  transition: transform 0.25s ease;
 }
 
-/* Informações internas */
+.restaurant-card:hover .restaurant-image {
+  transform: scale(1.03);
+}
+
+/* =========================
+   INFORMAÇÕES DO CARD
+========================= */
 .restaurant-info {
-  padding: 14px;
+  padding: 16px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .restaurant-info h3 {
-  margin: 0 0 6px;
-  font-size: 18px;
-  color: #333;
+  margin: 0 0 8px;
+  font-size: 1.125rem;
   font-weight: 600;
+  color: #222;
 }
 
 .restaurant-info p {
-  font-size: 14px;
-  margin: 0 0 12px;
-  color: #777;
+  margin: 0 0 14px;
+  font-size: 0.9rem;
+  color: #555;
+  line-height: 1.3;
 }
 
-/* Botão */
+/* =========================
+   BOTÃO "VER MAIS"
+========================= */
 .see-more {
   width: 100%;
-  padding: 10px;
-  background: #2c2c2c;
-  color: white;
+  padding: 12px;
+  background: #2a75f3;
+  color: #fff;
   border: none;
-  border-radius: 8px;
+  border-radius: 10px;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 0.95rem;
   font-weight: 600;
-  transition: background 0.2s, transform 0.2s;
+  transition: background 0.25s, transform 0.2s;
 }
 
 .see-more:hover {
-  background: #444;
-  transform: scale(1.02);
+  background: #1f5fd4;
+  transform: translateY(-2px);
 }
 
-/* ========================================= */
-/* ✨ RESPONSIVIDADE */
-/* ========================================= */
+/* =========================
+   RESPONSIVIDADE
+========================= */
 
 /* Tablets */
 @media (max-width: 1024px) {
   .restaurant-image {
-    height: 120px;
+    height: 140px;
   }
 }
 
 /* Smartphones */
 @media (max-width: 768px) {
   .home-title {
-    font-size: 24px;
+    font-size: 1.75rem;
   }
 
   .restaurant-grid {
     grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
     gap: 16px;
   }
+
+  .restaurant-image {
+    height: 130px;
+  }
 }
 
 /* Telas muito pequenas */
 @media (max-width: 480px) {
   .restaurant-grid {
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
   }
 
   .restaurant-image {
-    height: 110px;
+    height: 120px;
+  }
+
+  .see-more {
+    font-size: 0.9rem;
+    padding: 10px;
   }
 }
