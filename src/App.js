@@ -22,8 +22,8 @@ function App() {
               <main className="main-content">
                 <AppRoutes />
               </main>
-              <Footer />
             </div>
+            <Footer />
           </div>
         </AuthProvider>
       </Router>

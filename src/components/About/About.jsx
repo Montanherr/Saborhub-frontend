@@ -12,13 +12,11 @@ export default function AboutMenu() {
       </p>
 
       <p className="about-text">
-        Sem aplicativos, sem burocracia — apenas o link do seu cardápio para
+        Sem aplicativos, sem burocracia, apenas o link do seu cardápio para
         compartilhar onde quiser!
       </p>
 
-      <a href="/restaurants" className="about-btn">
-        Ver Restaurantes
-      </a>
+  
     </section>
   );
 }

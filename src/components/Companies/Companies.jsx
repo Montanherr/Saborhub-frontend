@@ -1,21 +1,24 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import companyService from "../../services/companyService";
+import { getRestaurantLogo } from "../../utils/restaurantLogos";
 import "./Companies.css";
 
 export default function Companies() {
   const [restaurants, setRestaurants] = useState([]);
   const [page, setPage] = useState(1);
-  const itemsPerPage = 4;
+  const itemsPerPage = 6;
   const navigate = useNavigate();
 
   useEffect(() => {
-    companyService.getAll()
+    companyService
+      .getAll()
       .then(setRestaurants)
       .catch((err) => console.error("Erro ao carregar restaurantes:", err));
   }, []);
 
   const totalPages = Math.ceil(restaurants.length / itemsPerPage);
+
   const currentItems = restaurants.slice(
     (page - 1) * itemsPerPage,
     page * itemsPerPage
@@ -31,25 +34,28 @@ export default function Companies() {
 
       <div className="restaurant-grid">
         {currentItems.length === 0 ? (
-          <p>Carregando restaurantes...</p>
+          <p className="loading">Carregando restaurantes...</p>
         ) : (
           currentItems.map((r) => (
-            <div key={r.id} className="restaurant-card">
-              <img
-                src="/assets/zeroumadega.png"
-                alt={r.fantasyName}
-                className="restaurant-image"
-              />
+            <div
+              key={r.id}
+              className="restaurant-card"
+              onClick={() => handleViewMenu(r.id)}
+            >
+              <div className="image-wrapper">
+                <img
+                  src={getRestaurantLogo(r.fantasyName)}
+                  alt={r.fantasyName}
+                  className="restaurant-image"
+                />
+
+              </div>
 
               <div className="restaurant-info">
                 <h3>{r.fantasyName}</h3>
-                <p>{r.description}</p>
-                <button
-                  className="see-more"
-                  onClick={() => handleViewMenu(r.id)}
-                >
-                  Ver Cardápio
-                </button>
+                <p>
+                  {r.description ? r.description : "Confira nosso cardápio"}
+                </p>
               </div>
             </div>
           ))
@@ -62,9 +68,14 @@ export default function Companies() {
             ◀
           </button>
 
-          <span>{page} / {totalPages}</span>
+          <span>
+            {page} / {totalPages}
+          </span>
 
-          <button onClick={() => setPage(page + 1)} disabled={page === totalPages}>
+          <button
+            onClick={() => setPage(page + 1)}
+            disabled={page === totalPages}
+          >
             ▶
           </button>
         </div>
