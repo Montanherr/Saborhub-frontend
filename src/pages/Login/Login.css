@@ -1,104 +1,210 @@
-/* ===== CONTAINER ===== */
+/* ========================================= */
+/* CONFIGURAÇÕES GLOBAIS / DESIGN SYSTEM     */
+/* ========================================= */
+:root {
+  /* Cores (Branding e UI) */
+  --primary: #ff6600;
+  --primary-hover: #e65c00;
+  --primary-light: rgba(255, 102, 0, 0.1);
+  --bg-gradient: linear-gradient(180deg, #ffffff 0%, #f8f9fa 100%);
+  
+  /* Texto */
+  --text-main: #1a1a1a;
+  --text-muted: #666666;
+  --text-error: #dc3545;
+  
+  /* Superfícies */
+  --border-color: #e0e0e0;
+  --card-bg: #ffffff;
+  
+  /* Sombras e Bordas */
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
+  --shadow-lg: 0 10px 40px rgba(0, 0, 0, 0.08);
+  --radius-md: 12px;
+  --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Reset básico para garantir consistência */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', -apple-system, sans-serif; /* Fontes de sistema modernas */
+}
+
+/* ========================================= */
+/* CONTAINER PRINCIPAL                       */
+/* ========================================= */
 .login-container {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: 20px;
-  background: linear-gradient(180deg, #fff 0%, #f6f6f6 100%);
+  padding: 24px;
+  background: var(--bg-gradient);
 }
 
 /* ===== LOGO / TÍTULO ===== */
 .app-title {
-  font-size: 36px;
-  font-weight: 800;
-  color: #ff6600;
-  margin-bottom: 28px;
-  letter-spacing: -1px;
+  font-size: 40px;
+  font-weight: 900;
+  color: var(--primary);
+  margin-bottom: 32px;
+  letter-spacing: -1.5px;
+  /* Efeito sutil de gradiente no texto */
+  background: linear-gradient(to bottom right, #ff6600, #ff8533);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
-/* ===== CARD LOGIN ===== */
+/* ========================================= */
+/* CARD DE LOGIN (BOX)                       */
+/* ========================================= */
 .login-box {
   width: 100%;
-  max-width: 380px;
-  background: #fff;
-  padding: 32px;
-  border-radius: 16px;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+  max-width: 400px;
+  background: var(--card-bg);
+  padding: 40px;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  border: 1px solid rgba(0, 0, 0, 0.02); /* Borda quase invisível para definição */
 }
 
 .login-box h2 {
   text-align: center;
-  margin-bottom: 24px;
-  font-size: 22px;
-  color: #222;
+  margin-bottom: 28px;
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-main);
 }
 
-/* ===== FORM ===== */
+/* ===== FORMULÁRIO ===== */
 .login-box form {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 18px;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.input-group label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-left: 2px;
 }
 
 /* ===== INPUTS ===== */
 .login-box input {
   width: 100%;
-  padding: 13px 14px;
+  padding: 14px 16px;
   border-radius: 10px;
-  border: 1px solid #ddd;
-  font-size: 15px;
-  transition: all 0.2s ease;
+  border: 1.5px solid var(--border-color);
+  font-size: 16px;
+  color: var(--text-main);
+  background: #fff;
+  transition: var(--transition);
+}
+
+.login-box input:hover {
+  border-color: #ccc;
 }
 
 .login-box input:focus {
-  border-color: #ff6600;
-  box-shadow: 0 0 0 3px rgba(255, 102, 0, 0.15);
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px var(--primary-light);
   outline: none;
 }
 
-/* ===== ERRO ===== */
-.error {
-  font-size: 14px;
-  color: #ff3333;
-  margin-top: -4px;
+/* Placeholder mais elegante */
+.login-box input::placeholder {
+  color: #a0a0a0;
 }
 
-/* ===== BOTÃO ===== */
+/* ===== MENSAGEM DE ERRO ===== */
+.error {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-error);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* ===== BOTÃO PRINCIPAL ===== */
 .login-box button {
-  margin-top: 10px;
-  padding: 13px;
+  margin-top: 8px;
+  padding: 14px;
   border-radius: 10px;
   border: none;
-  background: #ff6600;
+  background: var(--primary);
   color: #fff;
   font-size: 16px;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
-  transition: background 0.25s ease, transform 0.1s ease;
+  transition: var(--transition);
+  box-shadow: 0 4px 12px rgba(255, 102, 0, 0.2);
 }
 
 .login-box button:hover {
-  background: #e65900;
+  background: var(--primary-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(255, 102, 0, 0.3);
 }
 
 .login-box button:active {
-  transform: scale(0.98);
+  transform: translateY(0);
 }
 
 .login-box button:disabled {
-  opacity: 0.6;
+  background: #ccc;
+  box-shadow: none;
   cursor: not-allowed;
+  transform: none;
 }
 
-/* ===== MOBILE ===== */
-@media (max-width: 420px) {
+/* ========================================= */
+/* LINKS ADICIONAIS (Esqueci a senha, etc)   */
+/* ========================================= */
+.login-footer {
+  margin-top: 24px;
+  text-align: center;
+}
+
+.login-footer a {
+  font-size: 14px;
+  color: var(--primary);
+  text-decoration: none;
+  font-weight: 600;
+  transition: var(--transition);
+}
+
+.login-footer a:hover {
+  color: var(--primary-hover);
+  text-decoration: underline;
+}
+
+/* ========================================= */
+/* RESPONSIVIDADE                            */
+/* ========================================= */
+@media (max-width: 480px) {
+  .login-container {
+    background: #fff; /* Em mobile, fundos sólidos costumam parecer mais limpos */
+    padding: 20px;
+  }
+
   .login-box {
-    padding: 26px;
+    box-shadow: none;
+    border: none;
+    padding: 0;
   }
 
   .app-title {
-    font-size: 30px;
+    font-size: 32px;
   }
 }

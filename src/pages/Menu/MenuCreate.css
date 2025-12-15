@@ -1,10 +1,51 @@
 /* =========================
+   VARIAVEIS GLOBAIS (TEMA)
+========================= */
+:root {
+  /* Cores Principais */
+  --cor-primaria: #2a75f3; /* Azul Principal */
+  --cor-primaria-hover: #1f5fd4;
+  --cor-fundo: #f4f4f9; /* Fundo Geral */
+  --cor-texto-principal: #1f1f1f;
+  --cor-texto-secundario: #555;
+  --cor-borda-clara: #e2e2e2;
+
+  /* Cores de Alerta/Ação */
+  --cor-aviso: #fff3cd; /* Fundo Aviso Amarelo */
+  --cor-aviso-borda: #ffe08a;
+  --cor-aviso-texto: #856404;
+
+  --cor-edicao: #ffe08a; /* Fundo Botão Editar Amarelo */
+  --cor-edicao-hover: #ffd659;
+  --cor-edicao-texto: #856404;
+
+  --cor-remocao: #ff6464; /* Fundo Botão Deletar Vermelho */
+  --cor-remocao-hover: #e53939;
+
+  /* Sombras */
+  --sombra-leve: 0 4px 16px rgba(0, 0, 0, 0.05);
+  --sombra-media: 0 6px 20px rgba(0, 0, 0, 0.05);
+  --sombra-hover: 0 8px 24px rgba(0, 0, 0, 0.08);
+
+  /* Espaçamento e Borda */
+  --padding-padrao: 25px;
+  --gap-padrao: 20px;
+  --borda-raio-grande: 14px;
+  --borda-raio-pequeno: 10px;
+}
+
+/* Aplicando uma cor de fundo global mais suave */
+body {
+  background-color: var(--cor-fundo);
+}
+
+/* =========================
    CONTAINER PRINCIPAL
 ========================= */
 .menu-create-container {
   max-width: 1100px;
   margin: auto;
-  padding: 25px;
+  padding: var(--padding-padrao);
   animation: fadeIn 0.3s ease-in-out;
 }
 
@@ -17,38 +58,39 @@ h1 {
   text-align: center;
   margin-bottom: 35px;
   font-size: 2rem;
-  color: #1f1f1f;
+  color: var(--cor-texto-principal);
   font-weight: 700;
 }
 
 /* =========================
-   FORMULÁRIOS LADO A LADO
+   FORMULÁRIOS
 ========================= */
+
+/* Estilos de Layout */
 .forms-row {
   display: flex;
-  gap: 20px;
+  gap: var(--gap-padrao);
   flex-wrap: wrap;
 }
 
 .forms-row .form-box {
-  flex: 1 1 45%;
+  /* Otimizado: 1 (cresce) 1 (encolhe) 45% (tamanho base) */
+  flex: 1 1 45%; 
 }
 
-/* =========================
-   FORM BOX
-========================= */
+/* Estilo do Box Individual */
 .form-box {
   background: #fff;
-  padding: 25px;
-  border-radius: 14px;
+  padding: var(--padding-padrao);
+  border-radius: var(--borda-raio-grande);
   margin-bottom: 40px;
-  border: 1px solid #e2e2e2;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.05);
+  border: 1px solid var(--cor-borda-clara);
+  box-shadow: var(--sombra-media);
   transition: box-shadow 0.3s ease;
 }
 
 .form-box:hover {
-  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+  box-shadow: var(--sombra-hover);
 }
 
 .form-box h2 {
@@ -58,14 +100,17 @@ h1 {
   color: #222;
 }
 
+/* =========================
+   ELEMENTOS DE FORMULÁRIO
+========================= */
 label {
   display: block;
   margin-top: 18px;
   font-weight: 600;
-  color: #555;
+  color: var(--cor-texto-secundario);
 }
 
-input,
+input:not([type="checkbox"]),
 select {
   width: 100%;
   padding: 12px;
@@ -74,48 +119,54 @@ select {
   border: 1px solid #ccc;
   font-size: 1rem;
   transition: all 0.2s;
+  /* Resetar o box-sizing para segurança, embora normalmente seja herdado */
+  box-sizing: border-box; 
 }
 
 input:focus,
 select:focus {
-  border-color: #2a75f3;
-  box-shadow: 0 0 0 3px rgba(42, 117, 243, 0.2);
+  border-color: var(--cor-primaria);
+  /* Uso de transparência no box-shadow para o foco */
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--cor-primaria) 30%, transparent); 
   outline: none;
 }
 
 /* =========================
-   BOTÃO PRINCIPAL
+   BOTÕES GERAIS
 ========================= */
-button {
+button[type="submit"], /* Selector mais específico para o botão principal */
+.main-button {
   margin-top: 25px;
   padding: 14px;
   width: 100%;
   font-size: 1rem;
-  background: #2a75f3;
+  background: var(--cor-primaria);
   color: #fff;
   border: none;
-  border-radius: 10px;
+  border-radius: var(--borda-raio-pequeno);
   cursor: pointer;
   font-weight: 600;
-  transition: background 0.25s, transform 0.15s;
+  transition: background 0.25s, transform 0.15s, box-shadow 0.2s;
 }
 
-button:hover {
-  background: #1f5fd4;
-  transform: translateY(-1px);
+button[type="submit"]:hover, 
+.main-button:hover {
+  background: var(--cor-primaria-hover);
+  transform: translateY(-2px); /* Aumento sutil no efeito de 'levantar' */
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
 
 /* =========================
    WARNING BOX
 ========================= */
 .warning-box {
-  background: #fff3cd;
-  border: 1px solid #ffe08a;
+  background: var(--cor-aviso);
+  border: 1px solid var(--cor-aviso-borda);
   padding: 18px;
-  border-radius: 10px;
+  border-radius: var(--borda-raio-pequeno);
   font-size: 1rem;
   text-align: center;
-  color: #856404;
+  color: var(--cor-aviso-texto);
 }
 
 /* =========================
@@ -129,7 +180,7 @@ button:hover {
   font-size: 1.5rem;
   color: #222;
   margin-bottom: 15px;
-  border-left: 5px solid #2a75f3;
+  border-left: 5px solid var(--cor-primaria);
   padding-left: 10px;
   font-weight: 700;
 }
@@ -139,7 +190,8 @@ button:hover {
 ========================= */
 .preview-products {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  /* Uso de minmax mais robusto para garantir ao menos 2 colunas em telas maiores que 500px */
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
   gap: 24px;
 }
 
@@ -149,18 +201,18 @@ button:hover {
 .product-card {
   background: #fff;
   border: 1px solid #ddd;
-  border-radius: 14px;
+  border-radius: var(--borda-raio-grande);
   padding: 16px;
   display: flex;
   flex-direction: column;
   text-align: center;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.05);
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  box-shadow: var(--sombra-leve);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .product-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+  transform: translateY(-8px); /* Efeito de 'levantar' mais pronunciado */
+  box-shadow: 0 10px 30px rgba(0,0,0,0.15); /* Sombra mais intensa no hover */
 }
 
 .product-img {
@@ -172,42 +224,47 @@ button:hover {
 }
 
 .product-card h4 {
-  margin-top: 8px;
-  font-size: 1.125rem;
+  /* Removido o margin-top, pois o 'p' abaixo já tem. Usar o margin-bottom do elemento anterior para espaçar */
+  margin-top: 8px; 
+  font-size: 1.15rem; /* Leve aumento para destaque */
   font-weight: 600;
   color: #111;
 }
 
 .product-card p {
-  font-size: 0.9rem;
-  color: #555;
+  font-size: 0.95rem; /* Leve aumento para legibilidade */
+  color: var(--cor-texto-secundario);
   margin-top: 5px;
+  /* Limitar linhas para nomes longos */
+  overflow: hidden; 
+  text-overflow: ellipsis;
 }
 
 .price {
-  margin-top: 10px;
-  font-size: 1.125rem;
+  margin-top: 12px; /* Mais espaço antes do preço */
+  font-size: 1.2rem;
   font-weight: 700;
-  color: #2a75f3;
+  color: var(--cor-primaria);
 }
 
 /* =========================
-   BOTÕES DE AÇÃO
+   BOTÕES DE AÇÃO (DENTRO DO CARD)
 ========================= */
 .actions {
-  margin-top: auto;
+  margin-top: auto; /* Garante que os botões fiquem sempre na parte inferior */
+  padding-top: 15px; /* Espaçamento com o conteúdo acima */
   display: flex;
   justify-content: space-between;
-  gap: 12px;
+  gap: 10px; /* Reduzido levemente o gap para maior aproveitamento */
 }
 
 .edit-btn,
 .delete-btn {
   flex: 1;
-  padding: 12px;
-  font-size: 0.95rem;
+  padding: 10px; /* Levemente menor que o botão principal */
+  font-size: 0.9rem; 
   border: none;
-  border-radius: 10px;
+  border-radius: 8px; /* Mais arredondado */
   cursor: pointer;
   font-weight: 600;
   transition: all 0.2s;
@@ -215,26 +272,38 @@ button:hover {
 }
 
 .edit-btn {
-  background: #ffe08a;
-  color: #856404;
+  background: var(--cor-edicao);
+  color: var(--cor-edicao-texto);
 }
 
 .edit-btn:hover {
-  background: #ffd659;
+  background: var(--cor-edicao-hover);
+  transform: translateY(-1px);
 }
 
 .delete-btn {
-  background: #ff6464;
+  background: var(--cor-remocao);
   color: #fff;
 }
 
 .delete-btn:hover {
-  background: #e53939;
+  background: var(--cor-remocao-hover);
+  transform: translateY(-1px);
 }
 
 /* =========================
    RESPONSIVIDADE
 ========================= */
+
+/* Tablet e Telas Médias */
+@media (max-width: 900px) {
+  /* Reduzir um pouco o padding geral em telas médias */
+  .menu-create-container {
+    padding: 20px;
+  }
+}
+
+/* Celular (Mudança de Flexbox) */
 @media (max-width: 768px) {
   .forms-row {
     flex-direction: column;
@@ -244,15 +313,23 @@ button:hover {
   .forms-row .form-box {
     flex: 1 1 100%;
   }
+
+  /* Reduzir o tamanho da fonte do título em telas menores */
+  h1 {
+    font-size: 1.75rem;
+  }
 }
 
+/* Celular (Ações do Card) */
 @media (max-width: 480px) {
   .actions {
     flex-direction: column;
+    gap: 8px; /* Reduzir o gap da coluna */
   }
 
   .edit-btn,
   .delete-btn {
     width: 100%;
+    padding: 12px;
   }
 }
