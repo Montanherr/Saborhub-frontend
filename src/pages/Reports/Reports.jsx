@@ -35,24 +35,18 @@ const loadReports = useCallback(async () => {
     const categoryRes = await reportsService.getByCategory(companyId, startDate, endDate);
 
     setSummary(summaryRes.data);
-    setCategoryData(
-      categoryRes.data.map((item) => ({
-        name: item.category,
-        pedidos: Number(item.totalItems),
-      }))
-    );
+    setCategoryData(categoryRes.data.map(item => ({
+      name: item.category,
+      pedidos: Number(item.totalItems)
+    })));
   } catch (err) {
-    console.error("Erro ao carregar relatórios", err);
+    console.error(err);
   }
-}, [companyId, startDate, endDate]); // 'useCallback' memoriza a função
+}, [companyId, startDate, endDate]);
 
 useEffect(() => {
   loadReports();
-}, [loadReports]); // 'useEffect' agora depende de 'loadReports'
-
-  useEffect(() => {
-    loadReports();
-  }, [companyId, startDate, endDate]);
+}, [loadReports]);
 
   // 🔹 Export PDF avançado
   const exportPDF = async () => {
