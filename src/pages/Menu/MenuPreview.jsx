@@ -1,75 +1,78 @@
 export default function MenuPreview({
   categories,
   products,
-  pageByCategory,
-  setPageByCategory,
-  itemsPerPage,
   onEdit,
   onDelete,
-  loggedCompanyId,
+  onEditCategory,
+  onDeleteCategory,
 }) {
-  function paginated(categoryId) {
-    const page = pageByCategory[categoryId] || 1;
-    const filtered = products.filter(p => p.categoryId === categoryId);
-    return filtered.slice(
-      (page - 1) * itemsPerPage,
-      page * itemsPerPage
-    );
-  }
-
   return (
     <>
-      <h2>Preview do Menu</h2>
+      <h2 className="preview-title">Preview do Menu</h2>
 
-      {categories.map(cat => (
-        <div
-          key={`category-${cat.id}`}
-          className="preview-category"
-        >
-          <h3>{cat.name}</h3>
+      {categories.map(category => {
+        const categoryProducts = products.filter(
+          p => p.categoryId === category.id
+        );
 
-          <div className="preview-products">
-            {paginated(cat.id).map(p => (
-              <div
-                key={`product-${p.id}`}
-                className="product-card"
-              >
-                {p.image && (
-                  <img
-                    src={p.image}
-                    alt={p.name}
-                    className="product-img"
-                  />
-                )}
+        return (
+          <div key={category.id} className="preview-category">
+            <div className="category-header">
+              <h3>{category.name}</h3>
 
-                <h4>{p.name}</h4>
-                <p>{p.description}</p>
-                <p className="price">
-                  R${Number(p.price).toFixed(2)}
-                </p>
-
-                {p.companyId === loggedCompanyId && (
-                  <div className="actions">
-                    <button
-                      className="edit-btn"
-                      onClick={() => onEdit(p)}
-                    >
-                      Editar
-                    </button>
-
-                    <button
-                      className="delete-btn"
-                      onClick={() => onDelete(p.id)}
-                    >
-                      Excluir
-                    </button>
-                  </div>
-                )}
+              <div className="category-actions">
+                <button onClick={() => onEditCategory(category)}>
+                  ✏️
+                </button>
+                <button onClick={() => onDeleteCategory(category)}>
+                  🗑️
+                </button>
               </div>
-            ))}
+            </div>
+
+            {categoryProducts.length === 0 ? (
+              <p className="empty-category">
+                Nenhum produto nesta categoria
+              </p>
+            ) : (
+              <div className="preview-products">
+                {categoryProducts.map(product => (
+                  <div key={product.id} className="product-card">
+                    {product.image && (
+                      <img
+                        src={product.image}
+                        alt={product.name}
+                        className="product-img"
+                      />
+                    )}
+
+                    <h4>{product.name}</h4>
+                    <p>{product.description}</p>
+                    <p className="price">
+                      R$ {Number(product.price).toFixed(2)}
+                    </p>
+
+                    <div className="actions">
+                      <button
+                        className="edit-btn"
+                        onClick={() => onEdit(product)}
+                      >
+                        Editar
+                      </button>
+                      <button
+                        className="delete-btn"
+                        onClick={() => onDelete(product)}
+                      >
+                        Excluir
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
-        </div>
-      ))}
+        );
+      })}
     </>
   );
 }

@@ -3,11 +3,11 @@ import { useEffect, useState } from "react";
 export default function CategoryForm({
   onSubmit,
   editingCategory,
-  onCancelEdit,
+  onCancel,
+  loading
 }) {
   const [name, setName] = useState("");
 
-  // 🔥 SINCRONIZA COM EDIÇÃO
   useEffect(() => {
     if (editingCategory) {
       setName(editingCategory.name);
@@ -20,37 +20,38 @@ export default function CategoryForm({
     e.preventDefault();
     if (!name.trim()) return;
     onSubmit(name);
-    setName("");
   }
 
   return (
-    <div className="form-box">
+    <form className="card" onSubmit={handleSubmit}>
       <h2>
-        {editingCategory ? "Editar Categoria" : "Cadastrar Categoria"}
+        {editingCategory ? "Editar Categoria" : "Nova Categoria"}
       </h2>
 
-      <form onSubmit={handleSubmit}>
-        <input
-          value={name}
-          onChange={e => setName(e.target.value)}
-          placeholder="Nome da categoria"
-          required
-        />
+      <input
+        type="text"
+        placeholder="Nome da categoria"
+        value={name}
+        onChange={e => setName(e.target.value)}
+        disabled={loading}
+      />
 
-        <button type="submit">
-          {editingCategory ? "Salvar Alterações" : "Salvar Categoria"}
+      <div className="actions">
+        <button type="submit" disabled={loading}>
+          {editingCategory ? "Salvar alterações" : "Criar categoria"}
         </button>
 
         {editingCategory && (
           <button
             type="button"
-            className="cancel-btn"
-            onClick={onCancelEdit}
+            className="secondary"
+            onClick={onCancel}
+            disabled={loading}
           >
             Cancelar
           </button>
         )}
-      </form>
-    </div>
+      </div>
+    </form>
   );
 }

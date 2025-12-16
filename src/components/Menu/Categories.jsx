@@ -1,62 +1,74 @@
 // src/pages/Categories/Categories.jsx
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+
 import categoryService from "../../services/categoriesService";
 import productService from "../../services/productService";
 import companyService from "../../services/companyService";
+
 import OrdersModal from "../../components/Modal/Order/Order";
 import "./Categories.css";
 
 export default function Categories() {
   const { companyId } = useParams();
 
-  const [categories, setCategories] = useState([]);
   const [company, setCompany] = useState(null);
-  const [products, setProducts] = useState({});
-  const [loading, setLoading] = useState(true);
+  const [categories, setCategories] = useState([]);
+  const [productsByCategory, setProductsByCategory] = useState({});
   const [expandedCategory, setExpandedCategory] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   // Pedido
   const [orderItems, setOrderItems] = useState([]);
   const [showOrderModal, setShowOrderModal] = useState(false);
 
   useEffect(() => {
-    async function fetchData() {
+    async function loadMenu() {
       try {
-        const comp = await companyService.getById(companyId);
-        setCompany(comp);
+        setLoading(true);
 
-        const cats = await categoryService.getCategories();
-        const companyCats = cats.filter(
-          (cat) => cat.companyId === Number(companyId)
-        );
-        setCategories(companyCats);
+        // 🔹 Empresa
+        const companyData = await companyService.getById(companyId);
+        setCompany(companyData);
 
-        // Buscar todos os produtos da empresa
-        const allProducts = await productService.getProducts();
-        const grouped = {};
-        companyCats.forEach((cat) => {
-          grouped[cat.id] = allProducts.filter((p) => p.categoryId === cat.id);
+        // 🔹 Categorias da empresa
+        const categoriesData = await categoryService.getCategories(companyId);
+        setCategories(categoriesData);
+
+        // 🔹 Produtos da empresa
+        const productsData =
+          await productService.getProductsByCompany(companyId);
+
+        // 🔹 Agrupar produtos por categoria
+        const groupedProducts = {};
+        categoriesData.forEach((category) => {
+          groupedProducts[category.id] = productsData.filter(
+            (product) => product.categoryId === category.id
+          );
         });
-        setProducts(grouped);
-      } catch (err) {
-        console.error(err);
+
+        setProductsByCategory(groupedProducts);
+      } catch (error) {
+        console.error("Erro ao carregar cardápio:", error);
       } finally {
         setLoading(false);
       }
     }
 
-    fetchData();
+    if (companyId) loadMenu();
   }, [companyId]);
 
-  // Alterna categoria expandida
-  const toggleCategory = (catId) => {
-    setExpandedCategory(expandedCategory === catId ? null : catId);
+  // Expandir / recolher categoria
+  const toggleCategory = (categoryId) => {
+    setExpandedCategory(
+      expandedCategory === categoryId ? null : categoryId
+    );
   };
 
   // Adicionar produto ao pedido
   const addToOrder = (product) => {
     const exists = orderItems.find((item) => item.id === product.id);
+
     if (exists) {
       setOrderItems(
         orderItems.map((item) =>
@@ -68,12 +80,15 @@ export default function Categories() {
     } else {
       setOrderItems([...orderItems, { ...product, quantity: 1 }]);
     }
-    setShowOrderModal(true); // abrir modal ao adicionar
+
+    setShowOrderModal(true);
   };
 
   return (
     <div className="categories-container">
-      <h2>{company ? `Cardápio - ${company.fantasyName}` : "Carregando..."}</h2>
+      <h2>
+        {company ? `Cardápio - ${company.fantasyName}` : "Carregando cardápio..."}
+      </h2>
 
       {loading ? (
         <p>Carregando categorias...</p>
@@ -81,44 +96,54 @@ export default function Categories() {
         <p>Nenhuma categoria encontrada.</p>
       ) : (
         <div className="category-grid">
-          {categories.map((cat) => (
-            <div key={cat.id} className="category-card">
+          {categories.map((category) => (
+            <div key={category.id} className="category-card">
               <div className="category-header">
-                <h3>{cat.name}</h3>
-                <button onClick={() => toggleCategory(cat.id)}>
-                  {expandedCategory === cat.id
+                <h3>{category.name}</h3>
+                <button onClick={() => toggleCategory(category.id)}>
+                  {expandedCategory === category.id
                     ? "Ocultar produtos"
-                    : "Ver mais"}
+                    : "Ver produtos"}
                 </button>
               </div>
 
-              {expandedCategory === cat.id && products[cat.id] && (
+              {expandedCategory === category.id && (
                 <div className="product-grid">
-                  {products[cat.id].map((prod) => (
-                    <div className="product-card">
-                      <img
-                        src={prod.image || "/assets/default-product.png"}
-                        alt={prod.name}
-                        className="product-image"
-                      />
+                  {productsByCategory[category.id]?.length > 0 ? (
+                    productsByCategory[category.id].map((product) => (
+                      <div key={product.id} className="product-card">
+                        <img
+                          src={
+                            product.image || "/assets/default-product.png"
+                          }
+                          alt={product.name}
+                          className="product-image"
+                        />
 
-                      <div className="product-info">
-                        <div>
-                          <h4>{prod.name}</h4>
-                          {prod.description && <p>{prod.description}</p>}
-                        </div>
+                        <div className="product-info">
+                          <div>
+                            <h4>{product.name}</h4>
+                            {product.description && (
+                              <p>{product.description}</p>
+                            )}
+                          </div>
 
-                        <div className="product-footer">
-                          <span className="price">
-                            R$ {Number(prod.price).toFixed(2)}
-                          </span>
-                          <button onClick={() => addToOrder(prod)}>
-                            Adicionar
-                          </button>
+                          <div className="product-footer">
+                            <span className="price">
+                              R$ {Number(product.price).toFixed(2)}
+                            </span>
+                            <button onClick={() => addToOrder(product)}>
+                              Adicionar
+                            </button>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    ))
+                  ) : (
+                    <p className="empty-category">
+                      Nenhum produto nesta categoria.
+                    </p>
+                  )}
                 </div>
               )}
             </div>
@@ -126,7 +151,6 @@ export default function Categories() {
         </div>
       )}
 
-      {/* Modal de pedidos */}
       {showOrderModal && (
         <OrdersModal
           company={company}

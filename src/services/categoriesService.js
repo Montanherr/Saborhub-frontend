@@ -1,13 +1,20 @@
 import api from "./api";
 
 const categoryService = {
-  createCategory: async (data) => {
-    const response = await api.post("/categories", data);
+  // 🔥 cria categoria DENTRO da empresa
+  createCategory: async (companyId, data) => {
+    const response = await api.post(
+      `/companies/${companyId}/categories`,
+      data
+    );
     return response.data;
   },
 
-  getCategories: async () => {
-    const response = await api.get("/categories");
+  // 🔥 lista categorias de uma empresa
+  getCategories: async (companyId) => {
+    const response = await api.get(
+      `/categories?companyId=${companyId}`
+    );
     return response.data;
   },
 
