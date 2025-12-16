@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useCallback, useState } from "react";
 import reportsService from "../../services/reportsService";
 import {
   ResponsiveContainer,
@@ -29,23 +29,26 @@ export default function DashboardReports() {
   const [endDate, setEndDate] = useState(new Date().toISOString().slice(0, 10));
 
   // 🔹 Carregar relatórios da API
-  const loadReports = async () => {
-    try {
-      const summaryRes = await reportsService.getSummary(companyId, startDate, endDate);
-      const categoryRes = await reportsService.getByCategory(companyId, startDate, endDate);
+const loadReports = useCallback(async () => {
+  try {
+    const summaryRes = await reportsService.getSummary(companyId, startDate, endDate);
+    const categoryRes = await reportsService.getByCategory(companyId, startDate, endDate);
 
-      setSummary(summaryRes.data);
+    setSummary(summaryRes.data);
+    setCategoryData(
+      categoryRes.data.map((item) => ({
+        name: item.category,
+        pedidos: Number(item.totalItems),
+      }))
+    );
+  } catch (err) {
+    console.error("Erro ao carregar relatórios", err);
+  }
+}, [companyId, startDate, endDate]); // 'useCallback' memoriza a função
 
-      setCategoryData(
-        categoryRes.data.map((item) => ({
-          name: item.category,
-          pedidos: Number(item.totalItems),
-        }))
-      );
-    } catch (err) {
-      console.error("Erro ao carregar relatórios", err);
-    }
-  };
+useEffect(() => {
+  loadReports();
+}, [loadReports]); // 'useEffect' agora depende de 'loadReports'
 
   useEffect(() => {
     loadReports();
