@@ -27,19 +27,26 @@ export default function Header() {
         <Link to="/">Home</Link>
         <Link to="/companies">Restaurantes</Link>
 
-        {isLoggedIn && (
-          <>
-            {user?.admin === true && (
-              <Link to="/menu/create" className="admin-link">
-                Incluir Item
-              </Link>
-            )}
+     {isLoggedIn && (
+  <>
+    {user?.admin === true && (
+      <>
+        <Link to="/menu/create" className="admin-link">
+          Incluir Item
+        </Link>
 
-            <button className="logout-btn" onClick={handleLogout}>
-              Logout
-            </button>
-          </>
-        )}
+        <Link to="/reports" className="admin-link">
+          Relatórios
+        </Link>
+      </>
+    )}
+
+    <button className="logout-btn" onClick={handleLogout}>
+      Logout
+    </button>
+  </>
+)}
+
 
         {!isLoggedIn && <Link to="/login">Login</Link>}
       </nav>

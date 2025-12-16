@@ -6,6 +6,7 @@ import CategoriesScreen from "../components/Menu/Categories";
 import MenuCreate from "../pages/Menu/MenuCreate";
 
 import Login from "../pages/Login/Login";
+import Reports from "../pages/Reports/Reports.jsx";
 import Register from "../pages/Login/Register";
 import Home from "../pages/Home/HomePublic";
 
@@ -16,9 +17,13 @@ export default function AppRoutes() {
       <Route path="/" element={<Home />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
-
       <Route path="/companies" element={<Companies />} />
       <Route path="/companies/:companyId/categories" element={<CategoriesScreen />} />
+
+      <Route path="/reports" element={
+  <ProtectedRoute>
+    <Reports />
+  </ProtectedRoute>} />
 
 <Route path="/menu/create" element={
   <ProtectedRoute>
