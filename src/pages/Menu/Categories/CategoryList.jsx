@@ -13,8 +13,9 @@ export default function CategoryList() {
 
   useEffect(() => {
     loadCategories();
-  }, [companyId]);
+  }, [companyId, loadCategories]);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   async function loadCategories() {
     try {
       setLoading(true);
@@ -37,19 +38,18 @@ export default function CategoryList() {
           { name }
         );
 
-        setCategories(prev =>
-          prev.map(c => (c.id === updated.id ? updated : c))
+        setCategories((prev) =>
+          prev.map((c) => (c.id === updated.id ? updated : c))
         );
 
         toast.success("Categoria atualizada!");
         setEditingCategory(null);
       } else {
-        const created = await categoryService.createCategory(
-          companyId,
-          { name }
-        );
+        const created = await categoryService.createCategory(companyId, {
+          name,
+        });
 
-        setCategories(prev => [...prev, created]);
+        setCategories((prev) => [...prev, created]);
         toast.success("Categoria criada!");
       }
     } catch {
@@ -65,7 +65,7 @@ export default function CategoryList() {
     try {
       setLoading(true);
       await categoryService.deleteCategory(category.id);
-      setCategories(prev => prev.filter(c => c.id !== category.id));
+      setCategories((prev) => prev.filter((c) => c.id !== category.id));
       toast.warn("Categoria excluída");
     } catch {
       toast.error("Erro ao excluir categoria");
@@ -92,7 +92,7 @@ export default function CategoryList() {
           <p className="empty">Nenhuma categoria cadastrada</p>
         )}
 
-        {categories.map(category => (
+        {categories.map((category) => (
           <div key={category.id} className="list-item">
             <span>{category.name}</span>
 
