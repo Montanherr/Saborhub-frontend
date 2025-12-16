@@ -8,8 +8,6 @@ import MenuCreate from "../pages/Menu/MenuCreate";
 import Login from "../pages/Login/Login";
 import Reports from "../pages/Reports/Reports.jsx";
 import Register from "../pages/Login/Register";
-import Categories from "../pages/Menu/Categories/CategoryList.jsx";
-import Products from "../pages/Menu/Products/ProductList.jsx";
 import Home from "../pages/Home/HomePublic";
 
 export default function AppRoutes() {
@@ -27,15 +25,7 @@ export default function AppRoutes() {
     <Reports />
   </ProtectedRoute>} />
 
-        <Route path="/products" element={
-  <ProtectedRoute>
-    <Products />
-  </ProtectedRoute>} />
-
-        <Route path="/categories" element={
-  <ProtectedRoute>
-    <Categories />
-  </ProtectedRoute>} />
+ 
 
 <Route path="/menu/create" element={
   <ProtectedRoute>

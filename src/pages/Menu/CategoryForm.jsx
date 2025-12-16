@@ -1,56 +1,103 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
+import productService from "../../services/productService";
+import categoryService from "../../services/categoriesService";
+import { toast } from "react-toastify";
+import ProductForm from "./ProductForm";
 
-export default function CategoryForm({
-  onSubmit,
-  editingCategory,
-  onCancelEdit,
-}) {
-  const [name, setName] = useState("");
+export default function ProductList() {
+  const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [editingProduct, setEditingProduct] = useState(null);
+  const [loading, setLoading] = useState(false);
 
-  // 🔥 SINCRONIZA COM EDIÇÃO
-  useEffect(() => {
-    if (editingCategory) {
-      setName(editingCategory.name);
-    } else {
-      setName("");
+  const companyId = Number(localStorage.getItem("companyId"));
+
+  // Função estável usando useCallback
+  const loadData = useCallback(async () => {
+    try {
+      setLoading(true);
+      const [p, c] = await Promise.all([
+        productService.getProducts(),
+        categoryService.getCategories(companyId)
+      ]);
+
+      setProducts(p.filter(p => p.companyId === companyId));
+      setCategories(c);
+    } catch {
+      toast.error("Erro ao carregar produtos");
+    } finally {
+      setLoading(false);
     }
-  }, [editingCategory]);
+  }, [companyId]);
 
-  function handleSubmit(e) {
-    e.preventDefault();
-    if (!name.trim()) return;
-    onSubmit(name);
-    setName("");
+  // useEffect depende apenas da função estável
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
+
+  async function handleSave(data) {
+    try {
+      setLoading(true);
+
+      if (editingProduct) {
+        await productService.updateProduct(editingProduct.id, data);
+        setProducts(prev =>
+          prev.map(p => (p.id === editingProduct.id ? { ...p, ...data } : p))
+        );
+        toast.success("Produto atualizado!");
+      } else {
+        const created = await productService.createProduct({
+          ...data,
+          companyId
+        });
+        setProducts(prev => [...prev, created]);
+        toast.success("Produto criado!");
+      }
+
+      setEditingProduct(null);
+    } catch {
+      toast.error("Erro ao salvar produto");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function handleDelete(product) {
+    if (!window.confirm("Excluir produto?")) return;
+
+    setLoading(true);
+    await productService.deleteProduct(product.id);
+    setProducts(prev => prev.filter(p => p.id !== product.id));
+    setLoading(false);
+    toast.warn("Produto removido");
   }
 
   return (
-    <div className="form-box">
-      <h2>
-        {editingCategory ? "Editar Categoria" : "Cadastrar Categoria"}
-      </h2>
+    <div className="page-container">
+      {loading && <div className="overlay">Carregando...</div>}
 
-      <form onSubmit={handleSubmit}>
-        <input
-          value={name}
-          onChange={e => setName(e.target.value)}
-          placeholder="Nome da categoria"
-          required
-        />
+      <ProductForm
+        categories={categories}
+        editingProduct={editingProduct}
+        onSubmit={handleSave}
+        onCancel={() => setEditingProduct(null)}
+        loading={loading}
+      />
 
-        <button type="submit">
-          {editingCategory ? "Salvar Alterações" : "Salvar Categoria"}
-        </button>
+      <div className="card">
+        <h2>Produtos</h2>
 
-        {editingCategory && (
-          <button
-            type="button"
-            className="cancel-btn"
-            onClick={onCancelEdit}
-          >
-            Cancelar
-          </button>
-        )}
-      </form>
+        {products.map(p => (
+          <div key={p.id} className="list-item">
+            <span>{p.name}</span>
+
+            <div className="buttons">
+              <button onClick={() => setEditingProduct(p)}>✏️</button>
+              <button className="danger" onClick={() => handleDelete(p)}>🗑️</button>
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
