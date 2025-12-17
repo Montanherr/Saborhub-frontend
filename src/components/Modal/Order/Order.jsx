@@ -1,4 +1,3 @@
-// src/components/OrdersModal/OrdersModal.jsx
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import orderService from "../../../services/orderService";
@@ -23,11 +22,12 @@ export default function OrdersModal({ company, items, setItems, close }) {
   const [waiters, setWaiters] = useState([]);
   const [selectedTable, setSelectedTable] = useState(null);
   const [selectedWaiter, setSelectedWaiter] = useState(null);
+  const [callWaiter, setCallWaiter] = useState(false);
 
   const navigate = useNavigate();
   const total = items.reduce((sum, i) => sum + i.price * i.quantity, 0).toFixed(2);
 
-  // Buscar mesas e garçons apenas quando orderType = table e company.id definido
+  // Buscar mesas e garçons apenas quando orderType = table
   useEffect(() => {
     if (orderType === "table" && company?.id) {
       tableService.getAll(company.id).then(setTables).catch(err => console.error(err));
@@ -50,6 +50,10 @@ export default function OrdersModal({ company, items, setItems, close }) {
       return alert("Selecione a mesa para pedidos na mesa!");
     }
 
+    if (needChange && !changeAmount) {
+      return alert("Informe o valor do troco necessário!");
+    }
+
     const payload = {
       companyId: company.id,
       fullName,
@@ -59,11 +63,12 @@ export default function OrdersModal({ company, items, setItems, close }) {
       additionalInfo,
       paymentMethod,
       needChange,
-      changeAmount,
+      changeAmount: needChange ? changeAmount : null,
       total,
       orderType,
-      tableId: selectedTable || null,
-      waiterId: selectedWaiter || null,
+      tableId: selectedTable ? Number(selectedTable) : null,
+      waiterId: selectedWaiter ? Number(selectedWaiter) : null,
+      callWaiter,
       items: items.map(i => ({ productId: i.id, quantity: i.quantity })),
     };
 
@@ -88,8 +93,11 @@ export default function OrdersModal({ company, items, setItems, close }) {
       msg += `*ℹ️ Informações adicionais:* ${additionalInfo || "Nenhuma"}\n`;
       msg += `*💳 Pagamento:* ${paymentMethod}\n`;
       msg += `Troco necessário: ${needChange ? "Sim, para R$ " + changeAmount : "Não"}\n`;
-      if (orderType === "table") msg += `Mesa: ${selectedTable}\n`;
-      if (selectedWaiter) msg += `Garçom: ${selectedWaiter}\n`;
+      if (orderType === "table") {
+        msg += `Mesa: ${selectedTable}\n`;
+        msg += `Garçom: ${selectedWaiter || "Nenhum"}\n`;
+        msg += `Chamar Garçom: ${callWaiter ? "Sim" : "Não"}\n`;
+      }
 
       window.open(`https://wa.me/${companyPhone}?text=${encodeURIComponent(msg)}`, "_blank");
 
@@ -111,45 +119,48 @@ export default function OrdersModal({ company, items, setItems, close }) {
         {/* Tipo de pedido */}
         <div className="order-type">
           <label>
-            <input type="radio" value="delivery" checked={orderType==="delivery"} onChange={e=>setOrderType(e.target.value)} /> Entrega
+            <input type="radio" value="delivery" checked={orderType === "delivery"} onChange={e => setOrderType(e.target.value)} /> Entrega
           </label>
           <label>
-            <input type="radio" value="pickup" checked={orderType==="pickup"} onChange={e=>setOrderType(e.target.value)} /> Retirada
+            <input type="radio" value="pickup" checked={orderType === "pickup"} onChange={e => setOrderType(e.target.value)} /> Retirada
           </label>
           <label>
-            <input type="radio" value="table" checked={orderType==="table"} onChange={e=>setOrderType(e.target.value)} /> Na mesa
+            <input type="radio" value="table" checked={orderType === "table"} onChange={e => setOrderType(e.target.value)} /> Na mesa
           </label>
         </div>
 
         {/* Campos gerais */}
         <div className="order-fields">
-          <input type="text" placeholder="Nome completo" value={fullName} onChange={e=>setFullName(e.target.value)} />
-          <input type="text" placeholder="Telefone" value={phone} onChange={e=>setPhone(e.target.value)} />
-          {orderType === "delivery" && <input placeholder="Endereço" value={address} onChange={e=>setAddress(e.target.value)} />}
-          <textarea placeholder="Observações" value={observations} onChange={e=>setObservations(e.target.value)} />
-          <textarea placeholder="Informações adicionais" value={additionalInfo} onChange={e=>setAdditionalInfo(e.target.value)} />
-          <select value={paymentMethod} onChange={e=>setPaymentMethod(e.target.value)}>
+          <input type="text" placeholder="Nome completo" value={fullName} onChange={e => setFullName(e.target.value)} />
+          <input type="text" placeholder="Telefone" value={phone} onChange={e => setPhone(e.target.value)} />
+          {orderType === "delivery" && <input placeholder="Endereço" value={address} onChange={e => setAddress(e.target.value)} />}
+          <textarea placeholder="Observações" value={observations} onChange={e => setObservations(e.target.value)} />
+          <textarea placeholder="Informações adicionais" value={additionalInfo} onChange={e => setAdditionalInfo(e.target.value)} />
+          <select value={paymentMethod} onChange={e => setPaymentMethod(e.target.value)}>
             <option value="dinheiro">Dinheiro</option>
             <option value="cartao">Cartão</option>
             <option value="pix">Pix</option>
           </select>
           <label>
-            <input type="checkbox" checked={needChange} onChange={e=>setNeedChange(e.target.checked)} /> Necessita troco
+            <input type="checkbox" checked={needChange} onChange={e => setNeedChange(e.target.checked)} /> Necessita troco
           </label>
-          {needChange && <input type="text" placeholder="Valor do troco" value={changeAmount} onChange={e=>setChangeAmount(e.target.value)} />}
+          {needChange && <input type="text" placeholder="Valor do troco" value={changeAmount} onChange={e => setChangeAmount(e.target.value)} />}
         </div>
 
         {/* Mesa e garçom */}
         {orderType === "table" && (
           <div className="table-waiter-select">
-            <select value={selectedTable || ""} onChange={e=>setSelectedTable(e.target.value)}>
+            <select value={selectedTable || ""} onChange={e => setSelectedTable(e.target.value)}>
               <option value="">Selecione a mesa</option>
               {tables.map(t => <option key={t.id} value={t.id}>Mesa {t.number}</option>)}
             </select>
-            <select value={selectedWaiter || ""} onChange={e=>setSelectedWaiter(e.target.value)}>
+            <select value={selectedWaiter || ""} onChange={e => setSelectedWaiter(e.target.value)}>
               <option value="">Garçom (opcional)</option>
               {waiters.map(w => <option key={w.id} value={w.id}>{w.name}</option>)}
             </select>
+            <label>
+              <input type="checkbox" checked={callWaiter} onChange={e => setCallWaiter(e.target.checked)} /> Chamar Garçom
+            </label>
           </div>
         )}
 
@@ -157,8 +168,8 @@ export default function OrdersModal({ company, items, setItems, close }) {
         <div className="order-items">
           {items.map(item => (
             <div key={item.id} className="order-item">
-              {item.name} x{item.quantity} - R$ {(item.price*item.quantity).toFixed(2)}
-              <button onClick={()=>handleRemove(item.id)}>Remover</button>
+              {item.name} x{item.quantity} - R$ {(item.price * item.quantity).toFixed(2)}
+              <button onClick={() => handleRemove(item.id)}>Remover</button>
             </div>
           ))}
         </div>
