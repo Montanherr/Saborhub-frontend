@@ -83,47 +83,41 @@ async function handleSaveCategory(name) {
 
 
   // 🔹 CREATE / UPDATE PRODUCT
-  async function handleSaveProduct(productData) {
-    try {
-      const payload = {
-        ...productData,
-        companyId: loggedCompanyId,
-      };
+async function handleSaveProduct(productData) {
+  try {
+    const formData = new FormData();
+    formData.append("name", productData.name);
+    formData.append("description", productData.description || "");
+    formData.append("price", Number(productData.price));
+    formData.append("categoryId", Number(productData.categoryId));
+    formData.append("companyId", loggedCompanyId);
 
-      if (editingProduct) {
-        await productService.updateProduct(
-          editingProduct.id,
-          payload
-        );
-
-        setProducts(prev =>
-          prev.map(p =>
-            p.id === editingProduct.id
-              ? { ...p, ...payload }
-              : p
-          )
-        );
-
-        toast.info("Produto atualizado!");
-      } else {
-        const newProduct =
-          await productService.createProduct(payload);
-
-        setProducts(prev => [...prev, newProduct]);
-        toast.success("Produto criado!");
-      }
-
-      setPageByCategory(prev => ({
-        ...prev,
-        [payload.categoryId]: 1,
-      }));
-
-      setEditingProduct(null);
-    } catch (err) {
-      console.error(err);
-      toast.error("Erro ao salvar produto");
+    if (productData.imageFile) {
+      formData.append("image", productData.imageFile);
     }
+
+   if (editingProduct) {
+  const updatedProduct = await productService.updateProduct(editingProduct.id, formData);
+
+  setProducts(prev =>
+    prev.map(p => (p.id === editingProduct.id ? updatedProduct : p))
+  );
+
+  toast.info("Produto atualizado!");
+} else {
+  const newProduct = await productService.createProduct(formData);
+
+  setProducts(prev => [...prev, newProduct]); // ✅ adiciona direto na lista
+  toast.success("Produto criado!");
+}
+
+    setEditingProduct(null);
+  } catch (err) {
+    console.error(err);
+    toast.error("Erro ao salvar produto");
   }
+}
+
 
   // 🔹 DELETE PRODUCT
   async function handleDeleteProduct(product) {

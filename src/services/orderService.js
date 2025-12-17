@@ -1,9 +1,6 @@
-import api from "./api"; // seu axios já configurado
+import api from "./api";
 
 const orderService = {
-  // ==============================
-  // Criar pedido
-  // ==============================
   createOrder: async (orderData) => {
     try {
       const response = await api.post("/orders", orderData);
@@ -14,9 +11,6 @@ const orderService = {
     }
   },
 
-  // ==============================
-  // Listar todos os pedidos
-  // ==============================
   getOrders: async () => {
     try {
       const response = await api.get("/orders");
@@ -27,9 +21,6 @@ const orderService = {
     }
   },
 
-  // ==============================
-  // Buscar pedido por ID
-  // ==============================
   getOrderById: async (id) => {
     try {
       const response = await api.get(`/orders/${id}`);
@@ -40,9 +31,6 @@ const orderService = {
     }
   },
 
-  // ==============================
-  // Atualizar pedido
-  // ==============================
   updateOrder: async (id, updateData) => {
     try {
       const response = await api.put(`/orders/${id}`, updateData);
@@ -53,9 +41,6 @@ const orderService = {
     }
   },
 
-  // ==============================
-  // Deletar pedido
-  // ==============================
   deleteOrder: async (id) => {
     try {
       const response = await api.delete(`/orders/${id}`);
@@ -64,7 +49,17 @@ const orderService = {
       console.error("Erro ao deletar pedido:", error.response?.data || error.message);
       throw error;
     }
-  }
+  },
+
+  callWaiter: async (orderId) => {
+    try {
+      const response = await api.put(`/orders/${orderId}`, { status: "waiter_called" });
+      return response.data;
+    } catch (error) {
+      console.error("Erro ao chamar garçom:", error.response?.data || error.message);
+      throw error;
+    }
+  },
 };
 
 export default orderService;

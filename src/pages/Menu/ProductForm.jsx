@@ -10,14 +10,21 @@ export default function ProductForm({
     name: "",
     description: "",
     price: "",
-    image: "",
+    imageFile: null,
     available: true,
     categoryId: "",
   });
 
   useEffect(() => {
     if (editingProduct) {
-      setForm(editingProduct);
+      setForm({
+        name: editingProduct.name || "",
+        description: editingProduct.description || "",
+        price: editingProduct.price || "",
+        imageFile: null, // não preencher com URL
+        available: editingProduct.available,
+        categoryId: editingProduct.categoryId || "",
+      });
     }
   }, [editingProduct]);
 
@@ -26,18 +33,27 @@ export default function ProductForm({
     setForm(prev => ({ ...prev, [name]: value }));
   }
 
+  function handleFileChange(e) {
+    setForm(prev => ({ ...prev, imageFile: e.target.files[0] || null }));
+  }
+
   function handleSubmit(e) {
     e.preventDefault();
-    onSubmit({
+
+    const payload = {
       ...form,
       price: Number(form.price),
       categoryId: Number(form.categoryId),
-    });
+    };
+
+    onSubmit(payload);
+
+    // Resetar formulário
     setForm({
       name: "",
       description: "",
       price: "",
-      image: "",
+      imageFile: null,
       available: true,
       categoryId: "",
     });
@@ -48,10 +64,36 @@ export default function ProductForm({
       <h2>{editingProduct ? "Editar Produto" : "Cadastrar Produto"}</h2>
 
       <form onSubmit={handleSubmit}>
-        <input name="name" value={form.name} onChange={handleChange} placeholder="Nome" required />
-        <input name="description" value={form.description} onChange={handleChange} placeholder="Descrição" />
-        <input name="price" type="number" value={form.price} onChange={handleChange} placeholder="Valor" required />
-        <input name="image" value={form.image} onChange={handleChange} placeholder="Imagem URL" />
+        <input
+          name="name"
+          value={form.name}
+          onChange={handleChange}
+          placeholder="Nome"
+          required
+        />
+
+        <input
+          name="description"
+          value={form.description}
+          onChange={handleChange}
+          placeholder="Descrição"
+        />
+
+        <input
+          name="price"
+          type="number"
+          value={form.price}
+          onChange={handleChange}
+          placeholder="Valor"
+          required
+        />
+
+        <input
+          type="file"
+          name="imageFile"
+          accept="image/*"
+          onChange={handleFileChange}
+        />
 
         <select
           name="categoryId"
