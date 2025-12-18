@@ -8,6 +8,7 @@ import MenuCreate from "../pages/Menu/MenuCreate";
 import Login from "../pages/Login/Login";
 import Reports from "../pages/Reports/Reports.jsx";
 import Register from "../pages/Login/Register";
+import Tables from "../pages/Table/Table.jsx";
 import Home from "../pages/Home/HomePublic";
 
 export default function AppRoutes() {
@@ -24,6 +25,14 @@ export default function AppRoutes() {
   <ProtectedRoute>
     <Reports />
   </ProtectedRoute>} />
+<Route
+  path="/tables"
+  element={
+    <ProtectedRoute role="waiter">
+      <Tables />
+    </ProtectedRoute>
+  }
+/>
 
  
 

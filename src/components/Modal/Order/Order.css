@@ -1,283 +1,185 @@
-/* ===========================
-   BACKDROP DO MODAL
-=========================== */
+:root {
+  --primary-color: #f59e0b;
+  --secondary-color: #3b82f6;
+  --danger-color: #ef4444;
+  --success-color: #22c55e;
+  --text-dark: #000;
+  --text-light: #fff;
+  --card-radius: 10px;
+  --card-shadow: 0 6px 15px rgba(0,0,0,0.1);
+  --transition: 0.3s;
+}
+
+/* Modal */
 .orders-modal-backdrop {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0,0,0,0.55);
-  backdrop-filter: blur(4px);
+  inset: 0;
+  background: rgba(0,0,0,0.5);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 999;
-  padding: 15px;
-  animation: fadeIn 0.25s ease;
+  z-index: 1000;
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-/* ===========================
-   MODAL PRINCIPAL
-=========================== */
 .orders-modal {
-  background: #fff;
-  border-radius: 18px;
-  width: 100%;
-  max-width: 520px;
-  max-height: 92vh;
-  overflow-y: auto;
+  background: #000000;
+  color: var(--text-light);
+  border-radius: var(--card-radius);
   padding: 24px;
-  box-shadow: 0 12px 32px rgba(0,0,0,0.18);
+  width: 100%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: var(--card-shadow);
+}
+
+.orders-modal h3 {
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+/* Tipo de pedido */
+.order-type {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 16px;
+}
+
+.order-type label {
+  cursor: pointer;
+}
+
+/* Campos */
+.order-fields input,
+.order-fields select,
+.order-fields textarea {
+  width: 100%;
+  padding: 10px;
+  margin: 6px 0;
+  border-radius: var(--card-radius);
+  border: none;
+  outline: none;
+}
+
+.order-fields textarea {
+  resize: none;
+}
+
+/* Mesa */
+.table-section {
+  margin: 12px 0;
   display: flex;
   flex-direction: column;
-  gap: 18px;
-  animation: slideUp 0.25s ease;
+  gap: 8px;
 }
 
-@keyframes slideUp {
-  from { transform: translateY(20px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
+.call-waiter-btn {
+  padding: 10px;
+  background: var(--primary-color);
+  color: var(--text-dark);
+  font-weight: bold;
+  border: none;
+  border-radius: var(--card-radius);
+  cursor: pointer;
+  transition: background var(--transition), transform 0.2s;
 }
 
-/* ===========================
-   TÍTULO
-=========================== */
-.orders-modal h3 {
-  text-align: center;
-  margin-bottom: 5px;
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #222;
+.call-waiter-btn:hover {
+  background: #d97706;
+  transform: scale(1.05);
 }
 
-/* ===========================
-   CAMPOS DO PEDIDO
-=========================== */
-.order-fields input,
-.order-fields textarea {
-  width: 100%;
-  padding: 12px;
-  margin-top: 6px;
-  border-radius: 10px;
-  border: 1px solid #ddd;
-  background: #fafafa;
-  font-size: 1rem;
-  transition: border-color 0.2s, box-shadow 0.2s;
+.call-waiter-btn.loading {
+  opacity: 0.7;
+  cursor: wait;
 }
 
-.order-fields input:focus,
-.order-fields textarea:focus {
-  border-color: #ff6600;
-  box-shadow: 0 0 0 3px rgba(255,102,0,0.2);
-  background: #fff;
+.call-waiter-btn.success {
+  background: var(--success-color);
+  color: var(--text-light);
 }
 
-.order-fields textarea {
-  resize: vertical;
-  min-height: 70px;
-}
-
-/* ===========================
-   LISTA DE ITENS
-=========================== */
+/* Itens do pedido */
 .order-items {
-  margin-top: 10px;
+  margin: 16px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
 .order-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #f3f3f3;
-  padding: 10px 12px;
-  border-radius: 10px;
-  margin-bottom: 8px;
-  font-size: 1rem;
-  transition: background 0.2s;
-}
-
-.order-item:hover {
-  background: #ececec;
+  background: #374151;
+  padding: 8px 12px;
+  border-radius: var(--card-radius);
 }
 
 .order-item button {
-  background: #ff6600;
+  background: var(--danger-color);
+  color: var(--text-light);
   border: none;
-  color: #fff;
-  padding: 4px 10px;
   border-radius: 6px;
   cursor: pointer;
-  font-size: 0.85rem;
-  transition: background-color 0.2s, transform 0.15s;
+  padding: 4px 8px;
+  transition: background 0.2s;
 }
 
 .order-item button:hover {
-  background-color: #e65c00;
-  transform: scale(1.05);
+  background: #dc2626;
 }
 
-/* ===========================
-   TOTAL
-=========================== */
+/* Total */
 .order-total {
-  font-weight: 700;
-  font-size: 1.2rem;
+  font-weight: bold;
   text-align: right;
-  margin-top: 12px;
-  color: #111;
+  margin-bottom: 16px;
 }
 
-/* ===========================
-   BOTÕES
-=========================== */
+/* Ações */
 .order-actions {
   display: flex;
   justify-content: space-between;
-  margin-top: 18px;
-  gap: 12px;
+  gap: 8px;
 }
 
-.order-actions button,
-.order-actions a {
+.btn {
   flex: 1;
-  padding: 12px;
-  font-size: 1rem;
-  border-radius: 10px;
+  padding: 10px;
+  border-radius: var(--card-radius);
+  font-weight: bold;
   cursor: pointer;
-  text-align: center;
-  text-decoration: none;
-  color: #fff;
   border: none;
-  transition: background-color 0.2s, transform 0.18s;
-  font-weight: 600;
+  transition: background var(--transition), transform 0.2s;
 }
 
-/* Botão cancelar */
-.order-actions button {
-  background: #888;
+.btn.primary {
+  background: var(--primary-color);
+  color: var(--text-dark);
 }
 
-.order-actions button:hover {
-  background: #555;
-  transform: translateY(-2px);
+.btn.primary:hover {
+  background: #d97706;
+  transform: scale(1.05);
 }
 
-/* Botão WhatsApp */
-.order-actions a.whatsapp-btn {
-  background: #25d366;
+.btn.secondary {
+  background: var(--secondary-color);
+  color: var(--text-light);
 }
 
-.order-actions a.whatsapp-btn:hover {
-  background: #1ebe5d;
-  transform: translateY(-2px);
+.btn.secondary:hover {
+  background: #2563eb;
+  transform: scale(1.05);
 }
 
-/* ===========================
-   SCROLLBAR
-=========================== */
-.orders-modal::-webkit-scrollbar {
-  width: 8px;
+.btn.cancel {
+  background: #6b7280;
+  color: var(--text-light);
 }
 
-.orders-modal::-webkit-scrollbar-thumb {
-  background-color: rgba(0,0,0,0.25);
-  border-radius: 6px;
-}
-
-/* ===========================
-   MOBILE
-=========================== */
-/* ===========================
-   MOBILE RESPONSIVO
-=========================== */
-@media (max-width: 500px) {
-  .orders-modal {
-    padding: 16px;
-    border-radius: 12px;
-    max-height: 95vh;
-    width: 95%;
-  }
-
-  .orders-modal h3 {
-    font-size: 1.2rem;
-  }
-
-  .order-fields input,
-  .order-fields textarea,
-  .order-fields select {
-    font-size: 0.95rem;
-    padding: 10px;
-  }
-
-  .order-fields textarea {
-    min-height: 60px;
-  }
-
-  .order-item {
-    flex-direction: column;
-    align-items: flex-start;
-    font-size: 0.9rem;
-    padding: 8px 10px;
-    gap: 6px;
-  }
-
-  .order-item button {
-    align-self: flex-end;
-    padding: 4px 8px;
-    font-size: 0.8rem;
-  }
-
-  .order-total {
-    font-size: 1.1rem;
-  }
-
-  .order-actions {
-    flex-direction: column;
-    gap: 10px;
-  }
-
-  .order-actions button,
-  .order-actions a {
-    flex: 1 1 100%;
-    padding: 10px;
-    font-size: 0.95rem;
-  }
-}
-
-/* ===========================
-   TELEFONES MUITO PEQUENOS
-=========================== */
-@media (max-width: 375px) {
-  .orders-modal {
-    width: 98%;
-    padding: 14px;
-  }
-
-  .orders-modal h3 {
-    font-size: 1.1rem;
-  }
-
-  .order-fields input,
-  .order-fields textarea,
-  .order-fields select {
-    font-size: 0.9rem;
-    padding: 8px;
-  }
-
-  .order-item {
-    font-size: 0.85rem;
-    padding: 6px 8px;
-  }
-
-  .order-actions button,
-  .order-actions a {
-    padding: 8px;
-    font-size: 0.9rem;
-  }
+.btn.cancel:hover {
+  background: #4b5563;
+  transform: scale(1.05);
 }

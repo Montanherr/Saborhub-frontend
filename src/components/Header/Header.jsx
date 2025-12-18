@@ -27,9 +27,9 @@ export default function Header() {
         <Link to="/">Home</Link>
         <Link to="/companies">Restaurantes</Link>
 
-     {isLoggedIn && (
+{isLoggedIn && (
   <>
-    {user?.admin === true && (
+    {user?.role === "admin" && (
       <>
         <Link to="/menu/create" className="admin-link">
           Incluir Item
@@ -39,6 +39,12 @@ export default function Header() {
           Relatórios
         </Link>
       </>
+    )}
+
+    {user?.role === "waiter" && (
+      <Link to="/tables/">
+        Mesas
+      </Link>
     )}
 
     <button className="logout-btn" onClick={handleLogout}>
