@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import tableService from "../../services/tableService";
 import tableAssignmentsService from "../../services/tableAssignments";
 import { socket } from "socket/socket";
@@ -13,8 +13,8 @@ export default function TablesView() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // 🔄 Carrega mesas
-  const fetchTables = async () => {
+  // 🔄 Carrega mesas (MEMORIZADO)
+  const fetchTables = useCallback(async () => {
     if (!companyId) return;
 
     try {
@@ -23,8 +23,8 @@ export default function TablesView() {
 
       const normalized = data.map((table) => {
         const active =
-          table.assignments.find((a) => a.status === "calling") ||
-          table.assignments.find((a) => a.status === "occupied");
+          table.assignments?.find((a) => a.status === "calling") ||
+          table.assignments?.find((a) => a.status === "occupied");
 
         return {
           ...table,
@@ -39,7 +39,7 @@ export default function TablesView() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [companyId]);
 
   // 🔌 Socket connect
   useEffect(() => {
@@ -54,44 +54,49 @@ export default function TablesView() {
 
     socket.on("connect", onConnect);
     return () => socket.off("connect", onConnect);
+  }, [companyId, fetchTables]);
+
+  // 🔄 Atualizações em tempo real
+  useEffect(() => {
+    if (!companyId) return;
+
+    const onUpdate = (data) => {
+      const assignments =
+        data.assignments?.map((a) => a.dataValues || a) || [];
+
+      const status = assignments.some((a) => a.status === "occupied")
+        ? "occupied"
+        : assignments.some((a) => a.status === "calling")
+        ? "calling"
+        : "available";
+
+      const activeAssignment =
+        assignments.find((a) =>
+          ["calling", "occupied"].includes(a.status)
+        ) || null;
+
+      const updatedTable = {
+        ...data,
+        assignments,
+        status,
+        activeAssignment,
+      };
+
+      setTables((prev) => {
+        const exists = prev.find((t) => t.id === data.id);
+        if (exists) {
+          return prev.map((t) =>
+            t.id === data.id ? updatedTable : t
+          );
+        }
+        return [...prev, updatedTable];
+      });
+    };
+
+    socket.on(`table_update_${companyId}`, onUpdate);
+    return () =>
+      socket.off(`table_update_${companyId}`, onUpdate);
   }, [companyId]);
-
-useEffect(() => {
-  if (!companyId) return;
-
-const onUpdate = (data) => {
-  // normaliza assignments
-  const assignments = data.assignments?.map(a => a.dataValues || a) || [];
-
-  const status = assignments.some(a => a.status === "occupied")
-    ? "occupied"
-    : assignments.some(a => a.status === "calling")
-    ? "calling"
-    : "available";
-
-  const activeAssignment = assignments.find(a => ["calling", "occupied"].includes(a.status)) || null;
-
-  const updatedTable = {
-    ...data,
-    assignments,
-    status,
-    activeAssignment,
-  };
-
-  setTables(prev => {
-    const exists = prev.find(t => t.id === data.id);
-    if (exists) {
-      return prev.map(t => (t.id === data.id ? updatedTable : t));
-    } else {
-      return [...prev, updatedTable];
-    }
-  });
-};
-
-
-  socket.on(`table_update_${companyId}`, onUpdate);
-  return () => socket.off(`table_update_${companyId}`, onUpdate);
-}, [companyId]);
 
   // 🎯 Ação principal da mesa
   const handleAction = async (table) => {
@@ -100,12 +105,10 @@ const onUpdate = (data) => {
 
       if (table.status === "available") {
         await tableAssignmentsService.open(table.id);
-      }
-
+      } 
       else if (table.status === "calling" && assignment) {
         await tableAssignmentsService.accept(assignment.id);
-      }
-
+      } 
       else if (table.status === "occupied") {
         if (!assignment || assignment.waiterId !== user.id) {
           alert("Essa mesa está sob atendimento de outro garçom");
