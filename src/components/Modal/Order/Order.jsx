@@ -90,7 +90,6 @@ export default function OrdersModal({ company, items, setItems, close }) {
       total,
       orderType,
       tableId: orderType === "table" ? Number(selectedTable) : null,
-      callWaiter,
       items: items.map(i => ({
         productId: i.id,
         quantity: i.quantity
@@ -103,9 +102,7 @@ export default function OrdersModal({ company, items, setItems, close }) {
       const order = await orderService.createOrder(payload);
       const code = order.code;
 
-      if (orderType === "table" && callWaiter) {
-        await handleCallWaiter();
-      }
+  
 
       const companyPhone = company.phone.startsWith("55")
         ? company.phone
@@ -124,7 +121,6 @@ export default function OrdersModal({ company, items, setItems, close }) {
       msg += `Troco: ${needChange ? changeAmount : "Não"}\n`;
       if (orderType === "table") {
         msg += `Mesa: ${selectedTable}\n`;
-        msg += `Chamar garçom: ${callWaiter ? "Sim" : "Não"}\n`;
       }
 
       window.open(
