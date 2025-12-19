@@ -19,7 +19,6 @@ export default function OrdersModal({ company, items, setItems, close }) {
   const [orderType, setOrderType] = useState("delivery"); // delivery | pickup | table
   const [tables, setTables] = useState([]);
   const [selectedTable, setSelectedTable] = useState(null);
-  const [callWaiter, setCallWaiter] = useState(false);
   const [calling, setCalling] = useState(false);
   const [callSuccess, setCallSuccess] = useState(false);
 
