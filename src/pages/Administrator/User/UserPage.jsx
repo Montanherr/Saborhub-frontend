@@ -1,13 +1,11 @@
 import { useEffect, useState } from "react";
 import userService from "../../../services/userService";
 import companyService from "../../../services/companyService";
-import { useAuth } from "../../../context/AuthContext";
 import UserForm from "./UserForm";
 import UserTable from "./UserTable";
 import "./User.css";
 
 export default function UserPage() {
-  const { user } = useAuth();
 
   const [users, setUsers] = useState([]);
   const [companies, setCompanies] = useState([]);
