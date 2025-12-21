@@ -1,185 +1,252 @@
 :root {
   --primary-color: #f59e0b;
-  --secondary-color: #3b82f6;
+  --primary-gradient: linear-gradient(135deg, #f59e0b, #fbbf24);
+  --secondary-color: #eba525;
   --danger-color: #ef4444;
   --success-color: #22c55e;
-  --text-dark: #000;
+  --text-dark: #1f2937;
   --text-light: #fff;
-  --card-radius: 10px;
-  --card-shadow: 0 6px 15px rgba(0,0,0,0.1);
-  --transition: 0.3s;
+  --card-radius: 12px;
+  --card-shadow: 0 8px 20px rgba(0,0,0,0.25);
+  --transition: 0.3s ease;
+  --input-bg: #f3f4f6;
+  --input-border: #d1d5db;
+  --input-focus: #f59e0b;
 }
 
-/* Modal */
+/* BACKDROP */
 .orders-modal-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.5);
+  background: rgba(0,0,0,0.35);
+  backdrop-filter: blur(4px);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 1000;
+  padding: 12px;
 }
 
+/* MODAL */
 .orders-modal {
-  background: #000000;
+  position: relative;
+  background: #1f2937;
   color: var(--text-light);
   border-radius: var(--card-radius);
-  padding: 24px;
+  padding: 32px 24px 24px 24px;
   width: 100%;
-  max-width: 500px;
+  max-width: 600px;
   max-height: 90vh;
   overflow-y: auto;
   box-shadow: var(--card-shadow);
+  animation: modalFadeIn 0.3s ease;
 }
 
+@keyframes modalFadeIn {
+  from { opacity: 0; transform: translateY(20px) scale(0.95); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* BOTÃO FECHAR */
+.orders-modal .close-btn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: transparent;
+  border: none;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--text-light);
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+.orders-modal .close-btn:hover {
+  transform: scale(1.2);
+  color: var(--danger-color);
+}
+
+/* TITULO */
 .orders-modal h3 {
-  margin-bottom: 16px;
   text-align: center;
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 24px;
+  color: var(--primary-color);
 }
 
-/* Tipo de pedido */
+/* TIPO DE PEDIDO */
 .order-type {
   display: flex;
-  justify-content: space-around;
-  margin-bottom: 16px;
+  gap: 12px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
 }
-
 .order-type label {
+  flex: 1;
+  text-align: center;
+  padding: 10px 12px;
+  border-radius: var(--card-radius);
+  background: var(--input-bg);
   cursor: pointer;
+  transition: background var(--transition), transform 0.2s;
+  color: var(--text-dark);
+  font-weight: 500;
+}
+.order-type input {
+  display: none;
+}
+.order-type input:checked + label,
+.order-type label:hover {
+  background: var(--primary-color);
+  color: var(--text-light);
+  transform: translateY(-2px);
 }
 
-/* Campos */
+/* CAMPOS */
 .order-fields input,
 .order-fields select,
 .order-fields textarea {
   width: 100%;
-  padding: 10px;
-  margin: 6px 0;
+  padding: 12px 14px;
+  margin: 8px 0;
   border-radius: var(--card-radius);
-  border: none;
-  outline: none;
-}
-
-.order-fields textarea {
-  resize: none;
-}
-
-/* Mesa */
-.table-section {
-  margin: 12px 0;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.call-waiter-btn {
-  padding: 10px;
-  background: var(--primary-color);
+  border: 1px solid var(--input-border);
+  background: var(--input-bg);
   color: var(--text-dark);
-  font-weight: bold;
-  border: none;
-  border-radius: var(--card-radius);
-  cursor: pointer;
-  transition: background var(--transition), transform 0.2s;
+  font-size: 0.95rem;
+  outline: none;
+  transition: border var(--transition), box-shadow var(--transition);
+}
+.order-fields input:focus,
+.order-fields select:focus,
+.order-fields textarea:focus {
+  border-color: var(--input-focus);
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2);
+}
+.order-fields textarea {
+  resize: vertical;
+  min-height: 80px;
 }
 
-.call-waiter-btn:hover {
-  background: #d97706;
-  transform: scale(1.05);
+/* PAGAMENTO */
+.payment-section {
+  margin-top: 16px;
 }
-
-.call-waiter-btn.loading {
-  opacity: 0.7;
-  cursor: wait;
+.payment-section h4 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: var(--primary-color);
 }
-
-.call-waiter-btn.success {
-  background: var(--success-color);
-  color: var(--text-light);
-}
-
-/* Itens do pedido */
-.order-items {
-  margin: 16px 0;
+.payment-section label {
   display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.order-item {
-  display: flex;
-  justify-content: space-between;
   align-items: center;
-  background: #374151;
+  gap: 8px;
   padding: 8px 12px;
+  background: var(--input-bg);
   border-radius: var(--card-radius);
-}
-
-.order-item button {
-  background: var(--danger-color);
-  color: var(--text-light);
-  border: none;
-  border-radius: 6px;
   cursor: pointer;
-  padding: 4px 8px;
-  transition: background 0.2s;
+  margin-bottom: 8px;
+  transition: background var(--transition);
+}
+.payment-section input[type="radio"],
+.payment-section input[type="checkbox"] {
+  cursor: pointer;
+}
+.payment-section select {
+  width: 100%;
+  padding: 10px;
+  border-radius: var(--card-radius);
+  border: 1px solid var(--input-border);
+  background: var(--input-bg);
+  margin-top: 6px;
 }
 
-.order-item button:hover {
-  background: #dc2626;
-}
-
-/* Total */
-.order-total {
-  font-weight: bold;
-  text-align: right;
-  margin-bottom: 16px;
-}
-
-/* Ações */
+/* BOTOES */
 .order-actions {
   display: flex;
-  justify-content: space-between;
-  gap: 8px;
+  gap: 12px;
+  margin-top: 16px;
+  flex-wrap: wrap;
 }
-
 .btn {
   flex: 1;
-  padding: 10px;
+  padding: 12px 14px;
   border-radius: var(--card-radius);
-  font-weight: bold;
+  font-weight: 700;
   cursor: pointer;
   border: none;
-  transition: background var(--transition), transform 0.2s;
+  transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
 }
-
 .btn.primary {
-  background: var(--primary-color);
+  background: var(--primary-gradient);
   color: var(--text-dark);
 }
-
-.btn.primary:hover {
-  background: #d97706;
-  transform: scale(1.05);
-}
-
 .btn.secondary {
   background: var(--secondary-color);
   color: var(--text-light);
 }
-
-.btn.secondary:hover {
-  background: #2563eb;
-  transform: scale(1.05);
-}
-
 .btn.cancel {
-  background: #6b7280;
+  background: #374151;
   color: var(--text-light);
 }
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+}
+.btn:active {
+  transform: scale(0.97);
+}
 
-.btn.cancel:hover {
-  background: #4b5563;
+/* ITENS DO PEDIDO */
+.order-items {
+  margin: 18px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.order-item {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: var(--card-radius);
+  background: #374151;
+  font-size: 0.95rem;
+}
+.order-item button {
+  background: var(--danger-color);
+  color: var(--text-light);
+  border: none;
+  border-radius: var(--card-radius);
+  cursor: pointer;
+  padding: 6px 10px;
+  transition: background var(--transition), transform 0.15s;
+}
+.order-item button:hover {
+  background: #dc2626;
   transform: scale(1.05);
+}
+
+/* TOTAL */
+.order-total {
+  font-weight: 700;
+  font-size: 1.1rem;
+  text-align: right;
+  margin: 14px 0;
+}
+
+/* RESPONSIVO */
+@media (max-width: 480px) {
+  .orders-modal {
+    padding: 24px 16px;
+    max-width: 95%;
+  }
+  .order-actions {
+    flex-direction: column;
+  }
+  .order-type {
+    flex-direction: column;
+  }
 }

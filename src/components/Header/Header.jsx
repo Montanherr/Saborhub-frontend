@@ -27,32 +27,33 @@ export default function Header() {
         <Link to="/">Home</Link>
         <Link to="/companies">Restaurantes</Link>
 
-{isLoggedIn && (
-  <>
-    {user?.role === "admin" && (
-      <>
-        <Link to="/menu/create" className="admin-link">
-          Incluir Item
-        </Link>
+        {isLoggedIn && (
+          <>
+            {user?.role === "admin" && (
+              <>
+                <Link to="/menu/create" className="admin-link">
+                  Incluir Item
+                </Link>
 
-        <Link to="/reports" className="admin-link">
-          Relatórios
-        </Link>
-      </>
-    )}
+                <Link to="/reports" className="admin-link">
+                  Relatórios
+                </Link>
+              </>
+            )}
 
-    {user?.role === "waiter" && (
-      <Link to="/tables/">
-        Mesas
-      </Link>
-    )}
+            {["manager", "admin", "waiter"].includes(user?.role) && (
+              <Link to="/tables/">Mesas</Link>
+            )}
 
-    <button className="logout-btn" onClick={handleLogout}>
-      Logout
-    </button>
-  </>
-)}
+            {["manager", "admin"].includes(user?.role) && (
+              <Link to="/administrator/">Administrador</Link>
+            )}
 
+            <button className="logout-btn" onClick={handleLogout}>
+              Logout
+            </button>
+          </>
+        )}
 
         {!isLoggedIn && <Link to="/login">Login</Link>}
       </nav>

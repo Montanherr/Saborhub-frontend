@@ -1,0 +1,87 @@
+/* =========================
+   ADMIN CONTAINER
+========================= */
+.admin-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+/* =========================
+   TABS
+========================= */
+.tabs {
+  display: flex;
+  gap: 12px;
+  background: #fff;
+  padding: 10px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.tabs button {
+  flex: 1;
+  min-width: 120px;
+  border: none;
+  background: #f4f4f4;
+  padding: 10px 16px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  color: #333;
+}
+
+.tabs button:hover {
+  background: #ffe2c6;
+  color: #ff7a00;
+}
+
+/* Aba ativa */
+.tabs button.active {
+  background: #ff7a00;
+  color: #fff;
+  box-shadow: 0 4px 10px rgba(255,122,0,0.35);
+}
+
+/* =========================
+   TAB CONTENT
+========================= */
+.tab-content {
+  background: #fff;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+}
+
+/* =========================
+   RESPONSIVO
+========================= */
+@media (max-width: 768px) {
+  .tabs {
+    gap: 8px;
+  }
+
+  .tabs button {
+    font-size: 13px;
+    padding: 8px 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .tabs {
+    flex-direction: column;
+  }
+
+  .tabs button {
+    width: 100%;
+    border-radius: 12px;
+  }
+
+  .tab-content {
+    padding: 12px;
+  }
+}

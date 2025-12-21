@@ -23,6 +23,11 @@ login: async ({ email, password }) => {
     return response.data;
   },
 
+  getAdminUsers: async () => {
+  const response = await api.get("/users/admin");
+  return response.data;
+},
+
   getUserById: async (id) => {
     const response = await api.get(`/users/${id}`);
     return response.data;

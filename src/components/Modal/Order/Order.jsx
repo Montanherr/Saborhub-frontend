@@ -3,16 +3,23 @@ import { useNavigate } from "react-router-dom";
 import orderService from "../../../services/orderService";
 import tableService from "../../../services/tableService";
 import tableAssignmentsService from "../../../services/tableAssignments";
+
+import OrderStepper from "../../Order/OrderStepper";
+import TableCallModal from "./TableCallModal";
+import OrderReviewModal from "./OrderReviewModal";
+import OrderSuccessModal from "./OrderSuccessModal";
+
 import "./Order.css";
 
 export default function OrdersModal({ company, items, setItems, close }) {
+  const [step, setStep] = useState(0); // 0=dados | 1=revisão | 2=sucesso
+
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
   const [observations, setObservations] = useState("");
   const [additionalInfo, setAdditionalInfo] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("dinheiro");
-  const [needChange, setNeedChange] = useState(true);
   const [changeAmount, setChangeAmount] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -28,55 +35,29 @@ export default function OrdersModal({ company, items, setItems, close }) {
     .reduce((sum, i) => sum + i.price * i.quantity, 0)
     .toFixed(2);
 
-  // Buscar mesas quando pedido for "na mesa"
+  /* ===================== MESA ===================== */
   useEffect(() => {
     if (orderType === "table" && company?.id) {
-      tableService
-        .getAll(company.id)
-        .then(setTables)
-        .catch(console.error);
+      tableService.getAll(company.id).then(setTables).catch(console.error);
     }
   }, [orderType, company?.id]);
 
-  const handleRemove = id => setItems(items.filter(i => i.id !== id));
-
-  const handleAddMore = () => {
-    close();
-    navigate(`/companies/${company.id}/categories`);
-  };
-
   const handleCallWaiter = async () => {
-    if (!selectedTable) return alert("Selecione uma mesa primeiro!");
-
+    if (!selectedTable) return alert("Selecione uma mesa!");
     try {
       setCalling(true);
-      setCallSuccess(false);
-
       await tableAssignmentsService.callWaiter(selectedTable, company.id);
-
       setCallSuccess(true);
       setTimeout(() => setCallSuccess(false), 3000);
-    } catch (err) {
-      console.error(err);
+    } catch {
       alert("Erro ao chamar o garçom");
     } finally {
       setCalling(false);
     }
   };
 
+  /* ===================== ENVIO ===================== */
   const handleSubmit = async () => {
-    if (!fullName || !phone || items.length === 0) {
-      return alert("Preencha os campos e adicione pelo menos um item!");
-    }
-
-    if (orderType === "table" && !selectedTable) {
-      return alert("Selecione a mesa!");
-    }
-
-    if (needChange && !changeAmount) {
-      return alert("Informe o valor do troco!");
-    }
-
     const payload = {
       companyId: company.id,
       fullName,
@@ -85,155 +66,228 @@ export default function OrdersModal({ company, items, setItems, close }) {
       observations,
       additionalInfo,
       paymentMethod,
-      needChange,
-      changeAmount: needChange ? changeAmount : null,
+      changeAmount: paymentMethod === "dinheiro" ? changeAmount : null,
       total,
       orderType,
-      tableId: orderType === "table" ? Number(selectedTable) : null,
-      items: items.map(i => ({
+      items: items.map((i) => ({
         productId: i.id,
-        quantity: i.quantity
-      }))
+        quantity: i.quantity,
+      })),
     };
 
     try {
       setLoading(true);
 
       const order = await orderService.createOrder(payload);
-      const code = order.code;
-
-  
 
       const companyPhone = company.phone.startsWith("55")
         ? company.phone
         : "55" + company.phone;
 
-      let msg = `*📦 Novo Pedido*\n\n`;
-      msg += `*Código:* ${code}\n\n`;
-      msg += `*Itens:*\n`;
-      items.forEach(item => {
-        msg += `- ${item.name} x${item.quantity} = R$ ${(item.price * item.quantity).toFixed(2)}\n`;
+      let msg = `📦 Novo Pedido\n\nCódigo: ${order.code}\n\n`;
+      items.forEach((i) => {
+        msg += `- ${i.name} x${i.quantity} = R$ ${(i.price * i.quantity).toFixed(2)}\n`;
       });
-      msg += `\n*Total:* R$ ${total}\n\n`;
+      msg += `\nTotal: R$ ${total}\n`;
       msg += `Cliente: ${fullName}\nTelefone: ${phone}\n`;
       if (orderType === "delivery") msg += `Endereço: ${address}\n`;
       msg += `Pagamento: ${paymentMethod}\n`;
-      msg += `Troco: ${needChange ? changeAmount : "Não"}\n`;
-      if (orderType === "table") {
-        msg += `Mesa: ${selectedTable}\n`;
-      }
+      if (paymentMethod === "dinheiro" && changeAmount && changeAmount !== "")
+        msg += `Troco para: R$ ${changeAmount}\n`;
 
       window.open(
         `https://wa.me/${companyPhone}?text=${encodeURIComponent(msg)}`,
         "_blank"
       );
 
-      setItems([]);
-      close();
-    } catch (err) {
-      console.error(err);
+      setStep(2);
+    } catch {
       alert("Erro ao criar pedido");
     } finally {
       setLoading(false);
     }
   };
 
+  /* ===================== CASO NA MESA ===================== */
+  if (orderType === "table") {
+    return (
+      <TableCallModal
+        tables={tables}
+        selectedTable={selectedTable}
+        setSelectedTable={setSelectedTable}
+        calling={calling}
+        callSuccess={callSuccess}
+        onCallWaiter={handleCallWaiter}
+        onClose={close}
+      />
+    );
+  }
+
+  /* ===================== MODAL PADRÃO ===================== */
   return (
     <div className="orders-modal-backdrop">
-      <div className="orders-modal">
-        <h3>Seu Pedido - {company.fantasyName}</h3>
+      <div className="orders-modal" style={{ maxWidth: "600px" }}>
+        <OrderStepper step={step} />
 
-        {/* Tipo de pedido */}
-        <div className="order-type">
-          <label>
-            <input type="radio" value="delivery"
-              checked={orderType === "delivery"}
-              onChange={e => setOrderType(e.target.value)}
-            /> Entrega
-          </label>
+        {/* ===== ETAPA 0 – DADOS ===== */}
+        {step === 0 && (
+          <>
+            <h3>Seu Pedido - {company.fantasyName}</h3>
 
-          <label>
-            <input type="radio" value="pickup"
-              checked={orderType === "pickup"}
-              onChange={e => setOrderType(e.target.value)}
-            /> Retirada
-          </label>
+            <div className="order-type">
+              <label>
+                <input
+                  type="radio"
+                  value="delivery"
+                  checked={orderType === "delivery"}
+                  onChange={(e) => setOrderType(e.target.value)}
+                />
+                Entrega
+              </label>
 
-          <label>
-            <input type="radio" value="table"
-              checked={orderType === "table"}
-              onChange={e => setOrderType(e.target.value)}
-            /> Na mesa
-          </label>
-        </div>
+              <label>
+                <input
+                  type="radio"
+                  value="pickup"
+                  checked={orderType === "pickup"}
+                  onChange={(e) => setOrderType(e.target.value)}
+                />
+                Retirada
+              </label>
 
-        {/* Campos gerais */}
-        <div className="order-fields">
-          <input placeholder="Nome completo" value={fullName} onChange={e => setFullName(e.target.value)} />
-          <input placeholder="Telefone" value={phone} onChange={e => setPhone(e.target.value)} />
+              <label>
+                <input
+                  type="radio"
+                  value="table"
+                  checked={orderType === "table"}
+                  onChange={(e) => setOrderType(e.target.value)}
+                />
+                Na mesa
+              </label>
+            </div>
 
-          {orderType === "delivery" && (
-            <input placeholder="Endereço" value={address} onChange={e => setAddress(e.target.value)} />
-          )}
+            <div className="order-fields">
+              <input
+                placeholder="Nome completo"
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+              />
+              <input
+                placeholder="Telefone"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+              />
+              {orderType === "delivery" && (
+                <input
+                  placeholder="Endereço"
+                  value={address}
+                  onChange={(e) => setAddress(e.target.value)}
+                />
+              )}
+              <textarea
+                placeholder="Observações"
+                value={observations}
+                onChange={(e) => setObservations(e.target.value)}
+              />
+              <textarea
+                placeholder="Informações adicionais"
+                value={additionalInfo}
+                onChange={(e) => setAdditionalInfo(e.target.value)}
+              />
 
-          <textarea placeholder="Observações" value={observations} onChange={e => setObservations(e.target.value)} />
-          <textarea placeholder="Informações adicionais" value={additionalInfo} onChange={e => setAdditionalInfo(e.target.value)} />
+              {/* ===== PAGAMENTO ===== */}
+              {orderType !== "table" && (
+                <div className="payment-section">
+                  <h4>Forma de pagamento</h4>
 
-          <select value={paymentMethod} onChange={e => setPaymentMethod(e.target.value)}>
-            <option value="dinheiro">Dinheiro</option>
-            <option value="cartao">Cartão</option>
-            <option value="pix">Pix</option>
-          </select>
+                  <label>
+                    <input
+                      type="radio"
+                      value="dinheiro"
+                      checked={paymentMethod === "dinheiro"}
+                      onChange={(e) => setPaymentMethod(e.target.value)}
+                    />
+                    Dinheiro
+                  </label>
 
-          <label>
-            <input type="checkbox" checked={needChange} onChange={e => setNeedChange(e.target.checked)} />
-            Necessita troco
-          </label>
+                  <label>
+                    <input
+                      type="radio"
+                      value="cartao"
+                      checked={paymentMethod === "cartao"}
+                      onChange={(e) => setPaymentMethod(e.target.value)}
+                    />
+                    Cartão
+                  </label>
 
-          {needChange && (
-            <input placeholder="Valor do troco" value={changeAmount} onChange={e => setChangeAmount(e.target.value)} />
-          )}
-        </div>
+                  <label>
+                    <input
+                      type="radio"
+                      value="pix"
+                      checked={paymentMethod === "pix"}
+                      onChange={(e) => setPaymentMethod(e.target.value)}
+                    />
+                    Pix
+                  </label>
 
-        {/* Mesa */}
-        {orderType === "table" && (
-          <div className="table-section">
-            <select value={selectedTable || ""} onChange={e => setSelectedTable(e.target.value)}>
-              <option value="">Selecione a mesa</option>
-              {tables.map(t => (
-                <option key={t.id} value={t.id}>Mesa {t.number}</option>
-              ))}
-            </select>
+                  {paymentMethod === "dinheiro" && (
+                    <div className="change-section">
+                      <label>Precisa de troco?</label>
+                      <select
+                        value={changeAmount}
+                        onChange={(e) => setChangeAmount(e.target.value)}
+                      >
+                        <option value="">Não</option>
+                        <option value="20">R$ 20</option>
+                        <option value="50">R$ 50</option>
+                        <option value="100">R$ 100</option>
+                      </select>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
 
-            <button
-              className={`call-waiter-btn ${calling ? "loading" : ""} ${callSuccess ? "success" : ""}`}
-              onClick={handleCallWaiter}
-              disabled={!selectedTable || calling}
+            {/* ===== BOTÕES ===== */}
+            <div
+              className="order-actions"
+              style={{ display: "flex", gap: "10px", marginTop: "20px" }}
             >
-              {calling ? "Chamando..." : callSuccess ? "Garçom chamado ✅" : "Chamar Garçom"}
-            </button>
-          </div>
+              <button className="btn cancel" onClick={close}>
+                Fechar
+              </button>
+              <button className="btn primary" onClick={() => setStep(1)}>
+                Revisar Pedido
+              </button>
+            </div>
+          </>
         )}
 
-        {/* Itens */}
-        <div className="order-items">
-          {items.map(item => (
-            <div key={item.id} className="order-item">
-              {item.name} x{item.quantity} – R$ {(item.price * item.quantity).toFixed(2)}
-              <button onClick={() => handleRemove(item.id)}>Remover</button>
-            </div>
-          ))}
-        </div>
+        {/* ===== ETAPA 1 – REVISÃO ===== */}
+        {step === 1 && (
+          <OrderReviewModal
+            items={items}
+            total={total}
+            loading={loading}
+            onBack={() => setStep(0)}
+            onConfirm={handleSubmit}
+            onAddMore={() => {
+              close();
+              navigate(`/companies/${company.id}/categories`);
+            }}
+            onClose={close}
+          />
+        )}
 
-        <p className="order-total">Total: R$ {total}</p>
-
-        <div className="order-actions">
-          <button className="btn cancel" onClick={close}>Fechar</button>
-          <button className="btn secondary" onClick={handleAddMore}>Adicionar mais</button>
-          <button className="btn primary" onClick={handleSubmit} disabled={loading}>
-            {loading ? "Enviando..." : "Enviar para WhatsApp"}
-          </button>
-        </div>
+        {/* ===== ETAPA 2 – SUCESSO ===== */}
+        {step === 2 && (
+          <OrderSuccessModal
+            onClose={() => {
+              setItems([]);
+              close();
+            }}
+          />
+        )}
       </div>
     </div>
   );

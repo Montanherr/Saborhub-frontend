@@ -7,6 +7,11 @@ const companyService = {
     return response.data;
   },
 
+  getAdminCompanies: async () => {
+  const response = await api.get("/companies/admin");
+  return response.data;
+},
+
   getById: async (id) => {
     const response = await api.get(`/companies/${id}`);
     return response.data;

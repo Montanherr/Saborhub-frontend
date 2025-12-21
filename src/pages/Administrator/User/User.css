@@ -1,0 +1,148 @@
+/* ===============================
+   CONTAINER PRINCIPAL
+================================ */
+.user-page {
+  background: #f6f6f6;
+  padding: 16px;
+}
+
+/* Desktop: centraliza e aumenta largura */
+@media (min-width: 1024px) {
+  .user-page {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 32px;
+  }
+}
+
+/* ===============================
+   FORMULÁRIO
+================================ */
+.user-form {
+  background: #ffffff;
+  padding: 16px;
+  border-radius: 10px;
+  margin-bottom: 24px;
+
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+/* Desktop: 2 colunas */
+@media (min-width: 768px) {
+  .user-form {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+
+  /* título ocupa linha inteira */
+  .user-form h3 {
+    grid-column: 1 / -1;
+  }
+
+  /* ações ocupam linha inteira */
+  .form-actions {
+    grid-column: 1 / -1;
+  }
+}
+
+.user-form input,
+.user-form select {
+  padding: 12px;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  font-size: 14px;
+  width: 100%;
+}
+
+.user-form input:focus,
+.user-form select:focus {
+  outline: none;
+  border-color: #ff7a00;
+}
+
+/* ===============================
+   AÇÕES DO FORMULÁRIO
+================================ */
+.form-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.form-actions button {
+  background: #ff7a00;
+  color: #fff;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: opacity 0.2s;
+}
+
+.form-actions button:hover {
+  opacity: 0.9;
+}
+
+.form-actions .cancel {
+  background: #999;
+}
+
+/* ===============================
+   TABELA RESPONSIVA
+================================ */
+
+/* wrapper para scroll horizontal no mobile */
+.table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+/* tabela */
+.user-table {
+  width: 100%;
+  min-width: 800px; /* força scroll no mobile */
+  background: #ffffff;
+  border-radius: 10px;
+  border-collapse: collapse;
+}
+
+.user-table th,
+.user-table td {
+  padding: 12px;
+  border-bottom: 1px solid #eee;
+  text-align: left;
+  font-size: 14px;
+}
+
+.user-table th {
+  background: #fafafa;
+  font-weight: 600;
+}
+
+/* ===============================
+   AÇÕES DA TABELA
+================================ */
+.actions {
+  display: flex;
+  gap: 8px;
+}
+
+.actions button {
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.actions button:not(.delete) {
+  background: #eeeeee;
+}
+
+.actions .delete {
+  background: #e53935;
+  color: #ffffff;
+}

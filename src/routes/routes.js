@@ -9,41 +9,58 @@ import Login from "../pages/Login/Login";
 import Reports from "../pages/Reports/Reports.jsx";
 import Register from "../pages/Login/Register";
 import Tables from "../pages/Table/Table.jsx";
+import Administrator from "../pages/Administrator/Index";
 import Home from "../pages/Home/HomePublic";
 
 export default function AppRoutes() {
   return (
     <Routes>
-
       <Route path="/" element={<Home />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/companies" element={<Companies />} />
-      <Route path="/companies/:companyId/categories" element={<CategoriesScreen />} />
+      <Route
+        path="/companies/:companyId/categories"
+        element={<CategoriesScreen />}
+      />
 
-      <Route path="/reports" element={
-  <ProtectedRoute>
-    <Reports />
-  </ProtectedRoute>} />
-<Route
-  path="/tables"
-  element={
-    <ProtectedRoute role="waiter">
-      <Tables />
-    </ProtectedRoute>
-  }
-/>
+      <Route
+        path="/reports"
+        element={
+          <ProtectedRoute roles={["admin"]}>
+            <Reports />
+          </ProtectedRoute>
+        }
+      />
 
- 
+      <Route
+        path="/administrator"
+        element={
+          <ProtectedRoute roles={["admin", "manager"]}>
+            <Administrator />
+          </ProtectedRoute>
+        }
+      />
 
-<Route path="/menu/create" element={
-  <ProtectedRoute>
-    <MenuCreate />
-  </ProtectedRoute>} />
+      <Route
+        path="/tables"
+        element={
+          <ProtectedRoute roles={["admin", "manager", "waiter"]}>
+            <Tables />
+          </ProtectedRoute>
+        }
+      />
 
+      <Route
+        path="/menu/create"
+        element={
+          <ProtectedRoute roles={["admin"]}>
+            <MenuCreate />
+          </ProtectedRoute>
+        }
+      />
 
       <Route path="*" element={<Navigate to="/" replace />} />
-
     </Routes>
   );
 }
