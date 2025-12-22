@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import orderService from "../../../services/orderService";
 import tableService from "../../../services/tableService";
+import tablePublic from "../../../services/tableService";
 import tableAssignmentsService from "../../../services/tableAssignments";
 
 import OrderStepper from "../../Order/OrderStepper";
@@ -45,6 +46,12 @@ export default function OrdersModal({ company, items, setItems, close }) {
   useEffect(() => {
     if (orderType === "table" && company?.id) {
       tableService.getAll(company.id).then(setTables).catch(console.error);
+    }
+  }, [orderType, company?.id]);
+
+  useEffect(() => {
+    if (orderType === "table" && company?.id) {
+      tablePublic.getAll(company.id).then(setTables).catch(console.error);
     }
   }, [orderType, company?.id]);
 
