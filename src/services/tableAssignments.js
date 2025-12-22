@@ -25,6 +25,11 @@ const tableAssignmentsService = {
     return api.patch(`/table-assignments/${assignmentId}/accept`);
   },
 
+  // src/services/tableAssignments.js
+finishService(id) {
+  return api.put(`/table-assignments/${id}/finish-service`);
+},
+
   // Abrir mesa (garçom)
   open(tableId) {
     return api.post("/table-assignments", { tableId });

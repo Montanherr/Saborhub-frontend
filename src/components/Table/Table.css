@@ -46,18 +46,36 @@
   text-transform: capitalize;
 }
 
-/* Status colors */
+/* ===============================
+   STATUS COLORS
+================================ */
+
+/* 🟢 Disponível */
 .table-card.available {
   border-left: 6px solid #2ecc71;
 }
 
+/* 🔔 Chamando garçom */
 .table-card.calling {
   border-left: 6px solid #f1c40f;
   animation: pulse 1.2s infinite;
 }
 
+/* 🔵 Em atendimento */
+.table-card.service {
+  border-left: 6px solid #3498db;
+  background: #f5faff;
+}
+
+/* 🟡 Ocupada (cliente ainda na mesa) */
 .table-card.occupied {
-  border-left: 6px solid #e74c3c;
+  border-left: 6px solid #e67e22;
+}
+
+/* ⚫ Mesa fechada / desativada */
+.table-card.closed {
+  border-left: 6px solid #7f8c8d;
+  opacity: 0.6;
 }
 
 /* Pulse animation */
@@ -73,7 +91,9 @@
   }
 }
 
-/* Buttons */
+/* ===============================
+   BUTTONS
+================================ */
 .btn {
   width: 100%;
   padding: 10px;
@@ -81,6 +101,7 @@
   border: none;
   font-weight: 600;
   cursor: pointer;
+  transition: background 0.15s ease;
 }
 
 .btn.primary {
@@ -92,6 +113,15 @@
   background: #2980b9;
 }
 
+.btn.warning {
+  background: #f39c12;
+  color: #fff;
+}
+
+.btn.warning:hover {
+  background: #d68910;
+}
+
 .btn.danger {
   background: #e74c3c;
   color: #fff;
@@ -101,7 +131,9 @@
   background: #c0392b;
 }
 
-/* Blocked text */
+/* ===============================
+   TEXTOS AUXILIARES
+================================ */
 .blocked {
   margin-top: 8px;
   font-size: 14px;
@@ -109,7 +141,6 @@
   font-weight: 500;
 }
 
-/* Info / error */
 .info {
   padding: 20px;
 }

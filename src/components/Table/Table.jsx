@@ -27,8 +27,9 @@ export default function TablesView() {
 
       const normalized = data.map((table) => {
         const activeAssignment =
-          table.assignments?.find((a) => a.status === "occupied") ||
           table.assignments?.find((a) => a.status === "calling") ||
+          table.assignments?.find((a) => a.status === "service") ||
+          table.assignments?.find((a) => a.status === "occupied") ||
           null;
 
         return {
@@ -47,9 +48,10 @@ export default function TablesView() {
   }, [companyId]);
 
   useEffect(() => {
-    callingAudio.current = new Audio("/sounds/calling.mp3"); // cliente chamou
-    acceptedAudio.current = new Audio("/sounds/accept.mp3"); // garçom aceitou
+    callingAudio.current = new Audio("/sounds/calling.mp3");
+    acceptedAudio.current = new Audio("/sounds/accept.mp3");
   }, []);
+
   // 🔌 Socket updates
   useEffect(() => {
     if (!companyId) return;
@@ -63,32 +65,30 @@ export default function TablesView() {
 
           const assignments = data.assignments || [];
 
-          const newStatus = assignments.some((a) => a.status === "occupied")
-            ? "occupied"
-            : assignments.some((a) => a.status === "calling")
-            ? "calling"
-            : "available";
+          let newStatus = "available";
+          if (assignments.some((a) => a.status === "calling")) {
+            newStatus = "calling";
+          } else if (assignments.some((a) => a.status === "service")) {
+            newStatus = "service";
+          } else if (assignments.some((a) => a.status === "occupied")) {
+            newStatus = "occupied";
+          }
 
           const activeAssignment =
-            assignments.find((a) =>
-              ["calling", "occupied"].includes(a.status)
-            ) || null;
+            assignments.find((a) => a.status === "calling") ||
+            assignments.find((a) => a.status === "service") ||
+            assignments.find((a) => a.status === "occupied") ||
+            null;
 
-          // 🔔 AÇÕES SOMENTE SE STATUS MUDOU
           if (t.status !== newStatus) {
-            // 📢 NOVO PEDIDO (CHAMANDO)
             if (newStatus === "calling") {
-              // 🔊 som
               callingAudio.current?.play().catch(() => {});
-
-              // 📳 vibração (somente aqui)
               if ("vibrate" in navigator) {
                 navigator.vibrate([300, 150, 300]);
               }
             }
 
-            // ✅ GARÇOM ACEITOU (sem vibrar)
-            if (newStatus === "occupied") {
+            if (newStatus === "service") {
               acceptedAudio.current?.play().catch(() => {});
             }
           }
@@ -120,8 +120,6 @@ export default function TablesView() {
       <div className="tables-grid">
         {tables.map((table) => {
           const assignment = table.activeAssignment;
-          const isMyTable =
-            assignment && Number(assignment.waiterId) === Number(user.id);
 
           return (
             <div key={table.id} className={`table-card ${table.status}`}>
@@ -132,25 +130,36 @@ export default function TablesView() {
               {table.status === "calling" && isWaiter && assignment && (
                 <button
                   className="btn primary"
-                  onClick={() => tableAssignmentsService.accept(assignment.id)}
+                  onClick={() =>
+                    tableAssignmentsService.accept(assignment.id)
+                  }
                 >
                   Atender
                 </button>
               )}
 
-              {/* ✅ OCUPADA PELO PRÓPRIO GARÇOM */}
-              {table.status === "occupied" && isWaiter && isMyTable && (
+              {/* ✅ EM ATENDIMENTO */}
+              {table.status === "service" && isWaiter && assignment && (
                 <button
-                  className="btn danger"
-                  onClick={() => tableAssignmentsService.finish(assignment.id)}
+                  className="btn warning"
+                  onClick={() =>
+                    tableAssignmentsService.finishService(assignment.id)
+                  }
                 >
-                  Finalizar
+                  Finalizar atendimento
                 </button>
               )}
 
-              {/* 🚫 OCUPADA POR OUTRO GARÇOM */}
-              {table.status === "occupied" && isWaiter && !isMyTable && (
-                <p className="blocked">Em atendimento</p>
+              {/* 🟡 OCUPADA (cliente ainda está na mesa) */}
+              {table.status === "occupied" && isWaiter && (
+                <button
+                  className="btn danger"
+                  onClick={() =>
+                    tableAssignmentsService.open(table.id)
+                  }
+                >
+                  Liberar mesa
+                </button>
               )}
             </div>
           );
