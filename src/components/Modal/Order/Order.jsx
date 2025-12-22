@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import orderService from "../../../services/orderService";
 import tableService from "../../../services/tableService";
@@ -8,6 +8,7 @@ import OrderStepper from "../../Order/OrderStepper";
 import TableCallModal from "./TableCallModal";
 import OrderReviewModal from "./OrderReviewModal";
 import OrderSuccessModal from "./OrderSuccessModal";
+import { socket } from "socket/socket";
 
 import "./Order.css";
 
@@ -20,7 +21,6 @@ export default function OrdersModal({ company, items, setItems, close }) {
   const [observations, setObservations] = useState("");
   const [additionalInfo, setAdditionalInfo] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("dinheiro");
-  const [changeAmount, setChangeAmount] = useState("");
   const [loading, setLoading] = useState(false);
 
   const [orderType, setOrderType] = useState("delivery"); // delivery | pickup | table
@@ -28,6 +28,12 @@ export default function OrdersModal({ company, items, setItems, close }) {
   const [selectedTable, setSelectedTable] = useState(null);
   const [calling, setCalling] = useState(false);
   const [callSuccess, setCallSuccess] = useState(false);
+  const [accepted, setAccepted] = useState(false);
+  const [audioUnlocked, setAudioUnlocked] = useState(false);
+  const [needChange, setNeedChange] = useState(false);
+  const [changeAmount, setChangeAmount] = useState("");
+
+  const acceptedAudio = useRef(null);
 
   const navigate = useNavigate();
 
@@ -46,6 +52,10 @@ export default function OrdersModal({ company, items, setItems, close }) {
     if (!selectedTable) return alert("Selecione uma mesa!");
     try {
       setCalling(true);
+
+      // 🔓 libera áudio (interação do usuário)
+      setAudioUnlocked(true);
+
       await tableAssignmentsService.callWaiter(selectedTable, company.id);
       setCallSuccess(true);
       setTimeout(() => setCallSuccess(false), 3000);
@@ -55,6 +65,45 @@ export default function OrdersModal({ company, items, setItems, close }) {
       setCalling(false);
     }
   };
+
+  useEffect(() => {
+    acceptedAudio.current = new Audio("/sounds/accept.mp3");
+    acceptedAudio.current.preload = "auto";
+  }, []);
+
+  useEffect(() => {
+    if (!company?.id || !selectedTable) return;
+
+    const handleSocketUpdate = (data) => {
+      // 🧠 garante que é a mesa certa
+      if (Number(data.id) !== Number(selectedTable)) return;
+
+      // ✅ só quando o garçom aceitar
+      if (data.status === "occupied") {
+        console.log("✅ Mesa aceita pelo garçom");
+
+        // 🔊 TOCA O SOM (somente se já foi desbloqueado)
+        if (audioUnlocked && acceptedAudio.current) {
+          acceptedAudio.current
+            .play()
+            .catch((err) => console.warn("Áudio bloqueado:", err));
+        }
+
+        // 📳 vibração (mobile)
+        if ("vibrate" in navigator) {
+          navigator.vibrate([200, 100, 200]);
+        }
+
+        setAccepted(true);
+      }
+    };
+
+    socket.on(`table_update_${company.id}`, handleSocketUpdate);
+
+    return () => {
+      socket.off(`table_update_${company.id}`, handleSocketUpdate);
+    };
+  }, [company?.id, selectedTable, audioUnlocked]);
 
   /* ===================== ENVIO ===================== */
   const handleSubmit = async () => {
@@ -84,17 +133,43 @@ export default function OrdersModal({ company, items, setItems, close }) {
         ? company.phone
         : "55" + company.phone;
 
-      let msg = `📦 Novo Pedido\n\nCódigo: ${order.code}\n\n`;
-      items.forEach((i) => {
-        msg += `- ${i.name} x${i.quantity} = R$ ${(i.price * i.quantity).toFixed(2)}\n`;
-      });
-      msg += `\nTotal: R$ ${total}\n`;
-      msg += `Cliente: ${fullName}\nTelefone: ${phone}\n`;
-      if (orderType === "delivery") msg += `Endereço: ${address}\n`;
-      msg += `Pagamento: ${paymentMethod}\n`;
-      if (paymentMethod === "dinheiro" && changeAmount && changeAmount !== "")
-        msg += `Troco para: R$ ${changeAmount}\n`;
+      // Montar mensagem para WhatsApp
+      let msg = `📦 *Novo Pedido*\n\n`;
+      msg += `🧾 Código: ${order.code}\n\n`;
 
+      items.forEach((i) => {
+        msg += `• ${i.name} x${i.quantity} = R$ ${(
+          i.price * i.quantity
+        ).toFixed(2)}\n`;
+      });
+
+      msg += `\n💰 *Total:* R$ ${total}\n`;
+      msg += `👤 Cliente: ${fullName}\n`;
+      msg += `📞 Telefone: ${phone}\n`;
+
+      if (orderType === "delivery") {
+        msg += `📍 Endereço: ${address}\n`;
+      }
+
+      msg += `\n💳 *Pagamento:* ${paymentMethod}\n`;
+
+      if (paymentMethod === "dinheiro") {
+        if (needChange && changeAmount) {
+          msg += `💵 Troco para: R$ ${changeAmount}\n`;
+        } else {
+          msg += `💵 Não precisa de troco\n`;
+        }
+      }
+
+      if (observations && observations.trim() !== "") {
+        msg += `\n📝 Observações: ${observations}\n`;
+      }
+
+      if (additionalInfo && additionalInfo.trim() !== "") {
+        msg += `ℹ️ Informações adicionais: ${additionalInfo}\n`;
+      }
+
+      // Abrir WhatsApp Web
       window.open(
         `https://wa.me/${companyPhone}?text=${encodeURIComponent(msg)}`,
         "_blank"
@@ -117,6 +192,7 @@ export default function OrdersModal({ company, items, setItems, close }) {
         setSelectedTable={setSelectedTable}
         calling={calling}
         callSuccess={callSuccess}
+        accepted={accepted} // 🔥 NOVO
         onCallWaiter={handleCallWaiter}
         onClose={close}
       />
@@ -232,16 +308,24 @@ export default function OrdersModal({ company, items, setItems, close }) {
 
                   {paymentMethod === "dinheiro" && (
                     <div className="change-section">
-                      <label>Precisa de troco?</label>
-                      <select
-                        value={changeAmount}
-                        onChange={(e) => setChangeAmount(e.target.value)}
-                      >
-                        <option value="">Não</option>
-                        <option value="20">R$ 20</option>
-                        <option value="50">R$ 50</option>
-                        <option value="100">R$ 100</option>
-                      </select>
+                      <label className="change-checkbox">
+                        <input
+                          type="checkbox"
+                          checked={needChange}
+                          onChange={(e) => setNeedChange(e.target.checked)}
+                        />
+                        Precisa de troco?
+                      </label>
+
+                      {needChange && (
+                        <input
+                          type="number"
+                          placeholder="Troco para quanto? Ex: 100"
+                          value={changeAmount}
+                          onChange={(e) => setChangeAmount(e.target.value)}
+                          min="0"
+                        />
+                      )}
                     </div>
                   )}
                 </div>

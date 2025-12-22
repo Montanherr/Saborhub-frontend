@@ -1,4 +1,5 @@
-import { useEffect, useState, useCallback } from "react";
+// src/components/Table/Table.jsx
+import { useEffect, useState, useCallback, useRef } from "react";
 import tableService from "../../services/tableService";
 import tableAssignmentsService from "../../services/tableAssignments";
 import { socket } from "socket/socket";
@@ -8,12 +9,15 @@ import "./Table.css";
 export default function TablesView() {
   const { user } = useAuth();
   const companyId = user?.companyId;
+  const isWaiter = user?.role === "waiter";
 
   const [tables, setTables] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const callingAudio = useRef(null);
+  const acceptedAudio = useRef(null);
 
-  // 🔄 Carrega mesas (MEMORIZADO)
+  // 🔄 Fetch inicial
   const fetchTables = useCallback(async () => {
     if (!companyId) return;
 
@@ -22,14 +26,15 @@ export default function TablesView() {
       const data = await tableService.getAll(companyId);
 
       const normalized = data.map((table) => {
-        const active =
+        const activeAssignment =
+          table.assignments?.find((a) => a.status === "occupied") ||
           table.assignments?.find((a) => a.status === "calling") ||
-          table.assignments?.find((a) => a.status === "occupied");
+          null;
 
         return {
           ...table,
-          status: active?.status || "available",
-          activeAssignment: active || null,
+          status: activeAssignment?.status || "available",
+          activeAssignment,
         };
       });
 
@@ -41,117 +46,116 @@ export default function TablesView() {
     }
   }, [companyId]);
 
-  // 🔌 Socket connect
+  useEffect(() => {
+    callingAudio.current = new Audio("/sounds/calling.mp3"); // cliente chamou
+    acceptedAudio.current = new Audio("/sounds/accept.mp3"); // garçom aceitou
+  }, []);
+  // 🔌 Socket updates
   useEffect(() => {
     if (!companyId) return;
 
     fetchTables();
 
-    const onConnect = () => {
-      console.log("📥 Socket conectou → sync mesas");
-      fetchTables();
+    const handleUpdate = (data) => {
+      setTables((prev) =>
+        prev.map((t) => {
+          if (t.id !== data.id) return t;
+
+          const assignments = data.assignments || [];
+
+          const newStatus = assignments.some((a) => a.status === "occupied")
+            ? "occupied"
+            : assignments.some((a) => a.status === "calling")
+            ? "calling"
+            : "available";
+
+          const activeAssignment =
+            assignments.find((a) =>
+              ["calling", "occupied"].includes(a.status)
+            ) || null;
+
+          // 🔔 AÇÕES SOMENTE SE STATUS MUDOU
+          if (t.status !== newStatus) {
+            // 📢 NOVO PEDIDO (CHAMANDO)
+            if (newStatus === "calling") {
+              // 🔊 som
+              callingAudio.current?.play().catch(() => {});
+
+              // 📳 vibração (somente aqui)
+              if ("vibrate" in navigator) {
+                navigator.vibrate([300, 150, 300]);
+              }
+            }
+
+            // ✅ GARÇOM ACEITOU (sem vibrar)
+            if (newStatus === "occupied") {
+              acceptedAudio.current?.play().catch(() => {});
+            }
+          }
+
+          return {
+            ...t,
+            status: newStatus,
+            activeAssignment,
+            assignments,
+          };
+        })
+      );
     };
 
-    socket.on("connect", onConnect);
-    return () => socket.off("connect", onConnect);
+    socket.on(`table_update_${companyId}`, handleUpdate);
+
+    return () => {
+      socket.off(`table_update_${companyId}`, handleUpdate);
+    };
   }, [companyId, fetchTables]);
 
-  // 🔄 Atualizações em tempo real
-  useEffect(() => {
-    if (!companyId) return;
-
-    const onUpdate = (data) => {
-      const assignments =
-        data.assignments?.map((a) => a.dataValues || a) || [];
-
-      const status = assignments.some((a) => a.status === "occupied")
-        ? "occupied"
-        : assignments.some((a) => a.status === "calling")
-        ? "calling"
-        : "available";
-
-      const activeAssignment =
-        assignments.find((a) =>
-          ["calling", "occupied"].includes(a.status)
-        ) || null;
-
-      const updatedTable = {
-        ...data,
-        assignments,
-        status,
-        activeAssignment,
-      };
-
-      setTables((prev) => {
-        const exists = prev.find((t) => t.id === data.id);
-        if (exists) {
-          return prev.map((t) =>
-            t.id === data.id ? updatedTable : t
-          );
-        }
-        return [...prev, updatedTable];
-      });
-    };
-
-    socket.on(`table_update_${companyId}`, onUpdate);
-    return () =>
-      socket.off(`table_update_${companyId}`, onUpdate);
-  }, [companyId]);
-
-  // 🎯 Ação principal da mesa
-  const handleAction = async (table) => {
-    try {
-      const assignment = table.activeAssignment;
-
-      if (table.status === "available") {
-        await tableAssignmentsService.open(table.id);
-      } 
-      else if (table.status === "calling" && assignment) {
-        await tableAssignmentsService.accept(assignment.id);
-      } 
-      else if (table.status === "occupied") {
-        if (!assignment || assignment.waiterId !== user.id) {
-          alert("Essa mesa está sob atendimento de outro garçom");
-          return;
-        }
-        await tableAssignmentsService.finish(assignment.id);
-      }
-
-      fetchTables();
-    } catch (err) {
-      alert(err.response?.data?.error || err.message);
-    }
-  };
-
-  if (loading) return <p>Carregando mesas...</p>;
-  if (error) return <p>Erro: {error}</p>;
+  if (loading) return <p className="info">Carregando mesas...</p>;
+  if (error) return <p className="error">Erro: {error}</p>;
 
   return (
-    <div className="tables-grid">
-      {tables.map((table) => (
-        <div
-          key={table.id}
-          className={`table-card ${table.status}`}
-          onClick={() => handleAction(table)}
-        >
-          <h3>Mesa {table.number}</h3>
-          <p>Status: {table.status}</p>
+    <div className="tables-container">
+      <h2 className="title">Mesas</h2>
 
-          {table.status === "calling" && (
-            <button className="btn primary">Atender</button>
-          )}
+      <div className="tables-grid">
+        {tables.map((table) => {
+          const assignment = table.activeAssignment;
+          const isMyTable =
+            assignment && Number(assignment.waiterId) === Number(user.id);
 
-          {table.status === "occupied" &&
-            table.activeAssignment?.waiterId === user.id && (
-              <button className="btn danger">Finalizar</button>
-            )}
+          return (
+            <div key={table.id} className={`table-card ${table.status}`}>
+              <h3>Mesa {table.number}</h3>
+              <span className="status-label">{table.status}</span>
 
-          {table.status === "occupied" &&
-            table.activeAssignment?.waiterId !== user.id && (
-              <p className="blocked">Em atendimento</p>
-            )}
-        </div>
-      ))}
+              {/* 🔔 CHAMANDO */}
+              {table.status === "calling" && isWaiter && assignment && (
+                <button
+                  className="btn primary"
+                  onClick={() => tableAssignmentsService.accept(assignment.id)}
+                >
+                  Atender
+                </button>
+              )}
+
+              {/* ✅ OCUPADA PELO PRÓPRIO GARÇOM */}
+              {table.status === "occupied" && isWaiter && isMyTable && (
+                <button
+                  className="btn danger"
+                  onClick={() => tableAssignmentsService.finish(assignment.id)}
+                >
+                  Finalizar
+                </button>
+              )}
+
+              {/* 🚫 OCUPADA POR OUTRO GARÇOM */}
+              {table.status === "occupied" && isWaiter && !isMyTable && (
+                <p className="blocked">Em atendimento</p>
+              )}
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 }

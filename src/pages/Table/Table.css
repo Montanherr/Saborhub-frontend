@@ -1,0 +1,52 @@
+.tables-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 16px;
+  padding: 16px;
+}
+
+.table-card {
+  background: #1f2937;
+  color: #fff;
+  border-radius: 12px;
+  padding: 16px;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  transition: transform 0.2s, box-shadow 0.2s;
+  cursor: pointer;
+  position: relative;
+}
+
+.table-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.35);
+}
+
+.table-card.calling {
+  border: 2px solid #f59e0b;
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { box-shadow: 0 0 8px #f59e0b; }
+  50% { box-shadow: 0 0 20px #fbbf24; }
+}
+
+.table-icon {
+  margin-bottom: 8px;
+}
+
+.table-number {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.calling-indicator {
+  margin-top: 8px;
+  color: #f59e0b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-weight: 600;
+}

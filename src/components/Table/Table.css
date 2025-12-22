@@ -1,158 +1,121 @@
-:root {
-  --color-primary: #f59e0b;
-  --color-danger: #ef4444;
-  --color-success: #22c55e;
-  --color-text-light: #fff;
-  --color-text-dark: #111827;
-  --color-blocked: #9ca3af;
-  --card-radius: 12px;
-  --card-padding: 16px;
-  --card-shadow: 0 6px 20px rgba(0,0,0,0.2);
-  --transition-speed: 0.3s;
-  --badge-bg: rgba(0,0,0,0.6);
+/* Container geral */
+.tables-container {
+  padding: 24px;
 }
 
-/* Grid de mesas */
+.title {
+  font-size: 24px;
+  margin-bottom: 16px;
+  font-weight: 600;
+}
+
+/* Grid */
 .tables-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  gap: 20px;
-  padding: 20px;
+  gap: 16px;
 }
 
-/* Card da mesa */
+/* Card base */
 .table-card {
-  position: relative;
-  border-radius: var(--card-radius);
-  padding: var(--card-padding);
-  text-align: center;
-  background-color: #1f2937; /* fundo escuro */
-  color: var(--color-text-light);
-  box-shadow: var(--card-shadow);
-  cursor: pointer;
-  transition: transform var(--transition-speed), box-shadow var(--transition-speed), border var(--transition-speed), background var(--transition-speed);
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
 .table-card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 14px 30px rgba(0,0,0,0.25);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
 }
 
-/* Status das mesas */
+.table-card h3 {
+  margin: 0;
+  font-size: 18px;
+}
+
+/* Status label */
+.status-label {
+  margin: 8px 0 12px;
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+/* Status colors */
 .table-card.available {
-  border: 2px solid var(--color-success);
+  border-left: 6px solid #2ecc71;
 }
 
 .table-card.calling {
-  border: 2px solid var(--color-primary);
-  animation: pulse 1.5s infinite;
+  border-left: 6px solid #f1c40f;
+  animation: pulse 1.2s infinite;
 }
 
 .table-card.occupied {
-  border: 2px solid var(--color-danger);
-  opacity: 0.95;
+  border-left: 6px solid #e74c3c;
 }
 
-/* Pulsante para calling */
+/* Pulse animation */
 @keyframes pulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.05); }
+  0% {
+    box-shadow: 0 0 0 0 rgba(241, 196, 15, 0.6);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(241, 196, 15, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(241, 196, 15, 0);
+  }
 }
 
-/* Badge de status */
-.table-card .status-badge {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-weight: 600;
-  font-size: 0.85rem;
-  padding: 5px 10px;
-  border-radius: 12px;
-  background: var(--badge-bg);
-  backdrop-filter: blur(4px);
-  transition: transform var(--transition-speed), background var(--transition-speed);
-}
-
-.table-card.available .status-badge {
-  color: var(--color-success);
-}
-
-.table-card.calling .status-badge {
-  color: var(--color-primary);
-  animation: pulse-badge 1.5s infinite;
-}
-
-.table-card.occupied .status-badge {
-  color: var(--color-danger);
-}
-
-/* Animação do badge */
-@keyframes pulse-badge {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.1); }
-}
-
-/* Botões */
+/* Buttons */
 .btn {
-  margin-top: 12px;
-  padding: 10px 18px;
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
   border: none;
-  border-radius: var(--card-radius);
   font-weight: 600;
   cursor: pointer;
-  transition: background var(--transition-speed), transform var(--transition-speed), box-shadow var(--transition-speed);
 }
 
 .btn.primary {
-  background: var(--color-primary);
-  color: var(--color-text-dark);
-  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+  background: #3498db;
+  color: #fff;
 }
 
 .btn.primary:hover {
-  background: #d97706;
-  transform: scale(1.05);
-  box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+  background: #2980b9;
 }
 
 .btn.danger {
-  background: var(--color-danger);
-  color: var(--color-text-light);
-  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+  background: #e74c3c;
+  color: #fff;
 }
 
 .btn.danger:hover {
-  background: #dc2626;
-  transform: scale(1.05);
-  box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+  background: #c0392b;
 }
 
-/* Estado bloqueado */
+/* Blocked text */
 .blocked {
-  color: var(--color-blocked);
-  font-size: 0.9rem;
+  margin-top: 8px;
+  font-size: 14px;
+  color: #7f8c8d;
   font-weight: 500;
 }
 
-/* Ícones de mesa */
-.table-card .icon {
-  display: inline-block;
-  width: 24px;
-  height: 24px;
-  vertical-align: middle;
-  margin-right: 6px;
-  fill: currentColor;
-  transition: transform var(--transition-speed);
+/* Info / error */
+.info {
+  padding: 20px;
 }
 
-.table-card.calling .icon {
-  animation: pulse-icon 1.5s infinite;
-}
-
-@keyframes pulse-icon {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.2); }
+.error {
+  padding: 20px;
+  color: #e74c3c;
+  font-weight: 600;
 }

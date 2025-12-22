@@ -12,6 +12,8 @@
   --input-bg: #f3f4f6;
   --input-border: #d1d5db;
   --input-focus: #f59e0b;
+  --toast-bg: rgba(0,0,0,0.85);
+  --toast-color: #fff;
 }
 
 /* BACKDROP */
@@ -47,22 +49,48 @@
   to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
-/* BOTÃO FECHAR */
-.orders-modal .close-btn {
+/* TOAST */
+.toast {
   position: absolute;
   top: 16px;
-  right: 16px;
-  background: transparent;
-  border: none;
-  font-size: 1.5rem;
-  font-weight: bold;
-  color: var(--text-light);
-  cursor: pointer;
-  transition: transform 0.2s;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--toast-bg);
+  color: var(--toast-color);
+  padding: 12px 18px;
+  border-radius: var(--card-radius);
+  font-weight: 500;
+  animation: toastFade 0.5s ease forwards;
+  z-index: 1100;
 }
-.orders-modal .close-btn:hover {
-  transform: scale(1.2);
-  color: var(--danger-color);
+
+@keyframes toastFade {
+  0% { opacity: 0; transform: translateX(-50%) translateY(-10px); }
+  10%, 90% { opacity: 1; transform: translateX(-50%) translateY(0); }
+  100% { opacity: 0; transform: translateX(-50%) translateY(-10px); }
+}
+
+/* SHAKE ANIMATION */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-6px); }
+  40%, 80% { transform: translateX(6px); }
+}
+
+/* BOTÃO CHAMAR GARÇOM */
+.call-waiter-btn {
+  background: var(--primary-gradient);
+  color: var(--text-dark);
+  border: none;
+  border-radius: var(--card-radius);
+  padding: 12px 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.call-waiter-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(0,0,0,0.35);
 }
 
 /* TITULO */
@@ -127,6 +155,10 @@
   resize: vertical;
   min-height: 80px;
 }
+.input-error {
+  border-color: var(--danger-color);
+  animation: shake 0.3s;
+}
 
 /* PAGAMENTO */
 .payment-section {
@@ -181,10 +213,6 @@
 .btn.primary {
   background: var(--primary-gradient);
   color: var(--text-dark);
-}
-.btn.secondary {
-  background: var(--secondary-color);
-  color: var(--text-light);
 }
 .btn.cancel {
   background: #374151;
@@ -249,4 +277,125 @@
   .order-type {
     flex-direction: column;
   }
+}
+
+.orders-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.orders-modal {
+  background: #fff;
+  width: 100%;
+  max-width: 380px;
+  padding: 24px;
+  border-radius: 16px;
+  text-align: center;
+  animation: modalIn 0.35s ease;
+}
+
+@keyframes modalIn {
+  from {
+    transform: translateY(20px) scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+
+.orders-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.orders-modal {
+  background: #fff;
+  width: 100%;
+  max-width: 380px;
+  padding: 24px;
+  border-radius: 16px;
+  text-align: center;
+  animation: modalIn 0.35s ease;
+}
+
+@keyframes modalIn {
+  from {
+    transform: translateY(20px) scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+
+.orders-modal select {
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  margin-bottom: 16px;
+  font-size: 15px;
+}
+
+.call-waiter-btn {
+  width: 100%;
+  padding: 14px;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  background: linear-gradient(135deg, #ff9800, #ffb74d);
+  color: #fff;
+  transition: all 0.25s ease;
+}
+
+.call-waiter-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+
+.call-waiter-btn.loading {
+  background: #ccc;
+  cursor: wait;
+}
+
+.call-waiter-btn.success {
+  background: #198754;
+}
+
+.call-waiter-btn.accepted {
+  background: #157347;
+}
+
+.btn.cancel {
+  margin-top: 12px;
+  background: transparent;
+  border: none;
+  color: #777;
+  cursor: pointer;
+  font-size: 14px;
+  transition: color 0.2s;
+}
+
+.btn.cancel:hover {
+  color: #000;
+}
+
+.btn.cancel.auto-close {
+  opacity: 0.6;
+  cursor: default;
 }
