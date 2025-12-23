@@ -1,0 +1,158 @@
+/* =========================
+   DROPDOWN CONTAINER
+   ========================= */
+.dropdown {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+/* =========================
+   BOTÃO
+   ========================= */
+.dropdown-btn {
+  all: unset;
+  cursor: pointer;
+
+  font-size: 16px;
+  font-weight: 500;
+  color: #111;
+
+  padding: 6px 2px;
+  position: relative;
+  white-space: nowrap;
+
+  transition: color 0.25s ease;
+}
+
+/* Linha animada */
+.dropdown-btn::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -4px;
+  width: 0%;
+  height: 2px;
+  background: #ff6600;
+  transition: width 0.3s ease;
+}
+
+.dropdown-btn:hover,
+.dropdown-btn:focus-visible {
+  color: #ff6600;
+}
+
+.dropdown-btn:hover::after,
+.dropdown-btn:focus-visible::after {
+  width: 100%;
+}
+
+/* =========================
+   MENU
+   ========================= */
+.dropdown-menu {
+  position: absolute;
+  top: calc(100% + 14px);
+  left: 0;
+
+  min-width: 220px;
+  background: #fff;
+  border-radius: 12px;
+  padding: 6px 0;
+
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.18);
+  z-index: 1000;
+
+  opacity: 0;
+  transform: translateY(-8px);
+  animation: dropdownFade 0.25s ease forwards;
+}
+
+/* Animação */
+@keyframes dropdownFade {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* =========================
+   ITEM
+   ========================= */
+.dropdown-item {
+  display: block;
+  padding: 12px 20px;
+
+  font-size: 15px;
+  font-weight: 500;
+  color: #111;
+  text-decoration: none;
+
+  transition: all 0.25s ease;
+}
+
+/* Hover */
+.dropdown-item:hover,
+.dropdown-item:focus-visible {
+  background: rgba(255, 102, 0, 0.12);
+  color: #ff6600;
+  transform: translateX(4px);
+}
+
+/* =========================
+   MOBILE (ACCORDION STYLE)
+   ========================= */
+@media (max-width: 768px) {
+  .dropdown {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .dropdown-btn {
+    width: 100%;
+    text-align: center;
+
+    font-size: 18px;
+    padding: 14px 0;
+
+    border-radius: 8px;
+  }
+
+  /* remove underline */
+  .dropdown-btn::after {
+    display: none;
+  }
+
+  .dropdown-btn:hover {
+    background: rgba(255, 102, 0, 0.08);
+  }
+
+  .dropdown-menu {
+    position: static;
+    width: 100%;
+    background: transparent;
+
+    box-shadow: none;
+    border-radius: 0;
+
+    padding: 4px 0;
+    margin-top: 4px;
+
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+
+  .dropdown-item {
+    text-align: center;
+    padding: 14px 0;
+
+    font-size: 16px;
+  }
+
+  .dropdown-item:hover {
+    background: none;
+    color: #ff6600;
+    transform: translateX(6px);
+  }
+}

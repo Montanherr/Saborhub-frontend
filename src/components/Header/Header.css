@@ -145,6 +145,10 @@
     pointer-events: auto;
   }
 
+  .menu-toggle { display: block; }
+.menu-links.open { opacity: 1; }
+
+
   .menu-links a {
     font-size: 18px;
     padding: 10px 0;

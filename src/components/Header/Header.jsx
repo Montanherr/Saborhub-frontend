@@ -1,61 +1,74 @@
 import { useState } from "react";
 import { useAuth } from "../../context/AuthContext";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
+import Dropdown from "../../components/Dropdown/Dropdown";
 import "./Header.css";
 
 export default function Header() {
   const { user, logout } = useAuth();
-  const isLoggedIn = !!user; // 🔥 AGORA FUNCIONA
+  const navigate = useNavigate();
 
   const [open, setOpen] = useState(false);
-  const navigate = useNavigate();
+
+  const isAdmin = ["admin", "manager"].includes(user?.role);
+  const isWaiter = ["admin", "manager", "waiter"].includes(user?.role);
 
   const handleLogout = () => {
     logout();
     navigate("/login");
+    setOpen(false);
   };
 
   return (
     <header className="top-menu">
       <div className="logo">SaborHub</div>
 
-      <button className="menu-toggle" onClick={() => setOpen(!open)}>
+      {/* ☰ BOTÃO HAMBURGUER */}
+      <button
+        className="menu-toggle"
+        onClick={() => setOpen(!open)}
+        aria-label="Abrir menu"
+      >
         ☰
       </button>
 
       <nav className={`menu-links ${open ? "open" : ""}`}>
-        <Link to="/">Home</Link>
-        <Link to="/companies">Restaurantes</Link>
+        <Link to="/" onClick={() => setOpen(false)}>
+          Home
+        </Link>
 
-        {isLoggedIn && (
-          <>
-             {["manager", "admin"].includes(user?.role) && (
-              <>
-                <Link to="/menu/create" className="admin-link">
-                  Incluir Item
-                </Link>
-
-                <Link to="/reports" className="admin-link">
-                  Relatórios
-                </Link>
-              </>
-            )}
-
-            {["manager", "admin", "waiter"].includes(user?.role) && (
-              <Link to="/tables/">Mesas</Link>
-            )}
-
-            {["manager", "admin"].includes(user?.role) && (
-              <Link to="/administrator/">Administrador</Link>
-            )}
-
-            <button className="logout-btn" onClick={handleLogout}>
-              Logout
-            </button>
-          </>
+        {isAdmin && (
+          <Dropdown
+            title="Administração"
+            items={[
+              { label: "Empresas", to: "/companies" },
+              { label: "Incluir Item", to: "/menu/create" },
+              { label: "Relatórios", to: "/reports" },
+              { label: "Administrador", to: "/administrator" },
+            ]}
+          />
         )}
 
-        {!isLoggedIn && <Link to="/login">Login</Link>}
+        {isWaiter && (
+          <Dropdown
+            title="Garçom"
+            items={[
+              { label: "Mesas", to: "/tables" },
+              { label: "Pedidos", to: "/orders" },
+              { label: "Chamados", to: "/calls" },
+            ]}
+          />
+        )}
+
+        {user ? (
+          <button className="logout-btn" onClick={handleLogout}>
+            Logout
+          </button>
+        ) : (
+          <Link to="/login" onClick={() => setOpen(false)}>
+            Login
+          </Link>
+        )}
       </nav>
     </header>
   );
