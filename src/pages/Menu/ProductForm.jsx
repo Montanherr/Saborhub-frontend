@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import "./form-system.css";
 
 export default function ProductForm({
   categories,
@@ -10,114 +11,273 @@ export default function ProductForm({
     name: "",
     description: "",
     price: "",
-    imageFile: null,
-    available: true,
     categoryId: "",
+    imageFile: null,
+
+    promotion: false,
+    promotion_value: "",
+    promotion_type: "fixed",
+
+    has_delivery_fee: false,
+    delivery_fee: "",
   });
 
+  /* ======================
+     LOAD EDIÇÃO
+  ====================== */
   useEffect(() => {
-    if (editingProduct) {
-      setForm({
-        name: editingProduct.name || "",
-        description: editingProduct.description || "",
-        price: editingProduct.price || "",
-        imageFile: null, // não preencher com URL
-        available: editingProduct.available,
-        categoryId: editingProduct.categoryId || "",
-      });
-    }
+    if (!editingProduct) return;
+
+    setForm({
+      name: editingProduct.name ?? "",
+      description:
+        editingProduct.description ?? "",
+      price: editingProduct.price ?? "",
+      categoryId:
+        Number(editingProduct.categoryId),
+      imageFile: null,
+
+      promotion:
+        !!editingProduct.promotion,
+      promotion_value:
+        editingProduct.promotion
+          ? editingProduct.promotion_value
+          : "",
+      promotion_type:
+        editingProduct.promotion_type ??
+        "fixed",
+
+      has_delivery_fee:
+        !!editingProduct.has_delivery_fee,
+      delivery_fee:
+        editingProduct.has_delivery_fee
+          ? editingProduct.delivery_fee
+          : "",
+    });
   }, [editingProduct]);
 
-  function handleChange(e) {
-    const { name, value } = e.target;
-    setForm(prev => ({ ...prev, [name]: value }));
+  function update(name, value) {
+    setForm((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   }
 
-  function handleFileChange(e) {
-    setForm(prev => ({ ...prev, imageFile: e.target.files[0] || null }));
-  }
-
+  /* ======================
+     SUBMIT (🔥 CORRIGIDO)
+  ====================== */
   function handleSubmit(e) {
     e.preventDefault();
 
-    const payload = {
-      ...form,
+    if (
+      form.promotion &&
+      Number(form.promotion_value) >=
+        Number(form.price)
+    ) {
+      return alert(
+        "Promoção deve ser menor que o preço"
+      );
+    }
+
+    // ✅ ENVIA OBJETO JS (NÃO FormData)
+    onSubmit({
+      name: form.name,
+      description: form.description,
       price: Number(form.price),
       categoryId: Number(form.categoryId),
-    };
+      imageFile: form.imageFile,
 
-    onSubmit(payload);
+      promotion: form.promotion,
+      promotion_value: form.promotion
+        ? Number(form.promotion_value)
+        : 0,
+      promotion_type: form.promotion
+        ? form.promotion_type
+        : "fixed",
 
-    // Resetar formulário
-    setForm({
-      name: "",
-      description: "",
-      price: "",
-      imageFile: null,
-      available: true,
-      categoryId: "",
+      has_delivery_fee:
+        form.has_delivery_fee,
+      delivery_fee: form.has_delivery_fee
+        ? Number(form.delivery_fee)
+        : 0,
     });
   }
 
   return (
     <div className="form-box">
-      <h2>{editingProduct ? "Editar Produto" : "Cadastrar Produto"}</h2>
+      <h2>
+        {editingProduct
+          ? "Editar Produto"
+          : "Cadastrar Produto"}
+      </h2>
 
-      <form onSubmit={handleSubmit}>
+      <form className="form" onSubmit={handleSubmit}>
         <input
-          name="name"
-          value={form.name}
-          onChange={handleChange}
+          className="input"
           placeholder="Nome"
+          value={form.name}
+          onChange={(e) =>
+            update("name", e.target.value)
+          }
           required
         />
 
         <input
-          name="description"
-          value={form.description}
-          onChange={handleChange}
+          className="input"
           placeholder="Descrição"
+          value={form.description}
+          onChange={(e) =>
+            update(
+              "description",
+              e.target.value
+            )
+          }
         />
 
         <input
-          name="price"
+          className="input"
           type="number"
+          placeholder="Preço"
           value={form.price}
-          onChange={handleChange}
-          placeholder="Valor"
+          onChange={(e) =>
+            update("price", e.target.value)
+          }
           required
         />
 
         <input
           type="file"
-          name="imageFile"
-          accept="image/*"
-          onChange={handleFileChange}
+          onChange={(e) =>
+            update(
+              "imageFile",
+              e.target.files[0]
+            )
+          }
         />
 
         <select
-          name="categoryId"
+          className="select"
           value={form.categoryId}
-          onChange={handleChange}
+          onChange={(e) =>
+            update(
+              "categoryId",
+              e.target.value
+            )
+          }
           required
         >
-          <option value="">Categoria</option>
-          {categories.map(cat => (
-            <option key={`cat-${cat.id}`} value={cat.id}>
-              {cat.name}
+          <option value="">
+            Categoria
+          </option>
+          {categories.map((c) => (
+            <option
+              key={c.id}
+              value={c.id}
+            >
+              {c.name}
             </option>
           ))}
         </select>
 
-        <button type="submit">
-          {editingProduct ? "Salvar Alterações" : "Salvar Produto"}
-        </button>
+        {/* PROMOÇÃO */}
+        <label className="toggle">
+          <input
+            type="checkbox"
+            checked={form.promotion}
+            onChange={(e) =>
+              update(
+                "promotion",
+                e.target.checked
+              )
+            }
+          />
+          Promoção
+        </label>
 
-        {editingProduct && (
-          <button type="button" onClick={onCancelEdit}>
-            Cancelar
-          </button>
+        {form.promotion && (
+          <>
+            <input
+              className="input"
+              type="number"
+              placeholder="Valor promocional"
+              value={form.promotion_value}
+              onChange={(e) =>
+                update(
+                  "promotion_value",
+                  e.target.value
+                )
+              }
+              required
+            />
+
+            <select
+              className="select"
+              value={form.promotion_type}
+              onChange={(e) =>
+                update(
+                  "promotion_type",
+                  e.target.value
+                )
+              }
+            >
+              <option value="fixed">
+                Valor fixo
+              </option>
+              <option value="percentage">
+                Percentual
+              </option>
+            </select>
+          </>
         )}
+
+        {/* TAXA ENTREGA */}
+        <label className="toggle">
+          <input
+            type="checkbox"
+            checked={form.has_delivery_fee}
+            onChange={(e) =>
+              update(
+                "has_delivery_fee",
+                e.target.checked
+              )
+            }
+          />
+          Taxa de entrega
+        </label>
+
+        {form.has_delivery_fee && (
+          <input
+            className="input"
+            type="number"
+            placeholder="Valor da taxa"
+            value={form.delivery_fee}
+            onChange={(e) =>
+              update(
+                "delivery_fee",
+                e.target.value
+              )
+            }
+          />
+        )}
+
+        <div className="actions">
+          <button
+            className="btn btn-primary"
+            type="submit"
+          >
+            Salvar
+          </button>
+
+          {editingProduct && (
+            <button
+              className="btn btn-secondary"
+              type="button"
+              onClick={onCancelEdit}
+            >
+              Cancelar
+            </button>
+          )}
+        </div>
       </form>
     </div>
   );

@@ -1,42 +1,39 @@
 /* =========================
-   VARIAVEIS GLOBAIS (TEMA)
+   VARIÁVEIS GLOBAIS
 ========================= */
 :root {
-  /* Cores Principais */
-  --cor-primaria: #2a75f3; /* Azul Principal */
+  --cor-primaria: #2a75f3;
   --cor-primaria-hover: #1f5fd4;
-  --cor-fundo: #f4f4f9; /* Fundo Geral */
+  --cor-fundo: #f4f4f9;
   --cor-texto-principal: #1f1f1f;
   --cor-texto-secundario: #555;
   --cor-borda-clara: #e2e2e2;
-
-  /* Cores de Alerta/Ação */
-  --cor-aviso: #fff3cd; /* Fundo Aviso Amarelo */
+  --cor-aviso: #fff3cd;
   --cor-aviso-borda: #ffe08a;
   --cor-aviso-texto: #856404;
-
-  --cor-edicao: #ffe08a; /* Fundo Botão Editar Amarelo */
+  --cor-edicao: #ffe08a;
   --cor-edicao-hover: #ffd659;
   --cor-edicao-texto: #856404;
-
-  --cor-remocao: #ff6464; /* Fundo Botão Deletar Vermelho */
+  --cor-remocao: #ff6464;
   --cor-remocao-hover: #e53939;
 
-  /* Sombras */
   --sombra-leve: 0 4px 16px rgba(0, 0, 0, 0.05);
   --sombra-media: 0 6px 20px rgba(0, 0, 0, 0.05);
   --sombra-hover: 0 8px 24px rgba(0, 0, 0, 0.08);
 
-  /* Espaçamento e Borda */
   --padding-padrao: 25px;
   --gap-padrao: 20px;
   --borda-raio-grande: 14px;
   --borda-raio-pequeno: 10px;
 }
 
-/* Aplicando uma cor de fundo global mais suave */
+/* =========================
+   BODY
+========================= */
 body {
   background-color: var(--cor-fundo);
+  font-family: 'Arial', sans-serif;
+  color: var(--cor-texto-principal);
 }
 
 /* =========================
@@ -54,19 +51,16 @@ body {
   to { opacity: 1; transform: translateY(0); }
 }
 
-h1 {
+.menu-create-container h1 {
   text-align: center;
   margin-bottom: 35px;
   font-size: 2rem;
-  color: var(--cor-texto-principal);
   font-weight: 700;
 }
 
 /* =========================
-   FORMULÁRIOS
+   FORMS (CATEGORY / PRODUCT)
 ========================= */
-
-/* Estilos de Layout */
 .forms-row {
   display: flex;
   gap: var(--gap-padrao);
@@ -74,22 +68,16 @@ h1 {
 }
 
 .forms-row .form-box {
-  /* Otimizado: 1 (cresce) 1 (encolhe) 45% (tamanho base) */
-  flex: 1 1 45%; 
-}
-
-/* Estilo do Box Individual */
-.form-box {
+  flex: 1 1 45%;
   background: #fff;
   padding: var(--padding-padrao);
   border-radius: var(--borda-raio-grande);
-  margin-bottom: 40px;
   border: 1px solid var(--cor-borda-clara);
   box-shadow: var(--sombra-media);
   transition: box-shadow 0.3s ease;
 }
 
-.form-box:hover {
+.forms-row .form-box:hover {
   box-shadow: var(--sombra-hover);
 }
 
@@ -97,45 +85,35 @@ h1 {
   margin-bottom: 20px;
   font-size: 1.5rem;
   font-weight: 600;
-  color: #222;
 }
 
-/* =========================
-   ELEMENTOS DE FORMULÁRIO
-========================= */
-label {
+.form-box label {
   display: block;
   margin-top: 18px;
   font-weight: 600;
   color: var(--cor-texto-secundario);
 }
 
-input:not([type="checkbox"]),
-select {
+.form-box input:not([type="checkbox"]),
+.form-box select {
   width: 100%;
   padding: 12px;
   margin-top: 6px;
   border-radius: 8px;
   border: 1px solid #ccc;
   font-size: 1rem;
+  box-sizing: border-box;
   transition: all 0.2s;
-  /* Resetar o box-sizing para segurança, embora normalmente seja herdado */
-  box-sizing: border-box; 
 }
 
-input:focus,
-select:focus {
+.form-box input:focus,
+.form-box select:focus {
   border-color: var(--cor-primaria);
-  /* Uso de transparência no box-shadow para o foco */
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--cor-primaria) 30%, transparent); 
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--cor-primaria) 30%, transparent);
   outline: none;
 }
 
-/* =========================
-   BOTÕES GERAIS
-========================= */
-button[type="submit"], /* Selector mais específico para o botão principal */
-.main-button {
+.form-box button[type="submit"] {
   margin-top: 25px;
   padding: 14px;
   width: 100%;
@@ -149,40 +127,82 @@ button[type="submit"], /* Selector mais específico para o botão principal */
   transition: background 0.25s, transform 0.15s, box-shadow 0.2s;
 }
 
-button[type="submit"]:hover, 
-.main-button:hover {
+.form-box button[type="submit"]:hover {
   background: var(--cor-primaria-hover);
-  transform: translateY(-2px); /* Aumento sutil no efeito de 'levantar' */
+  transform: translateY(-2px);
   box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
 
-/* =========================
-   WARNING BOX
-========================= */
-.warning-box {
-  background: var(--cor-aviso);
-  border: 1px solid var(--cor-aviso-borda);
-  padding: 18px;
-  border-radius: var(--borda-raio-pequeno);
-  font-size: 1rem;
-  text-align: center;
-  color: var(--cor-aviso-texto);
+.form-box .cancel-btn {
+  margin-top: 10px;
+  padding: 12px;
+  width: 100%;
+  border: none;
+  background: #ccc;
+  color: #222;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.form-box .cancel-btn:hover {
+  background: #aaa;
 }
 
 /* =========================
    PREVIEW DE CATEGORIAS
 ========================= */
-.preview-category {
-  margin-bottom: 40px;
+.preview-title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 25px;
 }
 
-.preview-category h3 {
-  font-size: 1.5rem;
-  color: #222;
+.preview-category {
+  margin-bottom: 40px;
+  background: #fff;
+  padding: 20px;
+  border-radius: 14px;
+  border: 1px solid #e2e2e2;
+  box-shadow: var(--sombra-media);
+  transition: box-shadow 0.3s ease;
+}
+
+.preview-category:hover {
+  box-shadow: var(--sombra-hover);
+}
+
+.category-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 15px;
-  border-left: 5px solid var(--cor-primaria);
-  padding-left: 10px;
+}
+
+.category-header h3 {
+  font-size: 1.5rem;
   font-weight: 700;
+}
+
+.category-actions button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.2rem;
+  margin-left: 8px;
+  transition: transform 0.2s;
+}
+
+.category-actions button:hover {
+  transform: scale(1.1);
+}
+
+.empty-category {
+  font-size: 1rem;
+  color: #555;
+  text-align: center;
+  padding: 15px 0;
 }
 
 /* =========================
@@ -190,18 +210,14 @@ button[type="submit"]:hover,
 ========================= */
 .preview-products {
   display: grid;
-  /* Uso de minmax mais robusto para garantir ao menos 2 colunas em telas maiores que 500px */
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
-  gap: 24px;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
 }
 
-/* =========================
-   CARD DE PRODUTO
-========================= */
 .product-card {
   background: #fff;
   border: 1px solid #ddd;
-  border-radius: var(--borda-raio-grande);
+  border-radius: 12px;
   padding: 16px;
   display: flex;
   flex-direction: column;
@@ -211,11 +227,9 @@ button[type="submit"]:hover,
 }
 
 .product-card:hover {
-  transform: translateY(-8px); /* Efeito de 'levantar' mais pronunciado */
-  box-shadow: 0 10px 30px rgba(0,0,0,0.15); /* Sombra mais intensa no hover */
+  transform: translateY(-6px);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
 }
-
-
 
 .product-img {
   width: 100%;
@@ -224,54 +238,62 @@ button[type="submit"]:hover,
   background-color: #f7f7f7;
   padding: 8px;
   border-radius: 12px;
+  margin-bottom: 12px;
 }
 
 .product-card h4 {
-  /* Removido o margin-top, pois o 'p' abaixo já tem. Usar o margin-bottom do elemento anterior para espaçar */
-  margin-top: 8px; 
-  font-size: 1.15rem; /* Leve aumento para destaque */
+  font-size: 1.15rem;
   font-weight: 600;
-  color: #111;
+  margin-bottom: 6px;
 }
 
 .product-card p {
-  font-size: 0.95rem; /* Leve aumento para legibilidade */
-  color: var(--cor-texto-secundario);
-  margin-top: 5px;
-  /* Limitar linhas para nomes longos */
-  overflow: hidden; 
-  text-overflow: ellipsis;
+  font-size: 0.95rem;
+  color: #555;
+  margin: 4px 0;
 }
 
 .price {
-  margin-top: 12px; /* Mais espaço antes do preço */
   font-size: 1.2rem;
   font-weight: 700;
   color: var(--cor-primaria);
 }
 
+.promotion {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #ff7a00;
+  margin-left: 5px;
+}
+
+.delivery-fee {
+  font-size: 0.95rem;
+  color: #555;
+  font-style: italic;
+  margin-top: 4px;
+}
+
 /* =========================
-   BOTÕES DE AÇÃO (DENTRO DO CARD)
+   AÇÕES DO CARD
 ========================= */
 .actions {
-  margin-top: auto; /* Garante que os botões fiquem sempre na parte inferior */
-  padding-top: 15px; /* Espaçamento com o conteúdo acima */
+  margin-top: auto;
+  padding-top: 12px;
   display: flex;
   justify-content: space-between;
-  gap: 10px; /* Reduzido levemente o gap para maior aproveitamento */
+  gap: 10px;
 }
 
 .edit-btn,
 .delete-btn {
   flex: 1;
-  padding: 10px; /* Levemente menor que o botão principal */
-  font-size: 0.9rem; 
+  padding: 10px;
+  font-size: 0.9rem;
   border: none;
-  border-radius: 8px; /* Mais arredondado */
+  border-radius: 8px;
   cursor: pointer;
   font-weight: 600;
   transition: all 0.2s;
-  white-space: nowrap;
 }
 
 .edit-btn {
@@ -297,42 +319,31 @@ button[type="submit"]:hover,
 /* =========================
    RESPONSIVIDADE
 ========================= */
-
-/* Tablet e Telas Médias */
-@media (max-width: 900px) {
-  /* Reduzir um pouco o padding geral em telas médias */
-  .menu-create-container {
-    padding: 20px;
-  }
-}
-
-/* Celular (Mudança de Flexbox) */
 @media (max-width: 768px) {
   .forms-row {
     flex-direction: column;
-    gap: 20px;
   }
 
   .forms-row .form-box {
     flex: 1 1 100%;
   }
 
-  /* Reduzir o tamanho da fonte do título em telas menores */
-  h1 {
-    font-size: 1.75rem;
+  .preview-products {
+    grid-template-columns: 1fr;
   }
-}
 
-/* Celular (Ações do Card) */
-@media (max-width: 480px) {
+  .category-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .category-actions button {
+    margin-left: 0;
+  }
+
   .actions {
     flex-direction: column;
-    gap: 8px; /* Reduzir o gap da coluna */
-  }
-
-  .edit-btn,
-  .delete-btn {
-    width: 100%;
-    padding: 12px;
+    gap: 8px;
   }
 }

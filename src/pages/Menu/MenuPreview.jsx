@@ -1,3 +1,5 @@
+import "./MenuPreview.css";
+
 export default function MenuPreview({
   categories,
   products,
@@ -6,6 +8,27 @@ export default function MenuPreview({
   onEditCategory,
   onDeleteCategory,
 }) {
+  function renderPromotion(product) {
+    if (!product.promotion) return null;
+
+    if (product.promotion_type === "percentage") {
+      return (
+        <span className="promotion">
+          {" "}
+          | Promo: {Number(product.promotion_value)}%
+        </span>
+      );
+    }
+
+    // fixed
+    return (
+      <span className="promotion">
+        {" "}
+        | Promo: R$ {Number(product.promotion_value).toFixed(2)}
+      </span>
+    );
+  }
+
   return (
     <>
       <h2 className="preview-title">Preview do Menu</h2>
@@ -48,9 +71,18 @@ export default function MenuPreview({
 
                     <h4>{product.name}</h4>
                     <p>{product.description}</p>
+
                     <p className="price">
                       R$ {Number(product.price).toFixed(2)}
+                      {renderPromotion(product)}
                     </p>
+
+                    {product.has_delivery_fee && (
+                      <p className="delivery-fee">
+                        Taxa de entrega: R${" "}
+                        {Number(product.delivery_fee).toFixed(2)}
+                      </p>
+                    )}
 
                     <div className="actions">
                       <button

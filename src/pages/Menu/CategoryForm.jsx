@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react"; // Importação correta do React
+import "./form-system.css";
 
 export default function CategoryForm({
   onSubmit,

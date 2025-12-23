@@ -7,7 +7,7 @@ export default function ProtectedRoute({ children, roles }) {
   if (loading) return <div>Carregando...</div>;
 
   if (!isLoggedIn) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/" replace />;
   }
 
   if (roles && !roles.includes(user.role)) {

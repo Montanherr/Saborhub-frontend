@@ -29,7 +29,7 @@ export default function Header() {
 
         {isLoggedIn && (
           <>
-            {user?.role === "admin" && (
+             {["manager", "admin"].includes(user?.role) && (
               <>
                 <Link to="/menu/create" className="admin-link">
                   Incluir Item

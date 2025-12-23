@@ -27,7 +27,7 @@ export default function AppRoutes() {
       <Route
         path="/reports"
         element={
-          <ProtectedRoute roles={["admin"]}>
+          <ProtectedRoute roles={["admin", "manager"]}>
             <Reports />
           </ProtectedRoute>
         }
@@ -54,7 +54,7 @@ export default function AppRoutes() {
       <Route
         path="/menu/create"
         element={
-          <ProtectedRoute roles={["admin"]}>
+          <ProtectedRoute  roles={["admin", "manager"]}>
             <MenuCreate />
           </ProtectedRoute>
         }

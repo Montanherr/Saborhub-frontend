@@ -6,7 +6,9 @@ import categoryService from "../../services/categoriesService";
 import productService from "../../services/productService";
 import companyService from "../../services/companyService";
 
+import ProductCard from "../../components/Menu/Product/ProductCard";
 import OrdersModal from "../../components/Modal/Order/Order";
+
 import "./Categories.css";
 
 export default function Categories() {
@@ -18,7 +20,6 @@ export default function Categories() {
   const [expandedCategory, setExpandedCategory] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Pedido
   const [orderItems, setOrderItems] = useState([]);
   const [showOrderModal, setShowOrderModal] = useState(false);
 
@@ -27,27 +28,23 @@ export default function Categories() {
       try {
         setLoading(true);
 
-        // 🔹 Empresa
         const companyData = await companyService.getById(companyId);
         setCompany(companyData);
 
-        // 🔹 Categorias da empresa
         const categoriesData = await categoryService.getCategories(companyId);
         setCategories(categoriesData);
 
-        // 🔹 Produtos da empresa
         const productsData =
           await productService.getProductsByCompany(companyId);
 
-        // 🔹 Agrupar produtos por categoria
-        const groupedProducts = {};
+        const grouped = {};
         categoriesData.forEach((category) => {
-          groupedProducts[category.id] = productsData.filter(
-            (product) => product.categoryId === category.id
+          grouped[category.id] = productsData.filter(
+            (p) => p.categoryId === category.id
           );
         });
 
-        setProductsByCategory(groupedProducts);
+        setProductsByCategory(grouped);
       } catch (error) {
         console.error("Erro ao carregar cardápio:", error);
       } finally {
@@ -58,16 +55,14 @@ export default function Categories() {
     if (companyId) loadMenu();
   }, [companyId]);
 
-  // Expandir / recolher categoria
   const toggleCategory = (categoryId) => {
     setExpandedCategory(
       expandedCategory === categoryId ? null : categoryId
     );
   };
 
-  // Adicionar produto ao pedido
   const addToOrder = (product) => {
-    const exists = orderItems.find((item) => item.id === product.id);
+    const exists = orderItems.find((i) => i.id === product.id);
 
     if (exists) {
       setOrderItems(
@@ -84,10 +79,48 @@ export default function Categories() {
     setShowOrderModal(true);
   };
 
+  function hasValidPromotion(product) {
+    return (
+      product.promotion === true &&
+      Number(product.promotion_value) > 0 &&
+      product.promotion_type
+    );
+  }
+
+  function calculateFinalPrice(product) {
+    const price = Number(product.price);
+    const discount = Number(product.promotion_value);
+
+    if (!hasValidPromotion(product)) return price;
+
+    if (product.promotion_type === "percentage") {
+      return Math.max(price - (price * discount) / 100, 0);
+    }
+
+    // fixed
+    return Math.max(price - discount, 0);
+  }
+
+  function renderPromotion(product) {
+    if (!hasValidPromotion(product)) return null;
+
+    return (
+      <span className="promo-badge">
+        {product.promotion_type === "percentage"
+          ? `-${product.promotion_value}%`
+          : `R$ ${Number(product.promotion_value)
+              .toFixed(2)
+              .replace(".", ",")}`}
+      </span>
+    );
+  }
+
   return (
     <div className="categories-container">
-      <h2>
-        {company ? `Cardápio - ${company.fantasyName}` : "Carregando cardápio..."}
+      <h2 className="menu-title">
+        {company
+          ? `Cardápio • ${company.fantasyName}`
+          : "Carregando cardápio..."}
       </h2>
 
       {loading ? (
@@ -102,42 +135,22 @@ export default function Categories() {
                 <h3>{category.name}</h3>
                 <button onClick={() => toggleCategory(category.id)}>
                   {expandedCategory === category.id
-                    ? "Ocultar produtos"
+                    ? "Ocultar"
                     : "Ver produtos"}
                 </button>
               </div>
 
               {expandedCategory === category.id && (
-                <div className="product-grid">
+                <div className="product-grid desktop-grid">
                   {productsByCategory[category.id]?.length > 0 ? (
                     productsByCategory[category.id].map((product) => (
-                      <div key={product.id} className="product-card">
-                        <img
-                          src={
-                            product.image || "/assets/default-product.png"
-                          }
-                          alt={product.name}
-                          className="product-image"
-                        />
-
-                        <div className="product-info">
-                          <div>
-                            <h4>{product.name}</h4>
-                            {product.description && (
-                              <p>{product.description}</p>
-                            )}
-                          </div>
-
-                          <div className="product-footer">
-                            <span className="price">
-                              R$ {Number(product.price).toFixed(2)}
-                            </span>
-                            <button onClick={() => addToOrder(product)}>
-                              Adicionar
-                            </button>
-                          </div>
-                        </div>
-                      </div>
+                      <ProductCard
+                        key={product.id}
+                        product={product}
+                        onAdd={addToOrder}
+                        renderPromotion={renderPromotion}
+                        finalPrice={calculateFinalPrice(product)}
+                      />
                     ))
                   ) : (
                     <p className="empty-category">

@@ -21,3 +21,11 @@ code {
     'Courier New', monospace;
   font-size: 0.95rem;
 }
+
+:root {
+  --primary-orange: #ff7a00;
+  --primary-orange-hover: #e66f00;
+  --primary-orange-active: #cc6300;
+
+  --text-on-primary: #ffffff;
+}

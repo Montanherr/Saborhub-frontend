@@ -2,25 +2,28 @@ import { useEffect, useState } from "react";
 import categoryService from "../../services/categoriesService";
 import productService from "../../services/productService";
 import { toast } from "react-toastify";
-
+import { socket } from "../../socket/socket";
 import CategoryForm from "./CategoryForm";
 import ProductForm from "./ProductForm";
 import MenuPreview from "./MenuPreview";
+import Tabs from "./Tabs";
 
 import "./MenuCreate.css";
 
 export default function MenuCreate() {
+  const [activeTab, setActiveTab] = useState("preview");
+
   const [categories, setCategories] = useState([]);
   const [products, setProducts] = useState([]);
-  const [pageByCategory, setPageByCategory] = useState({});
 
   const loggedCompanyId = Number(localStorage.getItem("companyId"));
-  const itemsPerPage = 3;
 
   const [editingCategory, setEditingCategory] = useState(null);
   const [editingProduct, setEditingProduct] = useState(null);
 
-  // 🔹 LOAD INICIAL
+  /* ======================
+     LOAD INICIAL
+  ====================== */
   useEffect(() => {
     async function load() {
       try {
@@ -33,8 +36,11 @@ export default function MenuCreate() {
           await productService.getProducts();
 
         setCategories(categoriesData);
+
         setProducts(
-          productsData.filter(p => p.companyId === loggedCompanyId)
+          productsData.filter(
+            (p) => p.companyId === loggedCompanyId
+          )
         );
       } catch (err) {
         console.error(err);
@@ -45,123 +51,189 @@ export default function MenuCreate() {
     load();
   }, [loggedCompanyId]);
 
-  // 🔹 CREATE / UPDATE CATEGORY
-async function handleSaveCategory(name) {
-  try {
-    if (editingCategory) {
-      const updated = await categoryService.updateCategory(
-        editingCategory.id,
-        { name }
-      );
+  /* ======================
+     SOCKET
+  ====================== */
+  useEffect(() => {
+    if (!loggedCompanyId) return;
 
-      // Atualiza categorias
-      setCategories(prev =>
-        prev.map(c =>
-          c.id === updated.id ? updated : c
+    socket.emit("join_company", loggedCompanyId);
+
+    socket.on("produto_criado", (product) => {
+      if (product.companyId !== loggedCompanyId) return;
+
+      setProducts((prev) => {
+        const exists = prev.some(
+          (p) => p.id === product.id
+        );
+        return exists ? prev : [...prev, product];
+      });
+    });
+
+    socket.on("product_updated", (product) => {
+      if (product.companyId !== loggedCompanyId) return;
+
+      setProducts((prev) =>
+        prev.map((p) =>
+          p.id === product.id ? product : p
         )
       );
+    });
 
-      // 🔥 FORÇA RE-RENDER DO PREVIEW
-      setProducts(prev => [...prev]);
-
-      toast.info("Categoria atualizada!");
-      setEditingCategory(null);
-    } else {
-      const newCategory = await categoryService.createCategory(
-        loggedCompanyId,
-        { name }
+    socket.on("product_deleted", ({ id }) => {
+      setProducts((prev) =>
+        prev.filter((p) => p.id !== id)
       );
+    });
 
-      setCategories(prev => [...prev, newCategory]);
-      toast.success("Categoria criada!");
-    }
-  } catch (err) {
-    console.error(err);
-    toast.error("Erro ao salvar categoria");
-  }
-}
+    return () => {
+      socket.off("produto_criado");
+      socket.off("product_updated");
+      socket.off("product_deleted");
+    };
+  }, [loggedCompanyId]);
 
-
-  // 🔹 CREATE / UPDATE PRODUCT
-async function handleSaveProduct(productData) {
-  try {
-    const formData = new FormData();
-    formData.append("name", productData.name);
-    formData.append("description", productData.description || "");
-    formData.append("price", Number(productData.price));
-    formData.append("categoryId", Number(productData.categoryId));
-    formData.append("companyId", loggedCompanyId);
-
-    if (productData.imageFile) {
-      formData.append("image", productData.imageFile);
-    }
-
-   if (editingProduct) {
-  const updatedProduct = await productService.updateProduct(editingProduct.id, formData);
-
-  setProducts(prev =>
-    prev.map(p => (p.id === editingProduct.id ? updatedProduct : p))
-  );
-
-  toast.info("Produto atualizado!");
-} else {
-  const newProduct = await productService.createProduct(formData);
-
-  setProducts(prev => [...prev, newProduct]); // ✅ adiciona direto na lista
-  toast.success("Produto criado!");
-}
-
-    setEditingProduct(null);
-  } catch (err) {
-    console.error(err);
-    toast.error("Erro ao salvar produto");
-  }
-}
-
-
-  // 🔹 DELETE PRODUCT
-  async function handleDeleteProduct(product) {
-    if (!window.confirm("Deseja remover este produto?")) return;
-
-    await productService.deleteProduct(product.id);
-
-    setProducts(prev =>
-      prev.filter(p => p.id !== product.id)
-    );
-
-    toast.warn("Produto excluído!");
-  }
-
-  // 🔹 EDIT CATEGORY
-  function handleEditCategory(category) {
-    setEditingCategory(category);
-  }
-
-  // 🔹 DELETE CATEGORY
-  async function handleDeleteCategory(category) {
-    if (!window.confirm("Excluir esta categoria?")) return;
-
-    const hasProducts =
-      products.some(p => p.categoryId === category.id);
-
-    if (hasProducts) {
-      toast.warning(
-        "Remova os produtos da categoria primeiro"
-      );
-      return;
-    }
-
+  /* ======================
+     CATEGORY
+  ====================== */
+  async function handleSaveCategory(name) {
     try {
-      await categoryService.deleteCategory(category.id);
+      if (editingCategory) {
+        const updated =
+          await categoryService.updateCategory(
+            editingCategory.id,
+            { name }
+          );
 
-      setCategories(prev =>
-        prev.filter(c => c.id !== category.id)
+        setCategories((prev) =>
+          prev.map((c) =>
+            c.id === updated.id ? updated : c
+          )
+        );
+
+        toast.info("Categoria atualizada!");
+        setEditingCategory(null);
+      } else {
+        const newCategory =
+          await categoryService.createCategory(
+            loggedCompanyId,
+            { name }
+          );
+
+        setCategories((prev) => [
+          ...prev,
+          newCategory,
+        ]);
+
+        toast.success("Categoria criada!");
+      }
+
+      setActiveTab("preview");
+    } catch {
+      toast.error("Erro ao salvar categoria");
+    }
+  }
+
+  /* ======================
+     PRODUCT (🔥 CORRIGIDO)
+  ====================== */
+  async function handleSaveProduct(productData) {
+    try {
+      const formData = new FormData();
+
+      formData.append("name", productData.name);
+      formData.append(
+        "description",
+        productData.description || ""
+      );
+      formData.append(
+        "price",
+        Number(productData.price)
+      );
+      formData.append(
+        "categoryId",
+        Number(productData.categoryId)
+      );
+      formData.append(
+        "companyId",
+        loggedCompanyId
+      );
+      formData.append("available", "1");
+
+      // PROMOÇÃO (SEGURA)
+      formData.append(
+        "promotion",
+        productData.promotion ? "1" : "0"
+      );
+      formData.append(
+        "promotion_value",
+        productData.promotion
+          ? Number(productData.promotion_value)
+          : 0
+      );
+      formData.append(
+        "promotion_type",
+        productData.promotion
+          ? productData.promotion_type
+          : null
       );
 
-      toast.warn("Categoria removida!");
+      // TAXA DE ENTREGA
+      formData.append(
+        "has_delivery_fee",
+        productData.has_delivery_fee ? "1" : "0"
+      );
+      formData.append(
+        "delivery_fee",
+        productData.has_delivery_fee
+          ? Number(productData.delivery_fee)
+          : 0
+      );
+
+      if (productData.imageFile) {
+        formData.append(
+          "image",
+          productData.imageFile
+        );
+      }
+
+      let savedProduct;
+
+      if (editingProduct) {
+        savedProduct =
+          await productService.updateProduct(
+            editingProduct.id,
+            formData
+          );
+
+        setProducts((prev) =>
+          prev.map((p) =>
+            p.id === savedProduct.id
+              ? savedProduct
+              : p
+          )
+        );
+
+        toast.info("Produto atualizado!");
+      } else {
+        savedProduct =
+          await productService.createProduct(
+            formData
+          );
+
+        setProducts((prev) => [
+          ...prev,
+          savedProduct,
+        ]);
+
+        toast.success("Produto criado!");
+      }
+
+      setEditingProduct(null);
+      setActiveTab("preview");
     } catch (err) {
       console.error(err);
-      toast.error("Erro ao excluir categoria");
+      toast.error("Erro ao salvar produto");
     }
   }
 
@@ -169,32 +241,70 @@ async function handleSaveProduct(productData) {
     <div className="menu-create-container">
       <h1>Gerenciar Menu</h1>
 
-      <div className="forms-row">
-        <CategoryForm
-          onSubmit={handleSaveCategory}
-          editingCategory={editingCategory}
-          onCancelEdit={() => setEditingCategory(null)}
-        />
-
-        <ProductForm
-          categories={categories}
-          onSubmit={handleSaveProduct}
-          editingProduct={editingProduct}
-          onCancelEdit={() => setEditingProduct(null)}
-        />
-      </div>
-
-      <MenuPreview
-        categories={categories}
-        products={products}
-        pageByCategory={pageByCategory}
-        setPageByCategory={setPageByCategory}
-        itemsPerPage={itemsPerPage}
-        onEdit={setEditingProduct}
-        onDelete={handleDeleteProduct}
-        onEditCategory={handleEditCategory}
-        onDeleteCategory={handleDeleteCategory}
+      <Tabs
+        activeTab={activeTab}
+        onChange={setActiveTab}
+        tabs={[
+          { id: "preview", label: "🧾 Preview do Menu" },
+          { id: "manage", label: "⚙️ Gerenciar Menu" },
+        ]}
       />
+
+      {activeTab === "manage" && (
+        <div className="forms-row">
+          <CategoryForm
+            onSubmit={handleSaveCategory}
+            editingCategory={editingCategory}
+            onCancelEdit={() =>
+              setEditingCategory(null)
+            }
+          />
+
+          <ProductForm
+            categories={categories}
+            onSubmit={handleSaveProduct}
+            editingProduct={editingProduct}
+            onCancelEdit={() =>
+              setEditingProduct(null)
+            }
+          />
+        </div>
+      )}
+
+      {activeTab === "preview" && (
+        <MenuPreview
+          categories={categories}
+          products={products}
+          onEdit={(product) => {
+            setEditingProduct(product);
+            setActiveTab("manage");
+          }}
+          onDelete={async (product) => {
+            if (
+              !window.confirm(
+                "Deseja remover este produto?"
+              )
+            )
+              return;
+
+            await productService.deleteProduct(
+              product.id
+            );
+
+            setProducts((prev) =>
+              prev.filter(
+                (p) => p.id !== product.id
+              )
+            );
+
+            toast.warn("Produto excluído!");
+          }}
+          onEditCategory={(category) => {
+            setEditingCategory(category);
+            setActiveTab("manage");
+          }}
+        />
+      )}
     </div>
   );
 }
