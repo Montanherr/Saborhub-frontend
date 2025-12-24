@@ -1,3 +1,6 @@
+import "./TableCallModal.css";
+
+
 export default function TableCallModal({
   company,
   tables,

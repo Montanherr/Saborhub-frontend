@@ -9,7 +9,7 @@
   --card-radius: 12px;
   --card-shadow: 0 8px 20px rgba(0,0,0,0.25);
   --transition: 0.3s ease;
-  --input-bg: #f3f4f6;
+  --input-bg: #f9fafb;
   --input-border: #d1d5db;
   --input-focus: #f59e0b;
   --toast-bg: rgba(0,0,0,0.85);
@@ -20,7 +20,7 @@
 .orders-modal-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.35);
+  background: rgba(0,0,0,0.45);
   backdrop-filter: blur(4px);
   display: flex;
   justify-content: center;
@@ -32,8 +32,8 @@
 /* MODAL */
 .orders-modal {
   position: relative;
-  background: #1f2937;
-  color: var(--text-light);
+  background: #fff;
+  color: var(--text-dark);
   border-radius: var(--card-radius);
   padding: 32px 24px 24px 24px;
   width: 100%;
@@ -42,6 +42,7 @@
   overflow-y: auto;
   box-shadow: var(--card-shadow);
   animation: modalFadeIn 0.3s ease;
+  text-align: left;
 }
 
 @keyframes modalFadeIn {
@@ -63,7 +64,6 @@
   animation: toastFade 0.5s ease forwards;
   z-index: 1100;
 }
-
 @keyframes toastFade {
   0% { opacity: 0; transform: translateX(-50%) translateY(-10px); }
   10%, 90% { opacity: 1; transform: translateX(-50%) translateY(0); }
@@ -77,22 +77,6 @@
   40%, 80% { transform: translateX(6px); }
 }
 
-/* BOTÃO CHAMAR GARÇOM */
-.call-waiter-btn {
-  background: var(--primary-gradient);
-  color: var(--text-dark);
-  border: none;
-  border-radius: var(--card-radius);
-  padding: 12px 16px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s;
-}
-.call-waiter-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 15px rgba(0,0,0,0.35);
-}
-
 /* TITULO */
 .orders-modal h3 {
   text-align: center;
@@ -102,7 +86,7 @@
   color: var(--primary-color);
 }
 
-/* TIPO DE PEDIDO */
+/* TIPO DE PEDIDO (RADIO TOGGLE) */
 .order-type {
   display: flex;
   gap: 12px;
@@ -160,38 +144,22 @@
   animation: shake 0.3s;
 }
 
-/* PAGAMENTO */
-.payment-section {
-  margin-top: 16px;
+/* RESUMO DO PEDIDO (NOVO) */
+.order-summary {
+  margin: 16px 0;
+  padding: 16px;
+  background: #f3f4f6;
+  border-radius: var(--card-radius);
+  font-size: 0.95rem;
+  color: var(--text-dark);
 }
-.payment-section h4 {
-  font-size: 1rem;
-  font-weight: 600;
-  margin-bottom: 8px;
-  color: var(--primary-color);
-}
-.payment-section label {
+.order-summary p {
   display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 12px;
-  background: var(--input-bg);
-  border-radius: var(--card-radius);
-  cursor: pointer;
-  margin-bottom: 8px;
-  transition: background var(--transition);
+  justify-content: space-between;
+  margin: 6px 0;
 }
-.payment-section input[type="radio"],
-.payment-section input[type="checkbox"] {
-  cursor: pointer;
-}
-.payment-section select {
-  width: 100%;
-  padding: 10px;
-  border-radius: var(--card-radius);
-  border: 1px solid var(--input-border);
-  background: var(--input-bg);
-  margin-top: 6px;
+.order-summary strong {
+  font-weight: 700;
 }
 
 /* BOTOES */
@@ -212,15 +180,15 @@
 }
 .btn.primary {
   background: var(--primary-gradient);
-  color: var(--text-dark);
+  color: var(--text-light);
 }
 .btn.cancel {
-  background: #374151;
-  color: var(--text-light);
+  background: #e5e7eb;
+  color: var(--text-dark);
 }
 .btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+  box-shadow: 0 6px 15px rgba(0,0,0,0.2);
 }
 .btn:active {
   transform: scale(0.97);
@@ -240,7 +208,7 @@
   gap: 12px;
   padding: 10px 12px;
   border-radius: var(--card-radius);
-  background: #374151;
+  background: #f9fafb;
   font-size: 0.95rem;
 }
 .order-item button {
@@ -277,125 +245,4 @@
   .order-type {
     flex-direction: column;
   }
-}
-
-.orders-modal-backdrop {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.55);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 999;
-}
-
-.orders-modal {
-  background: #fff;
-  width: 100%;
-  max-width: 380px;
-  padding: 24px;
-  border-radius: 16px;
-  text-align: center;
-  animation: modalIn 0.35s ease;
-}
-
-@keyframes modalIn {
-  from {
-    transform: translateY(20px) scale(0.95);
-    opacity: 0;
-  }
-  to {
-    transform: none;
-    opacity: 1;
-  }
-}
-
-.orders-modal-backdrop {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.55);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 999;
-}
-
-.orders-modal {
-  background: #fff;
-  width: 100%;
-  max-width: 380px;
-  padding: 24px;
-  border-radius: 16px;
-  text-align: center;
-  animation: modalIn 0.35s ease;
-}
-
-@keyframes modalIn {
-  from {
-    transform: translateY(20px) scale(0.95);
-    opacity: 0;
-  }
-  to {
-    transform: none;
-    opacity: 1;
-  }
-}
-
-.orders-modal select {
-  width: 100%;
-  padding: 12px;
-  border-radius: 10px;
-  border: 1px solid #ddd;
-  margin-bottom: 16px;
-  font-size: 15px;
-}
-
-.call-waiter-btn {
-  width: 100%;
-  padding: 14px;
-  border-radius: 12px;
-  font-size: 16px;
-  font-weight: 600;
-  border: none;
-  cursor: pointer;
-  background: linear-gradient(135deg, #ff9800, #ffb74d);
-  color: #fff;
-  transition: all 0.25s ease;
-}
-
-.call-waiter-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-}
-
-.call-waiter-btn.loading {
-  background: #ccc;
-  cursor: wait;
-}
-
-.call-waiter-btn.success {
-  background: #198754;
-}
-
-.call-waiter-btn.accepted {
-  background: #157347;
-}
-
-.btn.cancel {
-  margin-top: 12px;
-  background: transparent;
-  border: none;
-  color: #777;
-  cursor: pointer;
-  font-size: 14px;
-  transition: color 0.2s;
-}
-
-.btn.cancel:hover {
-  color: #000;
-}
-
-.btn.cancel.auto-close {
-  opacity: 0.6;
-  cursor: default;
 }

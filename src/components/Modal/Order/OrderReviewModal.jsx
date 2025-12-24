@@ -1,6 +1,11 @@
+import "./OrderReviewModal.css";
+
 export default function OrderReviewModal({
   items,
+  subtotal,
+  deliveryFeeTotal,
   total,
+  calculateFinalPrice,
   loading,
   onConfirm,
   onBack,
@@ -13,15 +18,38 @@ export default function OrderReviewModal({
         <h3>Revisar Pedido</h3>
 
         <div className="order-items">
-          {items.map(item => (
-            <div key={item.id} className="order-item">
-              {item.name} x{item.quantity} – R${" "}
-              {(item.price * item.quantity).toFixed(2)}
-            </div>
-          ))}
+          {items.map(item => {
+            const finalPrice = calculateFinalPrice(item);
+            return (
+              <div key={item.id} className="order-item">
+                <div>
+                  {item.name} x{item.quantity}
+                  {item.promotion && (
+                    <span className="promo-tag">
+                      (Promo: {item.promotion_type === "percentage"
+                        ? `-${item.promotion_value}%`
+                        : `R$ ${Number(item.promotion_value).toFixed(2)}`})
+                    </span>
+                  )}
+                </div>
+                <div>
+                  R$ {(finalPrice * item.quantity).toFixed(2)}
+                  {item.has_delivery_fee && item.delivery_fee > 0 && (
+                    <span className="delivery-fee">
+                      {" "} + R$ {Number(item.delivery_fee).toFixed(2)} (taxa)
+                    </span>
+                  )}
+                </div>
+              </div>
+            );
+          })}
         </div>
 
-        <p className="order-total">Total: R$ {total}</p>
+        <div className="order-summary">
+          <p>Subtotal: R$ {subtotal.toFixed(2)}</p>
+          {deliveryFeeTotal > 0 && <p>Taxa de entrega: R$ {deliveryFeeTotal.toFixed(2)}</p>}
+          <p className="order-total">Total: R$ {total.toFixed(2)}</p>
+        </div>
 
         <div className="order-actions">
           <button className="btn cancel" onClick={onBack}>
@@ -31,7 +59,6 @@ export default function OrderReviewModal({
           <button className="btn secondary" onClick={onAddMore}>
             Adicionar mais itens
           </button>
-
 
           <button
             className="btn primary"
