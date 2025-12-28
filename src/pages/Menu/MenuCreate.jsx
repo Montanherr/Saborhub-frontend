@@ -3,6 +3,7 @@ import categoryService from "../../services/categoriesService";
 import productService from "../../services/productService";
 import { toast } from "react-toastify";
 import { socket } from "../../socket/socket";
+
 import CategoryForm from "./CategoryForm";
 import ProductForm from "./ProductForm";
 import MenuPreview from "./MenuPreview";
@@ -16,74 +17,67 @@ export default function MenuCreate() {
   const [categories, setCategories] = useState([]);
   const [products, setProducts] = useState([]);
 
-  const loggedCompanyId = Number(localStorage.getItem("companyId"));
-
   const [editingCategory, setEditingCategory] = useState(null);
   const [editingProduct, setEditingProduct] = useState(null);
+
+  const [loading, setLoading] = useState(false);
+
+  const loggedCompanyId = Number(localStorage.getItem("companyId"));
+
+  /* ======================
+     LOAD CENTRALIZADO
+  ====================== */
+  async function loadMenu() {
+    try {
+      if (!loggedCompanyId) return;
+
+      setLoading(true);
+
+      const categoriesData =
+        await categoryService.getCategories(loggedCompanyId);
+
+      const productsData =
+        await productService.getProducts();
+
+      setCategories(categoriesData);
+      setProducts(
+        productsData.filter(
+          (p) => p.companyId === loggedCompanyId
+        )
+      );
+    } catch (err) {
+      console.error(err);
+      toast.error("Erro ao carregar menu");
+    } finally {
+      setLoading(false);
+    }
+  }
 
   /* ======================
      LOAD INICIAL
   ====================== */
   useEffect(() => {
-    async function load() {
-      try {
-        if (!loggedCompanyId) return;
-
-        const categoriesData =
-          await categoryService.getCategories(loggedCompanyId);
-
-        const productsData =
-          await productService.getProducts();
-
-        setCategories(categoriesData);
-
-        setProducts(
-          productsData.filter(
-            (p) => p.companyId === loggedCompanyId
-          )
-        );
-      } catch (err) {
-        console.error(err);
-        toast.error("Erro ao carregar menu");
-      }
-    }
-
-    load();
+    loadMenu();
   }, [loggedCompanyId]);
 
   /* ======================
-     SOCKET
+     SOCKET (OPCIONAL)
   ====================== */
   useEffect(() => {
     if (!loggedCompanyId) return;
 
     socket.emit("join_company", loggedCompanyId);
 
-    socket.on("produto_criado", (product) => {
-      if (product.companyId !== loggedCompanyId) return;
-
-      setProducts((prev) => {
-        const exists = prev.some(
-          (p) => p.id === product.id
-        );
-        return exists ? prev : [...prev, product];
-      });
+    socket.on("produto_criado", () => {
+      loadMenu();
     });
 
-    socket.on("product_updated", (product) => {
-      if (product.companyId !== loggedCompanyId) return;
-
-      setProducts((prev) =>
-        prev.map((p) =>
-          p.id === product.id ? product : p
-        )
-      );
+    socket.on("product_updated", () => {
+      loadMenu();
     });
 
-    socket.on("product_deleted", ({ id }) => {
-      setProducts((prev) =>
-        prev.filter((p) => p.id !== id)
-      );
+    socket.on("product_deleted", () => {
+      loadMenu();
     });
 
     return () => {
@@ -99,35 +93,23 @@ export default function MenuCreate() {
   async function handleSaveCategory(name) {
     try {
       if (editingCategory) {
-        const updated =
-          await categoryService.updateCategory(
-            editingCategory.id,
-            { name }
-          );
-
-        setCategories((prev) =>
-          prev.map((c) =>
-            c.id === updated.id ? updated : c
-          )
+        await categoryService.updateCategory(
+          editingCategory.id,
+          { name }
         );
 
         toast.info("Categoria atualizada!");
         setEditingCategory(null);
       } else {
-        const newCategory =
-          await categoryService.createCategory(
-            loggedCompanyId,
-            { name }
-          );
-
-        setCategories((prev) => [
-          ...prev,
-          newCategory,
-        ]);
+        await categoryService.createCategory(
+          loggedCompanyId,
+          { name }
+        );
 
         toast.success("Categoria criada!");
       }
 
+      await loadMenu();
       setActiveTab("preview");
     } catch {
       toast.error("Erro ao salvar categoria");
@@ -135,7 +117,7 @@ export default function MenuCreate() {
   }
 
   /* ======================
-     PRODUCT (🔥 CORRIGIDO)
+     PRODUCT
   ====================== */
   async function handleSaveProduct(productData) {
     try {
@@ -160,7 +142,7 @@ export default function MenuCreate() {
       );
       formData.append("available", "1");
 
-      // PROMOÇÃO (SEGURA)
+      // PROMOÇÃO
       formData.append(
         "promotion",
         productData.promotion ? "1" : "0"
@@ -197,39 +179,19 @@ export default function MenuCreate() {
         );
       }
 
-      let savedProduct;
-
       if (editingProduct) {
-        savedProduct =
-          await productService.updateProduct(
-            editingProduct.id,
-            formData
-          );
-
-        setProducts((prev) =>
-          prev.map((p) =>
-            p.id === savedProduct.id
-              ? savedProduct
-              : p
-          )
+        await productService.updateProduct(
+          editingProduct.id,
+          formData
         );
-
         toast.info("Produto atualizado!");
       } else {
-        savedProduct =
-          await productService.createProduct(
-            formData
-          );
-
-        setProducts((prev) => [
-          ...prev,
-          savedProduct,
-        ]);
-
+        await productService.createProduct(formData);
         toast.success("Produto criado!");
       }
 
       setEditingProduct(null);
+      await loadMenu();
       setActiveTab("preview");
     } catch (err) {
       console.error(err);
@@ -272,38 +234,39 @@ export default function MenuCreate() {
       )}
 
       {activeTab === "preview" && (
-        <MenuPreview
-          categories={categories}
-          products={products}
-          onEdit={(product) => {
-            setEditingProduct(product);
-            setActiveTab("manage");
-          }}
-          onDelete={async (product) => {
-            if (
-              !window.confirm(
-                "Deseja remover este produto?"
+        loading ? (
+          <p className="loading">
+            Carregando menu...
+          </p>
+        ) : (
+          <MenuPreview
+            categories={categories}
+            products={products}
+            onEdit={(product) => {
+              setEditingProduct(product);
+              setActiveTab("manage");
+            }}
+            onDelete={async (product) => {
+              if (
+                !window.confirm(
+                  "Deseja remover este produto?"
+                )
               )
-            )
-              return;
+                return;
 
-            await productService.deleteProduct(
-              product.id
-            );
+              await productService.deleteProduct(
+                product.id
+              );
 
-            setProducts((prev) =>
-              prev.filter(
-                (p) => p.id !== product.id
-              )
-            );
-
-            toast.warn("Produto excluído!");
-          }}
-          onEditCategory={(category) => {
-            setEditingCategory(category);
-            setActiveTab("manage");
-          }}
-        />
+              toast.warn("Produto excluído!");
+              await loadMenu();
+            }}
+            onEditCategory={(category) => {
+              setEditingCategory(category);
+              setActiveTab("manage");
+            }}
+          />
+        )
       )}
     </div>
   );

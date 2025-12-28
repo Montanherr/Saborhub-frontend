@@ -9,66 +9,68 @@ export default function OrderReviewModal({
   loading,
   onConfirm,
   onBack,
-  onAddMore,
-  onClose
+  onAddMore
 }) {
   return (
-    <div className="orders-modal-backdrop">
-      <div className="orders-modal">
-        <h3>Revisar Pedido</h3>
+    <>
+      <h3>Revisar Pedido</h3>
 
-        <div className="order-items">
-          {items.map(item => {
-            const finalPrice = calculateFinalPrice(item);
-            return (
-              <div key={item.id} className="order-item">
-                <div>
-                  {item.name} x{item.quantity}
-                  {item.promotion && (
-                    <span className="promo-tag">
-                      (Promo: {item.promotion_type === "percentage"
-                        ? `-${item.promotion_value}%`
-                        : `R$ ${Number(item.promotion_value).toFixed(2)}`})
-                    </span>
-                  )}
-                </div>
-                <div>
-                  R$ {(finalPrice * item.quantity).toFixed(2)}
-                  {item.has_delivery_fee && item.delivery_fee > 0 && (
-                    <span className="delivery-fee">
-                      {" "} + R$ {Number(item.delivery_fee).toFixed(2)} (taxa)
-                    </span>
-                  )}
-                </div>
+      <div className="order-items">
+        {items.map((item) => {
+          const finalPrice = calculateFinalPrice(item);
+
+          return (
+            <div key={item.id} className="order-item">
+              <div>
+                {item.name} x{item.quantity}
+                {item.promotion && (
+                  <span className="promo-tag">
+                    (Promo:{" "}
+                    {item.promotion_type === "percentage"
+                      ? `-${item.promotion_value}%`
+                      : `R$ ${Number(item.promotion_value).toFixed(2)}`}
+                    )
+                  </span>
+                )}
               </div>
-            );
-          })}
-        </div>
 
-        <div className="order-summary">
-          <p>Subtotal: R$ {subtotal.toFixed(2)}</p>
-          {deliveryFeeTotal > 0 && <p>Taxa de entrega: R$ {deliveryFeeTotal.toFixed(2)}</p>}
-          <p className="order-total">Total: R$ {total.toFixed(2)}</p>
-        </div>
-
-        <div className="order-actions">
-          <button className="btn cancel" onClick={onBack}>
-            Voltar
-          </button>
-
-          <button className="btn secondary" onClick={onAddMore}>
-            Adicionar mais itens
-          </button>
-
-          <button
-            className="btn primary"
-            onClick={onConfirm}
-            disabled={loading}
-          >
-            {loading ? "Enviando..." : "Confirmar Pedido"}
-          </button>
-        </div>
+              <div>
+                R$ {(finalPrice * item.quantity).toFixed(2)}
+              </div>
+            </div>
+          );
+        })}
       </div>
-    </div>
+
+      <div className="order-summary">
+        <p>Subtotal: R$ {subtotal.toFixed(2)}</p>
+
+        {deliveryFeeTotal > 0 && (
+          <p>Taxa de entrega: R$ {deliveryFeeTotal.toFixed(2)}</p>
+        )}
+
+        <p className="order-total">
+          Total: R$ {total.toFixed(2)}
+        </p>
+      </div>
+
+      <div className="order-actions">
+        <button className="btn cancel" onClick={onBack}>
+          Voltar
+        </button>
+
+        <button className="btn secondary" onClick={onAddMore}>
+          Adicionar mais itens
+        </button>
+
+        <button
+          className="btn primary"
+          onClick={onConfirm}
+          disabled={loading}
+        >
+          {loading ? "Enviando..." : "Confirmar Pedido"}
+        </button>
+      </div>
+    </>
   );
 }

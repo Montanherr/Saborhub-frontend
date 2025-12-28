@@ -40,7 +40,11 @@ export default function OrdersModal({ company, items, setItems, close }) {
   const calculateFinalPrice = (item) => {
     if (!item.promotion) return Number(item.price);
     if (item.promotion_type === "percentage") {
-      return Math.max(Number(item.price) - (Number(item.price) * Number(item.promotion_value)) / 100, 0);
+      return Math.max(
+        Number(item.price) -
+          (Number(item.price) * Number(item.promotion_value)) / 100,
+        0
+      );
     }
     return Math.max(Number(item.price) - Number(item.promotion_value), 0);
   };
@@ -80,7 +84,9 @@ export default function OrdersModal({ company, items, setItems, close }) {
       if (Number(data.id) !== Number(selectedTable)) return;
       if (data.status === "occupied") {
         if (audioUnlocked && acceptedAudio.current) {
-          acceptedAudio.current.play().catch((err) => console.warn("Áudio bloqueado:", err));
+          acceptedAudio.current
+            .play()
+            .catch((err) => console.warn("Áudio bloqueado:", err));
         }
         if ("vibrate" in navigator) navigator.vibrate([200, 100, 200]);
         setAccepted(true);
@@ -96,9 +102,27 @@ export default function OrdersModal({ company, items, setItems, close }) {
 
   // ===================== ENVIO =====================
   const handleSubmit = async () => {
-    const subtotal = items.reduce((sum, i) => sum + calculateFinalPrice(i) * i.quantity, 0);
-    const deliveryFeeTotal = items.reduce((sum, i) => sum + (i.has_delivery_fee ? Number(i.delivery_fee) : 0), 0);
-    const total = subtotal + deliveryFeeTotal;
+  const subtotal = items.reduce(
+  (sum, i) => sum + calculateFinalPrice(i) * i.quantity,
+  0
+);
+
+const hasAnyDeliveryFee = items.some((i) => i.has_delivery_fee);
+
+const productDeliveryFee = Math.max(
+  ...items
+    .filter((i) => i.has_delivery_fee)
+    .map((i) => Number(i.delivery_fee || 0)),
+  0
+);
+
+const deliveryFeeTotal =
+  orderType === "delivery" && hasAnyDeliveryFee
+    ? Number(company.deliveryFee || productDeliveryFee)
+    : 0;
+
+const total = subtotal + deliveryFeeTotal;
+
 
     const payload = {
       companyId: company.id,
@@ -108,7 +132,10 @@ export default function OrdersModal({ company, items, setItems, close }) {
       observations,
       additionalInfo,
       paymentMethod,
-      changeAmount: paymentMethod === "dinheiro" && needChange ? Number(changeAmount) || 0 : 0,
+      changeAmount:
+        paymentMethod === "dinheiro" && needChange
+          ? Number(changeAmount) || 0
+          : 0,
       total,
       orderType,
       items: items.map((i) => ({
@@ -126,28 +153,35 @@ export default function OrdersModal({ company, items, setItems, close }) {
 
       // Abrir WhatsApp separado, evitando erros no try principal
       try {
-        const companyPhone = company.phone.startsWith("55") ? company.phone : "55" + company.phone;
+        const companyPhone = company.phone.startsWith("55")
+          ? company.phone
+          : "55" + company.phone;
         let msg = `📦 *Novo Pedido*\n\n🧾 Código: ${order.code}\n\n`;
         items.forEach((i) => {
           const price = calculateFinalPrice(i).toFixed(2);
           msg += `• ${i.name} x${i.quantity} = R$ ${price}`;
-          if (i.has_delivery_fee) msg += ` + R$ ${Number(i.delivery_fee).toFixed(2)} (taxa)\n`;
-          else msg += "\n";
+          msg += "\n";
         });
         msg += `\n💰 *Subtotal:* R$ ${subtotal.toFixed(2)}\n`;
-        if (deliveryFeeTotal > 0) msg += `💵 *Taxa de entrega:* R$ ${deliveryFeeTotal.toFixed(2)}\n`;
+        if (deliveryFeeTotal > 0)
+          msg += `💵 *Taxa de entrega:* R$ ${deliveryFeeTotal.toFixed(2)}\n`;
         msg += `💳 *Total:* R$ ${total.toFixed(2)}\n`;
         msg += `👤 Cliente: ${fullName}\n📞 Telefone: ${phone}\n`;
         if (orderType === "delivery") msg += `📍 Endereço: ${address}\n`;
         msg += `\n💳 *Pagamento:* ${paymentMethod}\n`;
         if (paymentMethod === "dinheiro") {
-          if (needChange && changeAmount) msg += `💵 Troco para: R$ ${changeAmount}\n`;
+          if (needChange && changeAmount)
+            msg += `💵 Troco para: R$ ${changeAmount}\n`;
           else msg += `💵 Não precisa de troco\n`;
         }
         if (observations) msg += `\n📝 Observações: ${observations}\n`;
-        if (additionalInfo) msg += `ℹ️ Informações adicionais: ${additionalInfo}\n`;
+        if (additionalInfo)
+          msg += `ℹ️ Informações adicionais: ${additionalInfo}\n`;
 
-        window.open(`https://wa.me/${companyPhone}?text=${encodeURIComponent(msg)}`, "_blank");
+        window.open(
+          `https://wa.me/${companyPhone}?text=${encodeURIComponent(msg)}`,
+          "_blank"
+        );
       } catch (err) {
         console.warn("Não foi possível abrir o WhatsApp:", err);
       }
@@ -176,9 +210,28 @@ export default function OrdersModal({ company, items, setItems, close }) {
   }
 
   // ===================== MODAL PADRÃO =====================
-  const subtotal = items.reduce((sum, i) => sum + calculateFinalPrice(i) * i.quantity, 0);
-  const deliveryFeeTotal = items.reduce((sum, i) => sum + (i.has_delivery_fee ? Number(i.delivery_fee) : 0), 0);
-  const total = subtotal + deliveryFeeTotal;
+const subtotal = items.reduce(
+  (sum, i) => sum + calculateFinalPrice(i) * i.quantity,
+  0
+);
+
+const hasAnyDeliveryFee = items.some((i) => i.has_delivery_fee);
+
+const productDeliveryFee = Math.max(
+  ...items
+    .filter((i) => i.has_delivery_fee)
+    .map((i) => Number(i.delivery_fee || 0)),
+  0
+);
+
+const deliveryFeeTotal =
+  orderType === "delivery" && hasAnyDeliveryFee
+    ? Number(company.deliveryFee || productDeliveryFee)
+    : 0;
+
+const total = subtotal + deliveryFeeTotal;
+
+
 
   return (
     <div className="orders-modal-backdrop">
@@ -191,49 +244,113 @@ export default function OrdersModal({ company, items, setItems, close }) {
             <h3>Seu Pedido - {company.fantasyName}</h3>
             <div className="order-type">
               <label>
-                <input type="radio" value="delivery" checked={orderType === "delivery"} onChange={(e) => setOrderType(e.target.value)} />
+                <input
+                  type="radio"
+                  value="delivery"
+                  checked={orderType === "delivery"}
+                  onChange={(e) => setOrderType(e.target.value)}
+                />
                 Entrega
               </label>
               <label>
-                <input type="radio" value="pickup" checked={orderType === "pickup"} onChange={(e) => setOrderType(e.target.value)} />
+                <input
+                  type="radio"
+                  value="pickup"
+                  checked={orderType === "pickup"}
+                  onChange={(e) => setOrderType(e.target.value)}
+                />
                 Retirada
               </label>
               <label>
-                <input type="radio" value="table" checked={orderType === "table"} onChange={(e) => setOrderType(e.target.value)} />
+                <input
+                  type="radio"
+                  value="table"
+                  checked={orderType === "table"}
+                  onChange={(e) => setOrderType(e.target.value)}
+                />
                 Na mesa
               </label>
             </div>
 
             <div className="order-fields">
-              <input placeholder="Nome completo" value={fullName} onChange={(e) => setFullName(e.target.value)} />
-              <input placeholder="Telefone" value={phone} onChange={(e) => setPhone(e.target.value)} />
-              {orderType === "delivery" && <input placeholder="Endereço" value={address} onChange={(e) => setAddress(e.target.value)} />}
-              <textarea placeholder="Observações" value={observations} onChange={(e) => setObservations(e.target.value)} />
-              <textarea placeholder="Informações adicionais" value={additionalInfo} onChange={(e) => setAdditionalInfo(e.target.value)} />
+              <input
+                placeholder="Nome completo"
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+              />
+              <input
+                placeholder="Telefone"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+              />
+              {orderType === "delivery" && (
+                <input
+                  placeholder="Endereço"
+                  value={address}
+                  onChange={(e) => setAddress(e.target.value)}
+                />
+              )}
+              <textarea
+                placeholder="Observações"
+                value={observations}
+                onChange={(e) => setObservations(e.target.value)}
+              />
+              <textarea
+                placeholder="Informações adicionais"
+                value={additionalInfo}
+                onChange={(e) => setAdditionalInfo(e.target.value)}
+              />
 
               {orderType !== "table" && (
                 <div className="payment-section">
                   <h4>Forma de pagamento</h4>
                   <label>
-                    <input type="radio" value="dinheiro" checked={paymentMethod === "dinheiro"} onChange={(e) => setPaymentMethod(e.target.value)} />
+                    <input
+                      type="radio"
+                      value="dinheiro"
+                      checked={paymentMethod === "dinheiro"}
+                      onChange={(e) => setPaymentMethod(e.target.value)}
+                    />
                     Dinheiro
                   </label>
                   <label>
-                    <input type="radio" value="cartao" checked={paymentMethod === "cartao"} onChange={(e) => setPaymentMethod(e.target.value)} />
+                    <input
+                      type="radio"
+                      value="cartao"
+                      checked={paymentMethod === "cartao"}
+                      onChange={(e) => setPaymentMethod(e.target.value)}
+                    />
                     Cartão
                   </label>
                   <label>
-                    <input type="radio" value="pix" checked={paymentMethod === "pix"} onChange={(e) => setPaymentMethod(e.target.value)} />
+                    <input
+                      type="radio"
+                      value="pix"
+                      checked={paymentMethod === "pix"}
+                      onChange={(e) => setPaymentMethod(e.target.value)}
+                    />
                     Pix
                   </label>
 
                   {paymentMethod === "dinheiro" && (
                     <div className="change-section">
                       <label className="change-checkbox">
-                        <input type="checkbox" checked={needChange} onChange={(e) => setNeedChange(e.target.checked)} />
+                        <input
+                          type="checkbox"
+                          checked={needChange}
+                          onChange={(e) => setNeedChange(e.target.checked)}
+                        />
                         Precisa de troco?
                       </label>
-                      {needChange && <input type="number" placeholder="Troco para quanto? Ex: 100" value={changeAmount} onChange={(e) => setChangeAmount(e.target.value)} min="0" />}
+                      {needChange && (
+                        <input
+                          type="number"
+                          placeholder="Troco para quanto? Ex: 100"
+                          value={changeAmount}
+                          onChange={(e) => setChangeAmount(e.target.value)}
+                          min="0"
+                        />
+                      )}
                     </div>
                   )}
                 </div>
@@ -241,8 +358,12 @@ export default function OrdersModal({ company, items, setItems, close }) {
             </div>
 
             <div className="order-actions">
-              <button className="btn cancel" onClick={close}>Fechar</button>
-              <button className="btn primary" onClick={() => setStep(1)}>Revisar Pedido</button>
+              <button className="btn cancel" onClick={close}>
+                Fechar
+              </button>
+              <button className="btn primary" onClick={() => setStep(1)}>
+                Revisar Pedido
+              </button>
             </div>
           </>
         )}
@@ -258,13 +379,23 @@ export default function OrdersModal({ company, items, setItems, close }) {
             loading={loading}
             onBack={() => setStep(0)}
             onConfirm={handleSubmit}
-            onAddMore={() => { close(); navigate(`/companies/${company.id}/categories`); }}
+            onAddMore={() => {
+              close();
+              navigate(`/companies/${company.id}/categories`);
+            }}
             onClose={close}
           />
         )}
 
         {/* ===== ETAPA 2 – SUCESSO ===== */}
-        {step === 2 && <OrderSuccessModal onClose={() => { setItems([]); close(); }} />}
+        {step === 2 && (
+          <OrderSuccessModal
+            onClose={() => {
+              setItems([]);
+              close();
+            }}
+          />
+        )}
       </div>
     </div>
   );

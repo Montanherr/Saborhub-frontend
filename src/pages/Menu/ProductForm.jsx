@@ -16,7 +16,6 @@ export default function ProductForm({
 
     promotion: false,
     promotion_value: "",
-    promotion_type: "fixed",
 
     has_delivery_fee: false,
     delivery_fee: "",
@@ -30,29 +29,20 @@ export default function ProductForm({
 
     setForm({
       name: editingProduct.name ?? "",
-      description:
-        editingProduct.description ?? "",
+      description: editingProduct.description ?? "",
       price: editingProduct.price ?? "",
-      categoryId:
-        Number(editingProduct.categoryId),
+      categoryId: Number(editingProduct.categoryId),
       imageFile: null,
 
-      promotion:
-        !!editingProduct.promotion,
-      promotion_value:
-        editingProduct.promotion
-          ? editingProduct.promotion_value
-          : "",
-      promotion_type:
-        editingProduct.promotion_type ??
-        "fixed",
+      promotion: !!editingProduct.promotion,
+      promotion_value: editingProduct.promotion
+        ? editingProduct.promotion_value
+        : "",
 
-      has_delivery_fee:
-        !!editingProduct.has_delivery_fee,
-      delivery_fee:
-        editingProduct.has_delivery_fee
-          ? editingProduct.delivery_fee
-          : "",
+      has_delivery_fee: !!editingProduct.has_delivery_fee,
+      delivery_fee: editingProduct.has_delivery_fee
+        ? editingProduct.delivery_fee
+        : "",
     });
   }, [editingProduct]);
 
@@ -64,22 +54,20 @@ export default function ProductForm({
   }
 
   /* ======================
-     SUBMIT (🔥 CORRIGIDO)
+     SUBMIT
   ====================== */
   function handleSubmit(e) {
     e.preventDefault();
 
     if (
       form.promotion &&
-      Number(form.promotion_value) >=
-        Number(form.price)
+      Number(form.promotion_value) >= Number(form.price)
     ) {
       return alert(
-        "Promoção deve ser menor que o preço"
+        "O valor promocional deve ser menor que o preço original"
       );
     }
 
-    // ✅ ENVIA OBJETO JS (NÃO FormData)
     onSubmit({
       name: form.name,
       description: form.description,
@@ -91,12 +79,8 @@ export default function ProductForm({
       promotion_value: form.promotion
         ? Number(form.promotion_value)
         : 0,
-      promotion_type: form.promotion
-        ? form.promotion_type
-        : "fixed",
 
-      has_delivery_fee:
-        form.has_delivery_fee,
+      has_delivery_fee: form.has_delivery_fee,
       delivery_fee: form.has_delivery_fee
         ? Number(form.delivery_fee)
         : 0,
@@ -127,10 +111,7 @@ export default function ProductForm({
           placeholder="Descrição"
           value={form.description}
           onChange={(e) =>
-            update(
-              "description",
-              e.target.value
-            )
+            update("description", e.target.value)
           }
         />
 
@@ -148,10 +129,7 @@ export default function ProductForm({
         <input
           type="file"
           onChange={(e) =>
-            update(
-              "imageFile",
-              e.target.files[0]
-            )
+            update("imageFile", e.target.files[0])
           }
         />
 
@@ -159,21 +137,13 @@ export default function ProductForm({
           className="select"
           value={form.categoryId}
           onChange={(e) =>
-            update(
-              "categoryId",
-              e.target.value
-            )
+            update("categoryId", e.target.value)
           }
           required
         >
-          <option value="">
-            Categoria
-          </option>
+          <option value="">Categoria</option>
           {categories.map((c) => (
-            <option
-              key={c.id}
-              value={c.id}
-            >
+            <option key={c.id} value={c.id}>
               {c.name}
             </option>
           ))}
@@ -185,49 +155,23 @@ export default function ProductForm({
             type="checkbox"
             checked={form.promotion}
             onChange={(e) =>
-              update(
-                "promotion",
-                e.target.checked
-              )
+              update("promotion", e.target.checked)
             }
           />
           Promoção
         </label>
 
         {form.promotion && (
-          <>
-            <input
-              className="input"
-              type="number"
-              placeholder="Valor promocional"
-              value={form.promotion_value}
-              onChange={(e) =>
-                update(
-                  "promotion_value",
-                  e.target.value
-                )
-              }
-              required
-            />
-
-            <select
-              className="select"
-              value={form.promotion_type}
-              onChange={(e) =>
-                update(
-                  "promotion_type",
-                  e.target.value
-                )
-              }
-            >
-              <option value="fixed">
-                Valor fixo
-              </option>
-              <option value="percentage">
-                Percentual
-              </option>
-            </select>
-          </>
+          <input
+            className="input"
+            type="number"
+            placeholder="Valor promocional"
+            value={form.promotion_value}
+            onChange={(e) =>
+              update("promotion_value", e.target.value)
+            }
+            required
+          />
         )}
 
         {/* TAXA ENTREGA */}
@@ -252,10 +196,7 @@ export default function ProductForm({
             placeholder="Valor da taxa"
             value={form.delivery_fee}
             onChange={(e) =>
-              update(
-                "delivery_fee",
-                e.target.value
-              )
+              update("delivery_fee", e.target.value)
             }
           />
         )}

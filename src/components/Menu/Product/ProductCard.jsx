@@ -4,16 +4,28 @@ export default function ProductCard({
   product,
   onAdd,
   renderPromotion,
-  finalPrice,
 }) {
   const hasPromotion =
     product.promotion &&
     Number(product.promotion_value) > 0;
 
+  const finalPrice = hasPromotion
+    ? Number(product.promotion_value)
+    : Number(product.price);
+
   return (
     <div className={`product-card ${hasPromotion ? "has-promotion" : ""}`}>
       <div className="image-wrapper">
-        {renderPromotion(product)}
+        {/* TAG PROMO */}
+        {hasPromotion && (
+          <span className="promo-badge">
+            PROMO
+          </span>
+        )}
+
+        {/* caso você já tenha outro render de promo, mantém */}
+        {renderPromotion && renderPromotion(product)}
+
         <img
           src={product.image || "/assets/default-product.png"}
           alt={product.name}
@@ -41,12 +53,16 @@ export default function ProductCard({
 
             {product.has_delivery_fee && (
               <span className="delivery-fee">
-                Taxa R$ {Number(product.delivery_fee).toFixed(2).replace(".", ",")}
+                Taxa R$ {Number(product.delivery_fee)
+                  .toFixed(2)
+                  .replace(".", ",")}
               </span>
             )}
           </div>
 
-          <button onClick={() => onAdd(product)}>Adicionar</button>
+          <button onClick={() => onAdd(product)}>
+            Adicionar
+          </button>
         </div>
       </div>
     </div>

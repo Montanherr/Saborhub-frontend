@@ -1,4 +1,6 @@
-/* Container geral */
+/* ===============================
+   CONTAINER GERAL
+================================ */
 .tables-container {
   padding: 24px;
 }
@@ -9,22 +11,28 @@
   font-weight: 600;
 }
 
-/* Grid */
+/* ===============================
+   GRID
+================================ */
 .tables-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
   gap: 16px;
 }
 
-/* Card base */
+/* ===============================
+   CARD BASE
+================================ */
 .table-card {
+  position: relative;
   background: #ffffff;
   border-radius: 12px;
   padding: 16px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   display: flex;
-  flex-direction: column;
   align-items: center;
+  justify-content: center;
+  min-height: 190px;
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
@@ -38,12 +46,22 @@
   font-size: 18px;
 }
 
-/* Status label */
+/* ===============================
+   MESA CENTRAL
+================================ */
+.table-center {
+  background: #ffffff;
+  border-radius: 10px;
+  padding: 12px;
+  width: 100%;
+  text-align: center;
+  z-index: 2;
+}
+
 .status-label {
   margin: 8px 0 12px;
   font-size: 14px;
   font-weight: 600;
-  text-transform: capitalize;
 }
 
 /* ===============================
@@ -67,18 +85,20 @@
   background: #f5faff;
 }
 
-/* 🟡 Ocupada (cliente ainda na mesa) */
+/* 🟡 Ocupada */
 .table-card.occupied {
   border-left: 6px solid #e67e22;
 }
 
-/* ⚫ Mesa fechada / desativada */
+/* ⚫ Fechada */
 .table-card.closed {
   border-left: 6px solid #7f8c8d;
   opacity: 0.6;
 }
 
-/* Pulse animation */
+/* ===============================
+   ANIMAÇÃO CHAMANDO
+================================ */
 @keyframes pulse {
   0% {
     box-shadow: 0 0 0 0 rgba(241, 196, 15, 0.6);
@@ -92,7 +112,48 @@
 }
 
 /* ===============================
-   BUTTONS
+   CADEIRAS
+================================ */
+.chairs {
+  position: absolute;
+  display: flex;
+  gap: 6px;
+  z-index: 1;
+}
+
+.chairs.top {
+  top: 6px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.chairs.bottom {
+  bottom: 6px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.chairs.left {
+  left: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.chairs.right {
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.chair {
+  width: 16px;
+  height: 16px;
+  background: #7f8c8d;
+  border-radius: 4px;
+}
+
+/* ===============================
+   BOTÕES
 ================================ */
 .btn {
   width: 100%;
@@ -149,4 +210,73 @@
   padding: 20px;
   color: #e74c3c;
   font-weight: 600;
+}
+
+/* ===============================
+   MOBILE (até 768px)
+================================ */
+@media (max-width: 768px) {
+
+  .tables-container {
+    padding: 12px;
+  }
+
+  .title {
+    font-size: 20px;
+    margin-bottom: 12px;
+  }
+
+  /* GRID MOBILE */
+  .tables-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  /* CARD */
+  .table-card {
+    min-height: 150px;
+    padding: 12px;
+  }
+
+  /* MESA */
+  .table-center {
+    padding: 10px;
+  }
+
+  .table-card h3 {
+    font-size: 16px;
+  }
+
+  .status-label {
+    font-size: 13px;
+    margin-bottom: 8px;
+  }
+
+  /* CADEIRAS (simplificadas) */
+  .chair {
+    width: 12px;
+    height: 12px;
+  }
+
+  .chairs.top,
+  .chairs.bottom {
+    gap: 4px;
+  }
+
+  .chairs.left,
+  .chairs.right {
+    display: none; /* simplifica no mobile */
+  }
+
+  /* BOTÕES GRANDES (dedo-friendly) */
+  .btn {
+    padding: 12px;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 768px) {
+  .table-card.calling {
+    transform: scale(1.05);
+  }
 }

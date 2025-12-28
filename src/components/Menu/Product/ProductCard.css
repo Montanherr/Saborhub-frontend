@@ -146,3 +146,33 @@
   font-weight: bold;
   color: #1a73e8;
 }
+
+.image-wrapper {
+  position: relative;
+}
+
+/* TAG PROMO */
+.promo-badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: #e53935;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 8px;
+  border-radius: 6px;
+  z-index: 2;
+  letter-spacing: 0.5px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+/* opcional: leve animação */
+.product-card.has-promotion {
+  border: 1px solid #e53935;
+}
+
+.product-card.has-promotion .price {
+  color: #e53935;
+  font-weight: 700;
+}
