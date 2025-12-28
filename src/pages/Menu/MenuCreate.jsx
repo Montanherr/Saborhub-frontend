@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import categoryService from "../../services/categoriesService";
 import productService from "../../services/productService";
 import { toast } from "react-toastify";
@@ -27,7 +27,7 @@ export default function MenuCreate() {
   /* ======================
      LOAD CENTRALIZADO
   ====================== */
-  async function loadMenu() {
+  const loadMenu = useCallback(async () => {
     try {
       if (!loggedCompanyId) return;
 
@@ -42,7 +42,7 @@ export default function MenuCreate() {
       setCategories(categoriesData);
       setProducts(
         productsData.filter(
-          (p) => p.companyId === loggedCompanyId
+          p => p.companyId === loggedCompanyId
         )
       );
     } catch (err) {
@@ -51,41 +51,33 @@ export default function MenuCreate() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [loggedCompanyId]);
 
   /* ======================
      LOAD INICIAL
   ====================== */
   useEffect(() => {
     loadMenu();
-  }, [loggedCompanyId]);
+  }, [loadMenu]);
 
   /* ======================
-     SOCKET (OPCIONAL)
+     SOCKET
   ====================== */
   useEffect(() => {
     if (!loggedCompanyId) return;
 
     socket.emit("join_company", loggedCompanyId);
 
-    socket.on("produto_criado", () => {
-      loadMenu();
-    });
-
-    socket.on("product_updated", () => {
-      loadMenu();
-    });
-
-    socket.on("product_deleted", () => {
-      loadMenu();
-    });
+    socket.on("produto_criado", loadMenu);
+    socket.on("product_updated", loadMenu);
+    socket.on("product_deleted", loadMenu);
 
     return () => {
-      socket.off("produto_criado");
-      socket.off("product_updated");
-      socket.off("product_deleted");
+      socket.off("produto_criado", loadMenu);
+      socket.off("product_updated", loadMenu);
+      socket.off("product_deleted", loadMenu);
     };
-  }, [loggedCompanyId]);
+  }, [loggedCompanyId, loadMenu]);
 
   /* ======================
      CATEGORY
@@ -97,7 +89,6 @@ export default function MenuCreate() {
           editingCategory.id,
           { name }
         );
-
         toast.info("Categoria atualizada!");
         setEditingCategory(null);
       } else {
@@ -105,7 +96,6 @@ export default function MenuCreate() {
           loggedCompanyId,
           { name }
         );
-
         toast.success("Categoria criada!");
       }
 
@@ -124,22 +114,10 @@ export default function MenuCreate() {
       const formData = new FormData();
 
       formData.append("name", productData.name);
-      formData.append(
-        "description",
-        productData.description || ""
-      );
-      formData.append(
-        "price",
-        Number(productData.price)
-      );
-      formData.append(
-        "categoryId",
-        Number(productData.categoryId)
-      );
-      formData.append(
-        "companyId",
-        loggedCompanyId
-      );
+      formData.append("description", productData.description || "");
+      formData.append("price", Number(productData.price));
+      formData.append("categoryId", Number(productData.categoryId));
+      formData.append("companyId", loggedCompanyId);
       formData.append("available", "1");
 
       // PROMOÇÃO
@@ -157,7 +135,7 @@ export default function MenuCreate() {
         "promotion_type",
         productData.promotion
           ? productData.promotion_type
-          : null
+          : "fixed"
       );
 
       // TAXA DE ENTREGA
@@ -173,10 +151,7 @@ export default function MenuCreate() {
       );
 
       if (productData.imageFile) {
-        formData.append(
-          "image",
-          productData.imageFile
-        );
+        formData.append("image", productData.imageFile);
       }
 
       if (editingProduct) {
@@ -217,51 +192,37 @@ export default function MenuCreate() {
           <CategoryForm
             onSubmit={handleSaveCategory}
             editingCategory={editingCategory}
-            onCancelEdit={() =>
-              setEditingCategory(null)
-            }
+            onCancelEdit={() => setEditingCategory(null)}
           />
 
           <ProductForm
             categories={categories}
             onSubmit={handleSaveProduct}
             editingProduct={editingProduct}
-            onCancelEdit={() =>
-              setEditingProduct(null)
-            }
+            onCancelEdit={() => setEditingProduct(null)}
           />
         </div>
       )}
 
       {activeTab === "preview" && (
         loading ? (
-          <p className="loading">
-            Carregando menu...
-          </p>
+          <p className="loading">Carregando menu...</p>
         ) : (
           <MenuPreview
             categories={categories}
             products={products}
-            onEdit={(product) => {
+            onEdit={product => {
               setEditingProduct(product);
               setActiveTab("manage");
             }}
-            onDelete={async (product) => {
-              if (
-                !window.confirm(
-                  "Deseja remover este produto?"
-                )
-              )
-                return;
+            onDelete={async product => {
+              if (!window.confirm("Deseja remover este produto?")) return;
 
-              await productService.deleteProduct(
-                product.id
-              );
-
+              await productService.deleteProduct(product.id);
               toast.warn("Produto excluído!");
               await loadMenu();
             }}
-            onEditCategory={(category) => {
+            onEditCategory={category => {
               setEditingCategory(category);
               setActiveTab("manage");
             }}

@@ -117,3 +117,66 @@
     text-align: center;
   }
 }
+/* ======================
+   SKELETON
+====================== */
+.skeleton {
+  pointer-events: none;
+}
+
+.skeleton-line {
+  height: 14px;
+  border-radius: 6px;
+  background: linear-gradient(
+    90deg,
+    #eee 25%,
+    #f5f5f5 37%,
+    #eee 63%
+  );
+  background-size: 400% 100%;
+  animation: shimmer 1.4s ease infinite;
+}
+
+.skeleton-line.title {
+  width: 60%;
+  height: 18px;
+}
+
+.skeleton-line.short {
+  width: 40%;
+}
+
+.skeleton-box {
+  height: 120px;
+  border-radius: 10px;
+  background: linear-gradient(
+    90deg,
+    #eee 25%,
+    #f5f5f5 37%,
+    #eee 63%
+  );
+  background-size: 400% 100%;
+  animation: shimmer 1.4s ease infinite;
+}
+
+.skeleton-button {
+  width: 90px;
+  height: 28px;
+  border-radius: 6px;
+  background: #eee;
+}
+
+.product-skeleton {
+  background: #fff;
+  padding: 10px;
+  border-radius: 12px;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: 0 0;
+  }
+}
