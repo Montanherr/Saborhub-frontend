@@ -14,6 +14,8 @@ export default function ProductForm({
     categoryId: "",
     imageFile: null,
 
+    available: true, // 🔥 NOVO
+
     promotion: false,
     promotion_value: "",
 
@@ -33,6 +35,8 @@ export default function ProductForm({
       price: editingProduct.price ?? "",
       categoryId: Number(editingProduct.categoryId),
       imageFile: null,
+
+      available: editingProduct.available ?? true,
 
       promotion: !!editingProduct.promotion,
       promotion_value: editingProduct.promotion
@@ -75,6 +79,8 @@ export default function ProductForm({
       categoryId: Number(form.categoryId),
       imageFile: form.imageFile,
 
+      available: form.available, // 🔥
+
       promotion: form.promotion,
       promotion_value: form.promotion
         ? Number(form.promotion_value)
@@ -100,9 +106,7 @@ export default function ProductForm({
           className="input"
           placeholder="Nome"
           value={form.name}
-          onChange={(e) =>
-            update("name", e.target.value)
-          }
+          onChange={(e) => update("name", e.target.value)}
           required
         />
 
@@ -149,6 +153,18 @@ export default function ProductForm({
           ))}
         </select>
 
+        {/* 🔥 DISPONIBILIDADE */}
+        <label className="toggle">
+          <input
+            type="checkbox"
+            checked={form.available}
+            onChange={(e) =>
+              update("available", e.target.checked)
+            }
+          />
+          Produto disponível
+        </label>
+
         {/* PROMOÇÃO */}
         <label className="toggle">
           <input
@@ -180,10 +196,7 @@ export default function ProductForm({
             type="checkbox"
             checked={form.has_delivery_fee}
             onChange={(e) =>
-              update(
-                "has_delivery_fee",
-                e.target.checked
-              )
+              update("has_delivery_fee", e.target.checked)
             }
           />
           Taxa de entrega
@@ -202,10 +215,7 @@ export default function ProductForm({
         )}
 
         <div className="actions">
-          <button
-            className="btn btn-primary"
-            type="submit"
-          >
+          <button className="btn btn-primary" type="submit">
             Salvar
           </button>
 

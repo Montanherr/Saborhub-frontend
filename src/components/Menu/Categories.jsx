@@ -7,6 +7,7 @@ import companyService from "../../services/companyService";
 
 import ProductCard from "../../components/Menu/Product/ProductCard";
 import OrdersModal from "../../components/Modal/Order/Order";
+import { socket } from "../../socket/socket";
 
 import "./Categories.css";
 
@@ -22,21 +23,22 @@ export default function Categories() {
   const [orderItems, setOrderItems] = useState([]);
   const [showOrderModal, setShowOrderModal] = useState(false);
 
+  /* ======================
+     LOAD INICIAL (RÁPIDO)
+  ====================== */
   useEffect(() => {
     async function loadMenu() {
       try {
         setLoading(true);
 
-        const companyData =
-          await companyService.getById(companyId);
+        const [companyData, categoriesData, productsData] = await Promise.all([
+          companyService.getById(companyId),
+          categoryService.getCategories(companyId),
+          productService.getProductsByCompany(companyId),
+        ]);
+
         setCompany(companyData);
-
-        const categoriesData =
-          await categoryService.getCategories(companyId);
         setCategories(categoriesData);
-
-        const productsData =
-          await productService.getProductsByCompany(companyId);
 
         const grouped = {};
         categoriesData.forEach((category) => {
@@ -46,11 +48,8 @@ export default function Categories() {
         });
 
         setProductsByCategory(grouped);
-      } catch (error) {
-        console.error(
-          "Erro ao carregar cardápio:",
-          error
-        );
+      } catch (err) {
+        console.error(err);
       } finally {
         setLoading(false);
       }
@@ -59,180 +58,93 @@ export default function Categories() {
     if (companyId) loadMenu();
   }, [companyId]);
 
-  const toggleCategory = (categoryId) => {
-    setExpandedCategory(
-      expandedCategory === categoryId
-        ? null
-        : categoryId
-    );
+  /* ======================
+     SOCKET (UPDATE LOCAL)
+  ====================== */
+  useEffect(() => {
+    if (!companyId) return;
+
+    socket.connect();
+    socket.emit("join_company", Number(companyId));
+
+    const updateProduct = (product) => {
+      setProductsByCategory((prev) => {
+        const updated = { ...prev };
+
+        const list = updated[product.categoryId] || [];
+
+        updated[product.categoryId] = list.map((p) =>
+          p.id === product.id ? { ...p, ...product } : p
+        );
+
+        return updated;
+      });
+    };
+
+    socket.on("product_availability_updated", updateProduct);
+    socket.on("product_updated", updateProduct);
+
+    return () => {
+      socket.off("product_availability_updated", updateProduct);
+      socket.off("product_updated", updateProduct);
+    };
+  }, [companyId]);
+
+  /* ======================
+     UI HELPERS
+  ====================== */
+  const toggleCategory = (id) => {
+    setExpandedCategory(expandedCategory === id ? null : id);
   };
 
   const addToOrder = (product) => {
-    const exists = orderItems.find(
-      (i) => i.id === product.id
-    );
+    if (!product.available) return;
 
-    if (exists) {
-      setOrderItems(
-        orderItems.map((item) =>
-          item.id === product.id
-            ? {
-                ...item,
-                quantity: item.quantity + 1,
-              }
-            : item
-        )
-      );
-    } else {
-      setOrderItems([
-        ...orderItems,
-        { ...product, quantity: 1 },
-      ]);
-    }
+    setOrderItems((prev) => {
+      const exists = prev.find((i) => i.id === product.id);
+
+      if (exists) {
+        return prev.map((i) =>
+          i.id === product.id ? { ...i, quantity: i.quantity + 1 } : i
+        );
+      }
+
+      return [...prev, { ...product, quantity: 1 }];
+    });
 
     setShowOrderModal(true);
   };
 
-  /* ======================
-     PROMO HELPERS
-  ====================== */
-  function hasValidPromotion(product) {
-    return (
-      product.promotion === true &&
-      Number(product.promotion_value) > 0 &&
-      product.promotion_type
-    );
-  }
-
-  function calculateFinalPrice(product) {
-    const price = Number(product.price);
-    const discount = Number(
-      product.promotion_value
-    );
-
-    if (!hasValidPromotion(product))
-      return price;
-
-    if (product.promotion_type === "percentage") {
-      return Math.max(
-        price - (price * discount) / 100,
-        0
-      );
-    }
-
-    return Math.max(price - discount, 0);
-  }
-
-  function renderPromotion(product) {
-    if (!hasValidPromotion(product)) return null;
-
-    return (
-      <span className="promo-badge">
-        {product.promotion_type ===
-        "percentage"
-          ? `-${product.promotion_value}%`
-          : `R$ ${Number(
-              product.promotion_value
-            )
-              .toFixed(2)
-              .replace(".", ",")}`}
-      </span>
-    );
-  }
-
-  /* ======================
-     SKELETONS
-  ====================== */
-  const SkeletonCategory = () => (
-    <div className="category-card skeleton">
-      <div className="category-header">
-        <div className="skeleton-line title" />
-        <div className="skeleton-button" />
-      </div>
-
-      <div className="product-grid desktop-grid">
-        {Array.from({ length: 4 }).map(
-          (_, i) => (
-            <div
-              key={i}
-              className="product-skeleton"
-            >
-              <div className="skeleton-box" />
-              <div className="skeleton-line" />
-              <div className="skeleton-line short" />
-            </div>
-          )
-        )}
-      </div>
-    </div>
-  );
-
   return (
     <div className="categories-container">
       <h2 className="menu-title">
-        {company
-          ? `Cardápio • ${company.fantasyName}`
-          : "Carregando cardápio..."}
+        {company ? `Cardápio • ${company.fantasyName}` : "Carregando..."}
       </h2>
 
       {loading ? (
-        <div className="category-grid">
-          {Array.from({ length: 3 }).map(
-            (_, i) => (
-              <SkeletonCategory key={i} />
-            )
-          )}
-        </div>
-      ) : categories.length === 0 ? (
-        <p>Nenhuma categoria encontrada.</p>
+        <p>Carregando cardápio...</p>
       ) : (
         <div className="category-grid">
           {categories.map((category) => (
-            <div
-              key={category.id}
-              className="category-card"
-            >
+            <div key={category.id} className="category-card">
               <div className="category-header">
                 <h3>{category.name}</h3>
-                <button
-                  onClick={() =>
-                    toggleCategory(category.id)
-                  }
-                >
-                  {expandedCategory ===
-                  category.id
+                <button onClick={() => toggleCategory(category.id)}>
+                  {expandedCategory === category.id
                     ? "Ocultar"
                     : "Ver produtos"}
                 </button>
               </div>
 
-              {expandedCategory ===
-                category.id && (
-                <div className="product-grid desktop-grid">
-                  {productsByCategory[
-                    category.id
-                  ]?.length > 0 ? (
-                    productsByCategory[
-                      category.id
-                    ].map((product) => (
-                      <ProductCard
-                        key={product.id}
-                        product={product}
-                        onAdd={addToOrder}
-                        renderPromotion={
-                          renderPromotion
-                        }
-                        finalPrice={calculateFinalPrice(
-                          product
-                        )}
-                      />
-                    ))
-                  ) : (
-                    <p className="empty-category">
-                      Nenhum produto nesta
-                      categoria.
-                    </p>
-                  )}
+              {expandedCategory === category.id && (
+                <div className="product-grid">
+                  {productsByCategory[category.id]?.map((product) => (
+                    <ProductCard
+                      key={product.id}
+                      product={product}
+                      onAdd={addToOrder}
+                    />
+                  ))}
                 </div>
               )}
             </div>
@@ -245,9 +157,7 @@ export default function Categories() {
           company={company}
           items={orderItems}
           setItems={setOrderItems}
-          close={() =>
-            setShowOrderModal(false)
-          }
+          close={() => setShowOrderModal(false)}
         />
       )}
     </div>

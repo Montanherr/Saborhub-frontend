@@ -33,18 +33,14 @@ export default function MenuCreate() {
 
       setLoading(true);
 
-      const categoriesData =
-        await categoryService.getCategories(loggedCompanyId);
+      const categoriesData = await categoryService.getCategories(
+        loggedCompanyId
+      );
 
-      const productsData =
-        await productService.getProducts();
+      const productsData = await productService.getProducts();
 
       setCategories(categoriesData);
-      setProducts(
-        productsData.filter(
-          p => p.companyId === loggedCompanyId
-        )
-      );
+      setProducts(productsData.filter((p) => p.companyId === loggedCompanyId));
     } catch (err) {
       console.error(err);
       toast.error("Erro ao carregar menu");
@@ -85,17 +81,11 @@ export default function MenuCreate() {
   async function handleSaveCategory(name) {
     try {
       if (editingCategory) {
-        await categoryService.updateCategory(
-          editingCategory.id,
-          { name }
-        );
+        await categoryService.updateCategory(editingCategory.id, { name });
         toast.info("Categoria atualizada!");
         setEditingCategory(null);
       } else {
-        await categoryService.createCategory(
-          loggedCompanyId,
-          { name }
-        );
+        await categoryService.createCategory(loggedCompanyId, { name });
         toast.success("Categoria criada!");
       }
 
@@ -118,24 +108,17 @@ export default function MenuCreate() {
       formData.append("price", Number(productData.price));
       formData.append("categoryId", Number(productData.categoryId));
       formData.append("companyId", loggedCompanyId);
-      formData.append("available", "1");
+      formData.append("available", productData.available ? "1" : "0");
 
       // PROMOÇÃO
-      formData.append(
-        "promotion",
-        productData.promotion ? "1" : "0"
-      );
+      formData.append("promotion", productData.promotion ? "1" : "0");
       formData.append(
         "promotion_value",
-        productData.promotion
-          ? Number(productData.promotion_value)
-          : 0
+        productData.promotion ? Number(productData.promotion_value) : 0
       );
       formData.append(
         "promotion_type",
-        productData.promotion
-          ? productData.promotion_type
-          : "fixed"
+        productData.promotion ? productData.promotion_type : "fixed"
       );
 
       // TAXA DE ENTREGA
@@ -145,9 +128,7 @@ export default function MenuCreate() {
       );
       formData.append(
         "delivery_fee",
-        productData.has_delivery_fee
-          ? Number(productData.delivery_fee)
-          : 0
+        productData.has_delivery_fee ? Number(productData.delivery_fee) : 0
       );
 
       if (productData.imageFile) {
@@ -155,10 +136,7 @@ export default function MenuCreate() {
       }
 
       if (editingProduct) {
-        await productService.updateProduct(
-          editingProduct.id,
-          formData
-        );
+        await productService.updateProduct(editingProduct.id, formData);
         toast.info("Produto atualizado!");
       } else {
         await productService.createProduct(formData);
@@ -204,31 +182,30 @@ export default function MenuCreate() {
         </div>
       )}
 
-      {activeTab === "preview" && (
-        loading ? (
+      {activeTab === "preview" &&
+        (loading ? (
           <p className="loading">Carregando menu...</p>
         ) : (
           <MenuPreview
             categories={categories}
             products={products}
-            onEdit={product => {
+            onEdit={(product) => {
               setEditingProduct(product);
               setActiveTab("manage");
             }}
-            onDelete={async product => {
+            onDelete={async (product) => {
               if (!window.confirm("Deseja remover este produto?")) return;
 
               await productService.deleteProduct(product.id);
               toast.warn("Produto excluído!");
               await loadMenu();
             }}
-            onEditCategory={category => {
+            onEditCategory={(category) => {
               setEditingCategory(category);
               setActiveTab("manage");
             }}
           />
-        )
-      )}
+        ))}
     </div>
   );
 }

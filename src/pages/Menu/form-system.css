@@ -9,6 +9,14 @@
   --radius: 14px;
 }
 
+.product-card.inactive {
+  opacity: 0.5;
+}
+
+.availability-toggle {
+  margin: 8px 0;
+}
+
 .form-box {
   background: #fff;
   border-radius: var(--radius);

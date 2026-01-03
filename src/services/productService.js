@@ -20,6 +20,10 @@ const productService = {
     return response.data;
   },
 
+  toggleProductAvailability(id) {
+    return api.patch(`/products/${id}/availability`);
+  },
+
   getProducts: async () => {
     const response = await api.get("/products");
     return response.data;
@@ -38,7 +42,7 @@ const productService = {
   deleteProduct: async (id) => {
     const response = await api.delete(`/products/${id}`);
     return response.data;
-  }
+  },
 };
 
 export default productService;

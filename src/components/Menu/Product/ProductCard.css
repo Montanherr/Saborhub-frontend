@@ -151,6 +151,21 @@
   position: relative;
 }
 
+.product-card.unavailable {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.unavailable-label {
+  padding: 8px 12px;
+  background: #ccc;
+  color: #555;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+
 /* TAG PROMO */
 .promo-badge {
   position: absolute;
@@ -175,4 +190,54 @@
 .product-card.has-promotion .price {
   color: #e53935;
   font-weight: 700;
+}
+
+/* ===== BOTÃO ADICIONAR ===== */
+.product-card button {
+  width: 100%;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 0;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  background: #2d6cdf;
+  color: #ffffff;
+  transition: background 0.2s ease, transform 0.1s ease;
+}
+
+.product-card button:hover {
+  background: #1f5ac2;
+}
+
+.product-card button:active {
+  transform: scale(0.97);
+}
+
+/* ===== INDISPONÍVEL LABEL ===== */
+.unavailable-label {
+  width: 100%;
+  text-align: center;
+  background: #e0e0e0;
+  color: #777;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 10px 0;
+  border-radius: 10px;
+  cursor: not-allowed;
+}
+
+/* ===== RESPONSIVO ===== */
+@media (max-width: 768px) {
+  .image-wrapper {
+    height: 120px;
+  }
+
+  .product-info h4 {
+    font-size: 0.9rem;
+  }
+
+  .price {
+    font-size: 0.95rem;
+  }
 }
