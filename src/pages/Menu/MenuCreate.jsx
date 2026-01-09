@@ -81,7 +81,7 @@ export default function MenuCreate() {
       socket.off("product_updated", loadMenu);
       socket.off("product_deleted", loadMenu);
     };
-  }, [loggedCompanyId, loadMenu]);
+  }, [loggedCompanyId, companyIdNumber, loadMenu]);
 
   /* ======================
      CATEGORY
