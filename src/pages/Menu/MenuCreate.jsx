@@ -24,7 +24,7 @@ export default function MenuCreate() {
 
   const loggedCompanyId = localStorage.getItem("companyId");
 
-  const companyIdNumber = loggedCompanyId ? Number(loggedCompanyId) : null;
+  const companyIdNumber = Number(localStorage.getItem("companyId"));
 
   /* ======================
      LOAD CENTRALIZADO
@@ -57,14 +57,17 @@ export default function MenuCreate() {
      LOAD INICIAL
   ====================== */
   useEffect(() => {
+    if (!companyIdNumber) return;
     loadMenu();
-  }, [loadMenu]);
+  }, [loadMenu, companyIdNumber]);
 
   /* ======================
      SOCKET
   ====================== */
   useEffect(() => {
     if (!loggedCompanyId) return;
+
+    if (!companyIdNumber) return;
 
     if (companyIdNumber) {
       socket.emit("join_company", companyIdNumber);
