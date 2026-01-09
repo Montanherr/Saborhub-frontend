@@ -39,7 +39,7 @@ export default function MenuCreate() {
         loggedCompanyId
       );
 
-      const productsData = await productService.getProductsByCompany(
+      const productsData = await productService.getAdminProducts(
         loggedCompanyId
       );
 

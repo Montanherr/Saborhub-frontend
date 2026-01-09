@@ -29,7 +29,7 @@ getProductsByCompany: async (companyId) => {
     return api.patch(`/products/${id}/availability`);
   },
 
-getProductsByCompany: async (companyId) => {
+getAdminProducts: async (companyId) => {
   const response = await api.get(
     `/products/admin/company/${companyId}`
   );
