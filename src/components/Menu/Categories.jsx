@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
 import categoryService from "../../services/categoriesService";
-import productService from "../../services/productService";
 import companyService from "../../services/companyService";
 
 import ProductCard from "../../components/Menu/Product/ProductCard";
@@ -24,32 +23,30 @@ export default function Categories() {
   const [showOrderModal, setShowOrderModal] = useState(false);
 
   /* ======================
-     LOAD INICIAL (RÁPIDO)
+     LOAD INICIAL
   ====================== */
   useEffect(() => {
     async function loadMenu() {
       try {
         setLoading(true);
 
-        const [companyData, categoriesData, productsData] = await Promise.all([
+        const [companyData, categoriesData] = await Promise.all([
           companyService.getById(companyId),
           categoryService.getCategories(companyId),
-          productService.getProductsByCompany(companyId),
         ]);
 
         setCompany(companyData);
         setCategories(categoriesData);
 
+        // 🔥 Produtos já vêm dentro da categoria
         const grouped = {};
         categoriesData.forEach((category) => {
-          grouped[category.id] = productsData.filter(
-            (p) => p.categoryId === category.id
-          );
+          grouped[category.id] = category.Products || [];
         });
 
         setProductsByCategory(grouped);
       } catch (err) {
-        console.error(err);
+        console.error("Erro ao carregar cardápio:", err);
       } finally {
         setLoading(false);
       }
@@ -59,7 +56,7 @@ export default function Categories() {
   }, [companyId]);
 
   /* ======================
-     SOCKET (UPDATE LOCAL)
+     SOCKET (ATUALIZAÇÕES EM TEMPO REAL)
   ====================== */
   useEffect(() => {
     if (!companyId) return;
@@ -70,7 +67,6 @@ export default function Categories() {
     const updateProduct = (product) => {
       setProductsByCategory((prev) => {
         const updated = { ...prev };
-
         const list = updated[product.categoryId] || [];
 
         updated[product.categoryId] = list.map((p) =>
@@ -81,12 +77,12 @@ export default function Categories() {
       });
     };
 
-    socket.on("product_availability_updated", updateProduct);
     socket.on("product_updated", updateProduct);
+    socket.on("product_availability_updated", updateProduct);
 
     return () => {
-      socket.off("product_availability_updated", updateProduct);
       socket.off("product_updated", updateProduct);
+      socket.off("product_availability_updated", updateProduct);
     };
   }, [companyId]);
 
@@ -115,6 +111,9 @@ export default function Categories() {
     setShowOrderModal(true);
   };
 
+  /* ======================
+     RENDER
+  ====================== */
   return (
     <div className="categories-container">
       <h2 className="menu-title">

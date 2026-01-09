@@ -22,7 +22,9 @@ export default function MenuCreate() {
 
   const [loading, setLoading] = useState(false);
 
-  const loggedCompanyId = Number(localStorage.getItem("companyId"));
+  const loggedCompanyId = localStorage.getItem("companyId");
+
+  const companyIdNumber = loggedCompanyId ? Number(loggedCompanyId) : null;
 
   /* ======================
      LOAD CENTRALIZADO
@@ -37,10 +39,12 @@ export default function MenuCreate() {
         loggedCompanyId
       );
 
-      const productsData = await productService.getProducts();
+      const productsData = await productService.getProductsByCompany(
+        loggedCompanyId
+      );
 
+      setProducts(productsData);
       setCategories(categoriesData);
-      setProducts(productsData.filter((p) => p.companyId === loggedCompanyId));
     } catch (err) {
       console.error(err);
       toast.error("Erro ao carregar menu");
@@ -62,8 +66,9 @@ export default function MenuCreate() {
   useEffect(() => {
     if (!loggedCompanyId) return;
 
-    socket.emit("join_company", loggedCompanyId);
-
+    if (companyIdNumber) {
+      socket.emit("join_company", companyIdNumber);
+    }
     socket.on("produto_criado", loadMenu);
     socket.on("product_updated", loadMenu);
     socket.on("product_deleted", loadMenu);

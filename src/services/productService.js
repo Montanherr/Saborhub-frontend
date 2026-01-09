@@ -20,19 +20,21 @@ const productService = {
     return response.data;
   },
 
+getProductsByCompany: async (companyId) => {
+  const response = await api.get(`/products/company/${companyId}`);
+  return response.data;
+},
+
   toggleProductAvailability(id) {
     return api.patch(`/products/${id}/availability`);
   },
 
-  getProducts: async () => {
-    const response = await api.get("/products");
-    return response.data;
-  },
-
-  getProductsByCompany: async (companyId) => {
-    const response = await api.get(`/products?companyId=${companyId}`);
-    return response.data;
-  },
+getProductsByCompany: async (companyId) => {
+  const response = await api.get(
+    `/products/admin/company/${companyId}`
+  );
+  return response.data;
+},
 
   getProductById: async (id) => {
     const response = await api.get(`/products/${id}`);

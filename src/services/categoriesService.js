@@ -1,7 +1,7 @@
 import api from "./api";
 
 const categoryService = {
-  // 🔥 cria categoria DENTRO da empresa
+  // 🔐 cria categoria (painel)
   createCategory: async (companyId, data) => {
     const response = await api.post(
       `/companies/${companyId}/categories`,
@@ -10,19 +10,23 @@ const categoryService = {
     return response.data;
   },
 
-  // 🔥 lista categorias de uma empresa
+  // 🔓 lista categorias (cardápio público)
   getCategories: async (companyId) => {
     const response = await api.get(
-      `/categories?companyId=${companyId}`
+      `/categories/company/${companyId}`
     );
     return response.data;
   },
 
-  getCategoryById: async (id) => {
-    const response = await api.get(`/categories/${id}`);
+  // 🔓 categoria específica (cardápio)
+  getCategoryById: async (companyId, id) => {
+    const response = await api.get(
+      `/categories/company/${companyId}/${id}`
+    );
     return response.data;
   },
 
+  // 🔐 painel
   updateCategory: async (id, data) => {
     const response = await api.put(`/categories/${id}`, data);
     return response.data;
