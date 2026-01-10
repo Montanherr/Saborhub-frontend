@@ -36,6 +36,9 @@ export default function Header() {
         <Link to="/" onClick={() => setOpen(false)}>
           Home
         </Link>
+          <Link to="/register" onClick={() => setOpen(false)}>
+          Para Empresas
+        </Link>
 
         {isAdmin && (
           <Dropdown

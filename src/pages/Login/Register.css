@@ -1,89 +1,208 @@
+/* ===============================
+   CONTAINER
+================================ */
 .auth-container {
-  width: 100%;
-  height: 100vh;
+  min-height: 100vh;
   display: flex;
-  justify-content: center;
   align-items: center;
-  background: #f5f7fa;
-  padding: 20px;
+  justify-content: center;
+  background: linear-gradient(135deg, #f4f6f8, #e9edf2);
+  font-family: "Inter", system-ui, sans-serif;
 }
 
+/* ===============================
+   BOX
+================================ */
 .auth-box {
-  background: #fff;
-  padding: 32px;
-  border-radius: 16px;
   width: 100%;
   max-width: 420px;
-  box-shadow: 0 8px 30px rgba(0,0,0,0.08);
-  animation: fadeIn 0.3s ease;
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 32px 28px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+  animation: fadeIn 0.4s ease;
 }
 
-.auth-box h2 {
+/* ===============================
+   PROGRESS BAR
+================================ */
+.progress-bar {
+  width: 100%;
+  height: 6px;
+  background: #e5e7eb;
+  border-radius: 6px;
+  overflow: hidden;
   margin-bottom: 20px;
-  text-align: center;
-  font-size: 26px;
-  color: #222;
-  font-weight: bold;
 }
 
-.input-group {
-  margin-bottom: 15px;
+.progress {
+  height: 100%;
+  width: 50%;
+  background: linear-gradient(90deg, #6366f1, #4f46e5);
+  transition: width 0.4s ease;
+}
+
+.progress.step-1 {
+  width: 50%;
+}
+
+.progress.step-2 {
+  width: 100%;
+}
+
+/* ===============================
+   TITLES
+================================ */
+.auth-box h2 {
+  text-align: center;
+  margin-bottom: 24px;
+  font-size: 1.5rem;
+  color: #111827;
+}
+
+/* ===============================
+   FORM
+================================ */
+.auth-box form {
   display: flex;
   flex-direction: column;
+  gap: 14px;
 }
 
-input {
+/* ===============================
+   INPUTS
+================================ */
+.auth-box input,
+.auth-box select {
+  width: 100%;
   padding: 12px 14px;
   border-radius: 10px;
-  border: 1px solid #ccc;
-  width: 100%;
+  border: 1px solid #d1d5db;
+  font-size: 0.95rem;
+  transition: all 0.2s ease;
+}
+
+.auth-box input:focus,
+.auth-box select:focus {
+  border-color: #6366f1;
   outline: none;
-  font-size: 15px;
-  transition: border 0.2s;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
 }
 
-input:focus {
-  border-color: #ff6600;
+.auth-box input::placeholder {
+  color: #9ca3af;
 }
 
+/* ===============================
+   ERRORS
+================================ */
 .error {
-  color: #ff3d3d;
-  font-size: 12px;
-  margin-top: 4px;
+  font-size: 0.75rem;
+  color: #dc2626;
+  margin-top: -6px;
 }
 
-.submit-btn {
-  width: 100%;
-  margin-top: 5px;
+/* ===============================
+   BUTTONS
+================================ */
+.auth-box button {
   padding: 12px;
-  background: #ff6600;
-  color: #fff;
+  border-radius: 10px;
   border: none;
-  border-radius: 10px;
-  font-size: 16px;
-  cursor: pointer;
-  transition: 0.2s;
-}
-
-.submit-btn:hover {
-  background: #e65c00;
-  transform: scale(1.02);
-}
-
-.company-btn {
-  width: 100%;
-  margin-top: 18px;
-  padding: 12px;
-  border: 2px solid #ff6600;
-  background: none;
-  color: #ff6600;
-  border-radius: 10px;
-  font-size: 16px;
-  cursor: pointer;
+  font-size: 0.95rem;
   font-weight: 600;
-  transition: 0.2s;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
-.company-btn:hover {
-  background: #fff3e6;
+.auth-box button[type="button"],
+.auth-box button.secondary {
+  background: #e5e7eb;
+  color: #374151;
+}
+
+.auth-box button[type="button"]:hover,
+.auth-box button.secondary:hover {
+  background: #d1d5db;
+}
+
+.auth-box button[type="submit"] {
+  background: linear-gradient(135deg, #6366f1, #4f46e5);
+  color: #ffffff;
+}
+
+.auth-box button[type="submit"]:hover {
+  filter: brightness(1.05);
+}
+
+/* ===============================
+   ACTIONS
+================================ */
+.actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.actions button {
+  flex: 1;
+}
+
+/* ===============================
+   SELECT DISABLED
+================================ */
+select:disabled {
+  background: #f9fafb;
+  color: #6b7280;
+  cursor: not-allowed;
+}
+
+/* ===============================
+   ANIMATION
+================================ */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ===============================
+   RESPONSIVE
+================================ */
+@media (max-width: 480px) {
+  .auth-box {
+    padding: 24px 20px;
+  }
+
+  .auth-box h2 {
+    font-size: 1.3rem;
+  }
+}
+
+.hint {
+  font-size: 12px;
+  color: #666;
+  margin-top: -4px;
+  margin-bottom: 8px;
+}
+
+.file-label {
+  display: flex;
+  flex-direction: column;
+  font-size: 14px;
+  gap: 6px;
+}
+
+.logo-preview {
+  width: 120px;
+  height: 120px;
+  object-fit: contain;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  margin: 10px auto;
 }

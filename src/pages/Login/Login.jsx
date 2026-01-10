@@ -13,36 +13,53 @@ export default function Login() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async (e) => {
+  async function handleSubmit(e) {
     e.preventDefault();
+    setError("");
+
+    if (!email || !password) {
+      setError("Informe e-mail e senha.");
+      return;
+    }
 
     try {
       setLoading(true);
 
-      // 🔥 Faz login na API
-      const response = await userService.login({ email, password });
+      // 🔐 Login na API
+      const response = await userService.login({
+        email,
+        password,
+      });
 
-      const user = response.user;
+      const { token, user } = response;
 
-      // 🔥 Salva no localStorage (ESSENCIAL PARA O F5)
-      localStorage.setItem("token", response.token);
+      // 🔥 Persistência (importante para F5)
+      localStorage.setItem("token", token);
       localStorage.setItem("userId", user.id);
       localStorage.setItem("companyId", user.companyId);
-      localStorage.setItem("isAdmin", user.admin);
+      localStorage.setItem("role", user.role);
 
-      // 🔥 Salva também no AuthContext
+      // 👉 Flag derivada (NÃO é coluna do banco)
+      localStorage.setItem(
+        "isAdmin",
+        user.role === "admin" || user.role === "manager"
+      );
+
+      // 🔥 Atualiza contexto global
       login({
         ...user,
-        token: response.token,
+        token,
       });
 
       navigate("/");
     } catch (err) {
-      setError("E-mail ou senha inválidos.");
+      setError(
+        err.response?.data?.error || "E-mail ou senha inválidos."
+      );
     } finally {
       setLoading(false);
     }
-  };
+  }
 
   return (
     <div className="login-container">
@@ -50,6 +67,7 @@ export default function Login() {
 
       <div className="login-box">
         <h2>Entrar</h2>
+
         <form onSubmit={handleSubmit}>
           <input
             type="email"
@@ -59,6 +77,7 @@ export default function Login() {
               setEmail(e.target.value);
               setError("");
             }}
+            required
           />
 
           <input
@@ -69,6 +88,7 @@ export default function Login() {
               setPassword(e.target.value);
               setError("");
             }}
+            required
           />
 
           {error && <span className="error">{error}</span>}
