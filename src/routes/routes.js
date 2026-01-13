@@ -7,6 +7,7 @@ import MenuCreate from "../pages/Menu/MenuCreate";
 
 import Login from "../pages/Login/Login";
 import Reports from "../pages/Reports/Reports.jsx";
+import ReportsOrders from "../pages/Reports/Orders";
 import Register from "../pages/Login/Register.jsx";
 import Tables from "../pages/Table/Table.jsx";
 import Administrator from "../pages/Administrator/Index";
@@ -29,6 +30,15 @@ export default function AppRoutes() {
         element={
           <ProtectedRoute roles={["admin", "manager"]}>
             <Reports />
+          </ProtectedRoute>
+        }
+      />
+
+         <Route
+        path="/reports_orders"
+        element={
+          <ProtectedRoute roles={["admin", "manager"]}>
+            <ReportsOrders />
           </ProtectedRoute>
         }
       />

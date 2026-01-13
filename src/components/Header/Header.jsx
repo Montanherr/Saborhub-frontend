@@ -10,20 +10,26 @@ export default function Header() {
 
   const [open, setOpen] = useState(false);
 
+  const isLoggedOut = !user;
   const isAdmin = ["admin", "manager"].includes(user?.role);
   const isWaiter = ["admin", "manager", "waiter"].includes(user?.role);
+
+  const closeMenu = () => setOpen(false);
 
   const handleLogout = () => {
     logout();
     navigate("/login");
-    setOpen(false);
+    closeMenu();
   };
 
   return (
     <header className="top-menu">
-      <div className="logo">SaborHub</div>
+      {/* LOGO */}
+      <div className="logo" onClick={() => navigate("/")}>
+        SaborHub
+      </div>
 
-      {/* ☰ BOTÃO HAMBURGUER */}
+      {/* BOTÃO HAMBURGUER */}
       <button
         className="menu-toggle"
         onClick={() => setOpen(!open)}
@@ -32,14 +38,20 @@ export default function Header() {
         ☰
       </button>
 
+      {/* MENU */}
       <nav className={`menu-links ${open ? "open" : ""}`}>
-        <Link to="/" onClick={() => setOpen(false)}>
+        <Link to="/" onClick={closeMenu}>
           Home
         </Link>
-          <Link to="/register" onClick={() => setOpen(false)}>
-          Para Empresas
-        </Link>
 
+        {/* VISÍVEL SOMENTE QUANDO NÃO LOGADO */}
+        {isLoggedOut && (
+          <Link to="/register" onClick={closeMenu}>
+            Para Empresas
+          </Link>
+        )}
+
+        {/* ADMIN */}
         {isAdmin && (
           <Dropdown
             title="Administração"
@@ -47,28 +59,30 @@ export default function Header() {
               { label: "Empresas", to: "/companies" },
               { label: "Incluir Item", to: "/menu/create" },
               { label: "Relatórios", to: "/reports" },
-              { label: "Administrador", to: "/administrator" },
             ]}
+            onSelect={closeMenu}
           />
         )}
 
+        {/* GARÇOM */}
         {isWaiter && (
           <Dropdown
             title="Garçom"
             items={[
               { label: "Mesas", to: "/tables" },
-              { label: "Pedidos", to: "/orders" },
-              { label: "Chamados", to: "/calls" },
+              { label: "Pedidos", to: "/reports_orders" },
             ]}
+            onSelect={closeMenu}
           />
         )}
 
+        {/* AUTH */}
         {user ? (
           <button className="logout-btn" onClick={handleLogout}>
             Logout
           </button>
         ) : (
-          <Link to="/login" onClick={() => setOpen(false)}>
+          <Link to="/login" onClick={closeMenu}>
             Login
           </Link>
         )}

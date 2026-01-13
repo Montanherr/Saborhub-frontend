@@ -102,27 +102,26 @@ export default function OrdersModal({ company, items, setItems, close }) {
 
   // ===================== ENVIO =====================
   const handleSubmit = async () => {
-  const subtotal = items.reduce(
-  (sum, i) => sum + calculateFinalPrice(i) * i.quantity,
-  0
-);
+    const subtotal = items.reduce(
+      (sum, i) => sum + calculateFinalPrice(i) * i.quantity,
+      0
+    );
 
-const hasAnyDeliveryFee = items.some((i) => i.has_delivery_fee);
+    const hasAnyDeliveryFee = items.some((i) => i.has_delivery_fee);
 
-const productDeliveryFee = Math.max(
-  ...items
-    .filter((i) => i.has_delivery_fee)
-    .map((i) => Number(i.delivery_fee || 0)),
-  0
-);
+    const productDeliveryFee = Math.max(
+      ...items
+        .filter((i) => i.has_delivery_fee)
+        .map((i) => Number(i.delivery_fee || 0)),
+      0
+    );
 
-const deliveryFeeTotal =
-  orderType === "delivery" && hasAnyDeliveryFee
-    ? Number(company.deliveryFee || productDeliveryFee)
-    : 0;
+    const deliveryFeeTotal =
+      orderType === "delivery" && hasAnyDeliveryFee
+        ? Number(company.deliveryFee || productDeliveryFee)
+        : 0;
 
-const total = subtotal + deliveryFeeTotal;
-
+    const total = subtotal + deliveryFeeTotal;
 
     const payload = {
       companyId: company.id,
@@ -146,7 +145,7 @@ const total = subtotal + deliveryFeeTotal;
 
     try {
       setLoading(true);
-      const order = await orderService.createOrder(payload);
+      const order = await orderService.createOrder(company.id, payload);
       console.log("Pedido criado:", order);
 
       setStep(2);
@@ -210,28 +209,26 @@ const total = subtotal + deliveryFeeTotal;
   }
 
   // ===================== MODAL PADRÃO =====================
-const subtotal = items.reduce(
-  (sum, i) => sum + calculateFinalPrice(i) * i.quantity,
-  0
-);
+  const subtotal = items.reduce(
+    (sum, i) => sum + calculateFinalPrice(i) * i.quantity,
+    0
+  );
 
-const hasAnyDeliveryFee = items.some((i) => i.has_delivery_fee);
+  const hasAnyDeliveryFee = items.some((i) => i.has_delivery_fee);
 
-const productDeliveryFee = Math.max(
-  ...items
-    .filter((i) => i.has_delivery_fee)
-    .map((i) => Number(i.delivery_fee || 0)),
-  0
-);
+  const productDeliveryFee = Math.max(
+    ...items
+      .filter((i) => i.has_delivery_fee)
+      .map((i) => Number(i.delivery_fee || 0)),
+    0
+  );
 
-const deliveryFeeTotal =
-  orderType === "delivery" && hasAnyDeliveryFee
-    ? Number(company.deliveryFee || productDeliveryFee)
-    : 0;
+  const deliveryFeeTotal =
+    orderType === "delivery" && hasAnyDeliveryFee
+      ? Number(company.deliveryFee || productDeliveryFee)
+      : 0;
 
-const total = subtotal + deliveryFeeTotal;
-
-
+  const total = subtotal + deliveryFeeTotal;
 
   return (
     <div className="orders-modal-backdrop">

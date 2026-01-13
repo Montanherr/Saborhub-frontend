@@ -1,0 +1,142 @@
+.orders-page {
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.orders-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.orders-header h2 {
+  font-size: 26px;
+  color: #333;
+}
+
+.orders-header input {
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  min-width: 260px;
+  font-size: 15px;
+}
+
+.orders-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.order-card {
+  background: #fff;
+  border-radius: 14px;
+  padding: 16px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform 0.2s ease;
+}
+
+.order-card:hover {
+  transform: translateY(-4px);
+}
+
+.order-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.order-code {
+  font-weight: bold;
+  font-size: 15px;
+}
+
+.order-status {
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+/* Status colors */
+.status-pending {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.status-preparing {
+  background: #cce5ff;
+  color: #004085;
+}
+
+.status-finished {
+  background: #d4edda;
+  color: #155724;
+}
+
+.status-canceled {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.order-body p {
+  margin: 6px 0;
+  font-size: 14px;
+  color: #444;
+}
+
+.order-footer {
+  margin-top: 12px;
+  font-size: 13px;
+  color: #777;
+  text-align: right;
+}
+
+.orders-loading,
+.orders-empty {
+  text-align: center;
+  font-size: 18px;
+  color: #666;
+  margin-top: 60px;
+}
+
+/* ===== MOBILE ===== */
+@media (max-width: 600px) {
+  .orders-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .orders-header input {
+    width: 100%;
+  }
+}
+
+.status-pending {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.status-preparation {
+  background: #cce5ff;
+  color: #004085;
+}
+
+.status-finished {
+  background: #d4edda;
+  color: #155724;
+}
+
+.status-delivered {
+  background: #e2e3e5;
+  color: #383d41;
+}
