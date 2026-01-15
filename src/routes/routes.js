@@ -10,6 +10,7 @@ import Reports from "../pages/Reports/Reports.jsx";
 import ReportsOrders from "../pages/Reports/Orders";
 import Register from "../pages/Login/Register.jsx";
 import Tables from "../pages/Table/Table.jsx";
+import TrialExpired from "../pages/Plans/TrialExpired";
 import Administrator from "../pages/Administrator/Index";
 import Home from "../pages/Home/HomePublic";
 
@@ -20,6 +21,8 @@ export default function AppRoutes() {
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/companies" element={<Companies />} />
+      <Route path="/trial-expired" element={<TrialExpired />} />
+
       <Route
         path="/companies/:companyId/categories"
         element={<CategoriesScreen />}
@@ -37,7 +40,7 @@ export default function AppRoutes() {
          <Route
         path="/reports_orders"
         element={
-          <ProtectedRoute roles={["admin", "manager"]}>
+          <ProtectedRoute roles={["admin", "manager", "waiter"]}>
             <ReportsOrders />
           </ProtectedRoute>
         }

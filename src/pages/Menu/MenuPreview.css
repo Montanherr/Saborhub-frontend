@@ -41,14 +41,14 @@
   color: #111827;
 }
 
-
-
 .empty-category {
-  font-size: 1rem;
-  color: #6b7280;
-  text-align: center;
-  padding: 20px 0;
+  padding: 12px;
+  font-size: 14px;
+  color: #7f8c8d;
+  font-style: italic;
 }
+
+
 
 /* =========================
    PRODUCT GRID

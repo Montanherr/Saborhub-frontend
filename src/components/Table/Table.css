@@ -1,14 +1,21 @@
 /* ===============================
-   CONTAINER GERAL
+   CONTAINER + HEADER
 ================================ */
 .tables-container {
   padding: 24px;
 }
 
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
 .title {
   font-size: 24px;
-  margin-bottom: 16px;
   font-weight: 600;
+  color: #2c3e50;
 }
 
 /* ===============================
@@ -16,8 +23,8 @@
 ================================ */
 .tables-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 18px;
 }
 
 /* ===============================
@@ -26,89 +33,63 @@
 .table-card {
   position: relative;
   background: #ffffff;
-  border-radius: 12px;
+  border-radius: 16px;
   padding: 16px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  min-height: 200px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 190px;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  transition: all 0.2s ease;
 }
 
 .table-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
-}
-
-.table-card h3 {
-  margin: 0;
-  font-size: 18px;
+  transform: translateY(-4px);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.14);
 }
 
 /* ===============================
-   MESA CENTRAL
+   STATUS VISUAL
 ================================ */
-.table-center {
-  background: #ffffff;
-  border-radius: 10px;
-  padding: 12px;
-  width: 100%;
-  text-align: center;
-  z-index: 2;
-}
-
-.status-label {
-  margin: 8px 0 12px;
-  font-size: 14px;
-  font-weight: 600;
-}
-
-/* ===============================
-   STATUS COLORS
-================================ */
-
-/* 🟢 Disponível */
 .table-card.available {
   border-left: 6px solid #2ecc71;
 }
 
-/* 🔔 Chamando garçom */
 .table-card.calling {
   border-left: 6px solid #f1c40f;
   animation: pulse 1.2s infinite;
 }
 
-/* 🔵 Em atendimento */
 .table-card.service {
   border-left: 6px solid #3498db;
   background: #f5faff;
 }
 
-/* 🟡 Ocupada */
 .table-card.occupied {
   border-left: 6px solid #e67e22;
 }
 
-/* ⚫ Fechada */
-.table-card.closed {
-  border-left: 6px solid #7f8c8d;
-  opacity: 0.6;
+/* ===============================
+   AÇÕES (EDIT / DELETE)
+================================ */
+.table-actions {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: flex;
+  gap: 6px;
+  z-index: 5;
 }
 
-/* ===============================
-   ANIMAÇÃO CHAMANDO
-================================ */
-@keyframes pulse {
-  0% {
-    box-shadow: 0 0 0 0 rgba(241, 196, 15, 0.6);
-  }
-  70% {
-    box-shadow: 0 0 0 10px rgba(241, 196, 15, 0);
-  }
-  100% {
-    box-shadow: 0 0 0 0 rgba(241, 196, 15, 0);
-  }
+.btn.small {
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border-radius: 50%;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* ===============================
@@ -146,10 +127,43 @@
 }
 
 .chair {
-  width: 16px;
-  height: 16px;
-  background: #7f8c8d;
+  width: 14px;
+  height: 14px;
+  background: #bdc3c7;
   border-radius: 4px;
+}
+
+/* ===============================
+   MESA CENTRAL
+================================ */
+.table-center {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 14px;
+  width: 100%;
+  text-align: center;
+  z-index: 2;
+}
+
+.table-center h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #34495e;
+}
+
+/* ===============================
+   STATUS LABEL
+================================ */
+.status-label {
+  display: inline-block;
+  margin: 8px 0 14px;
+  padding: 4px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 20px;
+  background: #f1f3f5;
+  color: #555;
 }
 
 /* ===============================
@@ -158,11 +172,15 @@
 .btn {
   width: 100%;
   padding: 10px;
-  border-radius: 8px;
+  border-radius: 10px;
   border: none;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.15s ease;
+  transition: background 0.2s ease, transform 0.1s ease;
+}
+
+.btn:active {
+  transform: scale(0.97);
 }
 
 .btn.primary {
@@ -193,90 +211,76 @@
 }
 
 /* ===============================
-   TEXTOS AUXILIARES
+   LOADING / ERROR
 ================================ */
-.blocked {
-  margin-top: 8px;
-  font-size: 14px;
-  color: #7f8c8d;
-  font-weight: 500;
-}
-
-.info {
-  padding: 20px;
-}
-
+.info,
 .error {
-  padding: 20px;
-  color: #e74c3c;
+  padding: 30px;
+  text-align: center;
   font-weight: 600;
 }
 
+.error {
+  color: #e74c3c;
+}
+
 /* ===============================
-   MOBILE (até 768px)
+   ANIMAÇÃO CALLING
+================================ */
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(241, 196, 15, 0.5);
+  }
+  70% {
+    box-shadow: 0 0 0 16px rgba(241, 196, 15, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(241, 196, 15, 0);
+  }
+}
+
+/* ===============================
+   MOBILE
 ================================ */
 @media (max-width: 768px) {
-
   .tables-container {
-    padding: 12px;
+    padding: 14px;
   }
 
   .title {
     font-size: 20px;
-    margin-bottom: 12px;
   }
 
-  /* GRID MOBILE */
   .tables-grid {
     grid-template-columns: repeat(2, 1fr);
     gap: 12px;
   }
 
-  /* CARD */
   .table-card {
-    min-height: 150px;
+    min-height: 160px;
     padding: 12px;
   }
 
-  /* MESA */
-  .table-center {
-    padding: 10px;
-  }
-
-  .table-card h3 {
+  .table-center h3 {
     font-size: 16px;
   }
 
   .status-label {
-    font-size: 13px;
-    margin-bottom: 8px;
+    font-size: 12px;
   }
 
-  /* CADEIRAS (simplificadas) */
+  .chairs.left,
+  .chairs.right {
+    display: none;
+  }
+
   .chair {
     width: 12px;
     height: 12px;
   }
 
-  .chairs.top,
-  .chairs.bottom {
-    gap: 4px;
-  }
-
-  .chairs.left,
-  .chairs.right {
-    display: none; /* simplifica no mobile */
-  }
-
-  /* BOTÕES GRANDES (dedo-friendly) */
   .btn {
     padding: 12px;
     font-size: 14px;
-  }
-}
-
-@media (max-width: 768px) {
-  .table-card.calling {
-    transform: scale(1.05);
   }
 }

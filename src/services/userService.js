@@ -1,15 +1,10 @@
 import api from "./api";
 
 const userService = {
-  // Criar usuário normal
-  createUser: async (data) => {
-    const response = await api.post("/users", data);
-    return response.data;
-  },
 
   // Registrar (endpoint: /users/register)
   register: async (data) => {
-    const response = await api.post("/users/", data);
+    const response = await api.post("/users/register", data);
     return response.data;
   },
 

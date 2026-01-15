@@ -37,7 +37,7 @@ const loadData = async () => {
   }, []);
 
   const handleCreate = async (data) => {
-    await userService.createUser(data);
+    await userService.register(data);
     await loadData();
   };
 

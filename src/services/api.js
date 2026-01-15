@@ -2,10 +2,10 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "https://saborhub-backend-f7c4f594841a.herokuapp.com/api", // ajuste se necessário
+  baseURL: "https://saborhub-backend-f7c4f594841a.herokuapp.com/api",
 });
 
-// Interceptor para adicionar token automaticamente
+// 👉 Interceptor de REQUEST (token)
 api.interceptors.request.use(config => {
   const token = localStorage.getItem("token");
   if (token) {
@@ -13,5 +13,35 @@ api.interceptors.request.use(config => {
   }
   return config;
 });
+
+// 👉 Interceptor de RESPONSE (plano / empresa)
+api.interceptors.response.use(
+  response => response,
+  error => {
+    const status = error.response?.status;
+    const code = error.response?.data?.code;
+
+    if (status === 403) {
+      switch (code) {
+        case "TRIAL_EXPIRED":
+          window.location.href = "/trial-expired";
+          break;
+
+        case "SUBSCRIPTION_EXPIRED":
+          window.location.href = "/subscription-expired";
+          break;
+
+        case "PLAN_SUSPENDED":
+          window.location.href = "/plan-suspended";
+          break;
+
+        default:
+          window.location.href = "/blocked";
+      }
+    }
+
+    return Promise.reject(error);
+  }
+);
 
 export default api;

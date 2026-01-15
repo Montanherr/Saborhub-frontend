@@ -17,7 +17,6 @@ const STATUS_LABELS = {
 
 /* ======================
    PRIORIDADE DE STATUS
-   calling > service > occupied
 ====================== */
 function resolveTableStatus(assignments = []) {
   if (assignments.some(a => a.status === "calling")) return "calling";
@@ -30,6 +29,8 @@ export default function TablesView() {
   const { user } = useAuth();
   const companyId = user?.companyId;
   const isWaiter = user?.role === "waiter";
+  const canManageTables =
+    user?.role === "admin" || user?.role === "manager";
 
   const [tables, setTables] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -39,7 +40,7 @@ export default function TablesView() {
   const acceptedAudio = useRef(null);
 
   /* ======================
-     FETCH INICIAL
+     FETCH
   ====================== */
   const fetchTables = useCallback(async () => {
     if (!companyId) return;
@@ -104,7 +105,6 @@ export default function TablesView() {
             assignments.find(a => a.status === "occupied") ||
             null;
 
-          /* 🔔 SOM E VIBRAÇÃO */
           if (t.status !== newStatus) {
             if (newStatus === "calling") {
               callingAudio.current?.play().catch(() => {});
@@ -133,21 +133,93 @@ export default function TablesView() {
     };
   }, [companyId, fetchTables]);
 
+  /* ======================
+     CRUD
+  ====================== */
+  const handleCreateTable = async () => {
+    const number = prompt("Número da mesa:");
+    if (!number) return;
+
+    try {
+      setLoading(true);
+      await tableService.create({ number, companyId });
+      await fetchTables();
+    } catch {
+      alert("Erro ao criar mesa");
+    }
+  };
+
+  const handleEditTable = async (table) => {
+    const newNumber = prompt("Novo número da mesa:", table.number);
+    if (!newNumber) return;
+
+    try {
+      setLoading(true);
+      await tableService.update(table.id, { number: newNumber });
+      await fetchTables();
+    } catch {
+      alert("Erro ao atualizar mesa");
+    }
+  };
+
+  const handleDeleteTable = async (id) => {
+    if (!window.confirm("Excluir esta mesa?")) return;
+
+    try {
+      setLoading(true);
+      await tableService.delete(id);
+      await fetchTables();
+    } catch {
+      alert("Erro ao excluir mesa");
+    }
+  };
+
+  /* ======================
+     RENDER
+  ====================== */
   if (loading) return <p className="info">Carregando mesas...</p>;
   if (error) return <p className="error">Erro: {error}</p>;
 
   return (
     <div className="tables-container">
-      <h2 className="title">Mesas</h2>
+      <div className="header">
+
+        {canManageTables && (
+          <button
+            className="btn primary"
+            onClick={handleCreateTable}
+          >
+            ➕ Nova mesa
+          </button>
+        )}
+      </div>
 
       <div className="tables-grid">
         {tables.map(table => {
           const assignment = table.activeAssignment;
 
           return (
-            <div key={table.id} className={`table-card ${table.status}`}>
+            <div
+              key={table.id}
+              className={`table-card ${table.status}`}
+            >
+              {canManageTables && (
+                <div className="table-actions">
+                  <button
+                    className="btn small"
+                    onClick={() => handleEditTable(table)}
+                  >
+                    ✏️
+                  </button>
+                  <button
+                    className="btn small danger"
+                    onClick={() => handleDeleteTable(table.id)}
+                  >
+                    🗑️
+                  </button>
+                </div>
+              )}
 
-              {/* 🪑 CADEIRAS */}
               <div className="chairs top">
                 <span className="chair" />
                 <span className="chair" />
@@ -166,7 +238,6 @@ export default function TablesView() {
                 <span className="chair" />
               </div>
 
-              {/* 🍽️ MESA */}
               <div className="table-center">
                 <h3>Mesa {table.number}</h3>
 
@@ -174,41 +245,47 @@ export default function TablesView() {
                   {STATUS_LABELS[table.status]}
                 </span>
 
-                {/* 🔔 CHAMANDO */}
-                {table.status === "calling" && isWaiter && assignment && (
-                  <button
-                    className="btn primary"
-                    onClick={() =>
-                      tableAssignmentsService.accept(assignment.id)
-                    }
-                  >
-                    Atender
-                  </button>
-                )}
+                {table.status === "calling" &&
+                  isWaiter &&
+                  assignment && (
+                    <button
+                      className="btn primary"
+                      onClick={() =>
+                        tableAssignmentsService.accept(
+                          assignment.id
+                        )
+                      }
+                    >
+                      Atender
+                    </button>
+                  )}
 
-                {/* 🟡 EM ATENDIMENTO */}
-                {table.status === "service" && isWaiter && assignment && (
-                  <button
-                    className="btn warning"
-                    onClick={() =>
-                      tableAssignmentsService.finishService(assignment.id)
-                    }
-                  >
-                    Finalizar atendimento
-                  </button>
-                )}
+                {table.status === "service" &&
+                  isWaiter &&
+                  assignment && (
+                    <button
+                      className="btn warning"
+                      onClick={() =>
+                        tableAssignmentsService.finishService(
+                          assignment.id
+                        )
+                      }
+                    >
+                      Finalizar atendimento
+                    </button>
+                  )}
 
-                {/* 🔴 OCUPADA */}
-                {table.status === "occupied" && isWaiter && (
-                  <button
-                    className="btn danger"
-                    onClick={() =>
-                      tableAssignmentsService.open(table.id)
-                    }
-                  >
-                    Liberar mesa
-                  </button>
-                )}
+                {table.status === "occupied" &&
+                  isWaiter && (
+                    <button
+                      className="btn danger"
+                      onClick={() =>
+                        tableAssignmentsService.open(table.id)
+                      }
+                    >
+                      Liberar mesa
+                    </button>
+                  )}
               </div>
             </div>
           );

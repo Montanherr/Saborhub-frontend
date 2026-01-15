@@ -57,8 +57,10 @@ export default function Header() {
             title="Administração"
             items={[
               { label: "Empresas", to: "/companies" },
-              { label: "Incluir Item", to: "/menu/create" },
+              { label: "Cardápio", to: "/menu/create" },
               { label: "Relatórios", to: "/reports" },
+              { label: "Usuários", to: "/administrator" },
+
             ]}
             onSelect={closeMenu}
           />

@@ -1,0 +1,69 @@
+.trial-expired-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #f8f9fa, #eef1f4);
+  padding: 16px;
+}
+
+.trial-expired-card {
+  background: #ffffff;
+  max-width: 420px;
+  width: 100%;
+  padding: 32px 24px;
+  border-radius: 16px;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+}
+
+.trial-expired-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+}
+
+.trial-expired-card h1 {
+  font-size: 1.6rem;
+  margin-bottom: 12px;
+  color: #222;
+}
+
+.trial-expired-card p {
+  font-size: 1rem;
+  color: #555;
+  margin-bottom: 12px;
+}
+
+.secondary-text {
+  font-size: 0.9rem;
+  color: #777;
+}
+
+.back-home-button {
+  margin-top: 20px;
+  width: 100%;
+  padding: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 10px;
+  background: #ff7a00;
+  color: white;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.back-home-button:hover {
+  background: #e66f00;
+}
+
+/* 📱 Mobile */
+@media (max-width: 480px) {
+  .trial-expired-card {
+    padding: 24px 16px;
+  }
+
+  .trial-expired-card h1 {
+    font-size: 1.4rem;
+  }
+}

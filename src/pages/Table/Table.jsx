@@ -8,7 +8,7 @@ function Dashboard() {
 
   return (
     <div>
-      <h1>Mesas da Empresa</h1>
+      <h1>Mesas</h1>
       <TablesView companyId={user.companyId} />
     </div>
   );

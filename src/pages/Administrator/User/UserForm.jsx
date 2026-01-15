@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
 
+/* =========================
+   ROLES (UI PT-BR / API EN)
+========================= */
 const ROLE_OPTIONS = [
   { label: "Usuário", value: "user" },
   { label: "Gerente", value: "manager" },
@@ -23,25 +26,47 @@ export default function UserForm({
     companyId: "",
   });
 
+  /* =========================
+     CARREGAR USUÁRIO (EDIÇÃO)
+  ========================= */
   useEffect(() => {
     if (editingUser) {
-      setForm({ ...editingUser, password: "" });
+      setForm({
+        name: editingUser.name || "",
+        email: editingUser.email || "",
+        password: "",
+        cpf: editingUser.cpf || "",
+        role: editingUser.role || "user",
+        companyId: editingUser.companyId || "",
+      });
     }
   }, [editingUser]);
 
+  /* =========================
+     HANDLERS
+  ========================= */
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (editingUser) {
-      onUpdate(editingUser.id, form);
-    } else {
-      onCreate(form);
+    const payload = { ...form };
+
+    // Não envia senha vazia na edição
+    if (editingUser && !payload.password) {
+      delete payload.password;
     }
 
+    if (editingUser) {
+      onUpdate(editingUser.id, payload);
+    } else {
+      onCreate(payload);
+    }
+
+    // Reset
     setForm({
       name: "",
       email: "",
@@ -52,13 +77,16 @@ export default function UserForm({
     });
   };
 
+  /* =========================
+     RENDER
+  ========================= */
   return (
     <form className="user-form" onSubmit={handleSubmit}>
       <h3>{editingUser ? "Editar Usuário" : "Novo Usuário"}</h3>
 
       <input
         name="name"
-        placeholder="Nome"
+        placeholder="Nome completo"
         value={form.name}
         onChange={handleChange}
         required
@@ -66,6 +94,7 @@ export default function UserForm({
 
       <input
         name="email"
+        type="email"
         placeholder="E-mail"
         value={form.email}
         onChange={handleChange}
@@ -91,6 +120,7 @@ export default function UserForm({
         required
       />
 
+      {/* ROLE */}
       <select name="role" value={form.role} onChange={handleChange}>
         {ROLE_OPTIONS.map((role) => (
           <option key={role.value} value={role.value}>
@@ -99,6 +129,7 @@ export default function UserForm({
         ))}
       </select>
 
+      {/* EMPRESA */}
       <select
         name="companyId"
         value={form.companyId}
@@ -106,6 +137,7 @@ export default function UserForm({
         required
       >
         <option value="">Selecione a empresa</option>
+
         {companies.map((company) => (
           <option key={company.id} value={company.id}>
             {company.fantasyName}
@@ -113,6 +145,7 @@ export default function UserForm({
         ))}
       </select>
 
+      {/* AÇÕES */}
       <div className="form-actions">
         <button type="submit">
           {editingUser ? "Atualizar" : "Cadastrar"}

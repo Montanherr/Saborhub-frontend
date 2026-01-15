@@ -17,7 +17,14 @@ export default function Companies() {
 
     companyService
       .getAll()
-      .then(setRestaurants)
+      .then((data) => {
+        const filtered = data.filter(
+          (company) =>
+            company.plan !== "suspended" && !company.isBlocked
+        );
+
+        setRestaurants(filtered);
+      })
       .catch((err) =>
         console.error("Erro ao carregar restaurantes:", err)
       )
@@ -43,7 +50,6 @@ export default function Companies() {
   const SkeletonCard = () => (
     <div className="restaurant-card skeleton">
       <div className="image-wrapper skeleton-box" />
-
       <div className="restaurant-info">
         <div className="skeleton-line title" />
         <div className="skeleton-line" />
@@ -54,49 +60,50 @@ export default function Companies() {
 
   return (
     <div className="companies-container">
-      <h2 className="companies-title">
-        Restaurantes
-      </h2>
+      <h2 className="companies-title">Restaurantes</h2>
 
       <div className="restaurant-grid">
         {loading ? (
           Array.from({ length: itemsPerPage }).map(
-            (_, index) => (
-              <SkeletonCard key={index} />
-            )
+            (_, index) => <SkeletonCard key={index} />
           )
         ) : currentItems.length === 0 ? (
           <p className="loading">
             Nenhum restaurante encontrado
           </p>
         ) : (
-          currentItems.map((r) => (
-            <div
-              key={r.id}
-              className="restaurant-card"
-              onClick={() =>
-                handleViewMenu(r.id)
-              }
-            >
-              <div className="image-wrapper">
-                <img
-                  src={getRestaurantLogo(
-                    r.fantasyName
-                  )}
-                  alt={r.fantasyName}
-                  className="restaurant-image"
-                />
-              </div>
+          currentItems.map((r) => {
+            const imageSrc =
+              r.image || getRestaurantLogo(r.fantasyName);
 
-              <div className="restaurant-info">
-                <h3>{r.fantasyName}</h3>
-                <p>
-                  {r.description ||
-                    "Confira nosso cardápio"}
-                </p>
+            return (
+              <div
+                key={r.id}
+                className="restaurant-card"
+                onClick={() => handleViewMenu(r.id)}
+              >
+                <div className="image-wrapper">
+                  <img
+                    src={imageSrc}
+                    alt={r.fantasyName}
+                    className="restaurant-image"
+                    onError={(e) => {
+                      e.target.src =
+                        "/images/restaurant-placeholder.png";
+                    }}
+                  />
+                </div>
+
+                <div className="restaurant-info">
+                  <h3>{r.fantasyName}</h3>
+                  <p>
+                    {r.description ||
+                      "Confira nosso cardápio"}
+                  </p>
+                </div>
               </div>
-            </div>
-          ))
+            );
+          })
         )}
       </div>
 
