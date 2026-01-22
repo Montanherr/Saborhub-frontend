@@ -35,13 +35,11 @@ export default function MenuCreate() {
 
       setLoading(true);
 
-      const categoriesData = await categoryService.getCategories(
-        loggedCompanyId
-      );
+      const categoriesData =
+        await categoryService.getCategories(loggedCompanyId);
 
-      const productsData = await productService.getAdminProducts(
-        loggedCompanyId
-      );
+      const productsData =
+        await productService.getAdminProducts(loggedCompanyId);
 
       setProducts(productsData);
       setCategories(categoriesData);
@@ -104,6 +102,19 @@ export default function MenuCreate() {
     }
   }
 
+  async function handleDeleteCategory(category) {
+    if (!window.confirm("Deseja remover esta categoria?")) return;
+
+    try {
+      await categoryService.deleteCategory(category.id);
+      toast.warn("Categoria excluída!");
+      await loadMenu();
+    } catch (err) {
+      console.error(err);
+      toast.error("Erro ao excluir categoria");
+    }
+  }
+
   /* ======================
      PRODUCT
   ====================== */
@@ -122,21 +133,21 @@ export default function MenuCreate() {
       formData.append("promotion", productData.promotion ? "1" : "0");
       formData.append(
         "promotion_value",
-        productData.promotion ? Number(productData.promotion_value) : 0
+        productData.promotion ? Number(productData.promotion_value) : 0,
       );
       formData.append(
         "promotion_type",
-        productData.promotion ? productData.promotion_type : "fixed"
+        productData.promotion ? productData.promotion_type : "fixed",
       );
 
       // TAXA DE ENTREGA
       formData.append(
         "has_delivery_fee",
-        productData.has_delivery_fee ? "1" : "0"
+        productData.has_delivery_fee ? "1" : "0",
       );
       formData.append(
         "delivery_fee",
-        productData.has_delivery_fee ? Number(productData.delivery_fee) : 0
+        productData.has_delivery_fee ? Number(productData.delivery_fee) : 0,
       );
 
       if (productData.imageFile) {
@@ -212,6 +223,7 @@ export default function MenuCreate() {
               setEditingCategory(category);
               setActiveTab("manage");
             }}
+            onDeleteCategory={handleDeleteCategory}
           />
         ))}
     </div>

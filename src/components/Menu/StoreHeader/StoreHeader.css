@@ -1,0 +1,63 @@
+.store-header {
+  background: #fff;
+  padding: 20px 0;
+  border-bottom: 1px solid #eee;
+  margin-bottom: 24px;
+  background: #fff;
+  border-radius: 14px;
+  padding: 20px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+
+}
+
+.store-main {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.store-logo {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid #ddd;
+  background: #f5f5f5;
+}
+
+.store-info h1 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0;
+  color: #222;
+}
+
+.store-description {
+  font-size: 0.9rem;
+  color: #666;
+  margin: 4px 0;
+}
+
+.store-meta {
+  display: flex;
+  gap: 12px;
+  font-size: 0.85rem;
+  color: #777;
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .store-logo {
+    width: 56px;
+    height: 56px;
+  }
+
+  .store-info h1 {
+    font-size: 1.2rem;
+  }
+
+  .store-meta {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+}

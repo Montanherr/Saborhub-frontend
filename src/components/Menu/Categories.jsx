@@ -5,7 +5,9 @@ import categoryService from "../../services/categoriesService";
 import companyService from "../../services/companyService";
 
 import ProductCard from "../../components/Menu/Product/ProductCard";
+import StoreHeader from "../../components/Menu/StoreHeader/StoreHeader";
 import OrdersModal from "../../components/Modal/Order/Order";
+
 import { socket } from "../../socket/socket";
 
 import "./Categories.css";
@@ -38,7 +40,7 @@ export default function Categories() {
         setCompany(companyData);
         setCategories(categoriesData);
 
-        // 🔥 Produtos já vêm dentro da categoria
+        // Produtos agrupados por categoria
         const grouped = {};
         categoriesData.forEach((category) => {
           grouped[category.id] = category.Products || [];
@@ -56,7 +58,7 @@ export default function Categories() {
   }, [companyId]);
 
   /* ======================
-     SOCKET (ATUALIZAÇÕES EM TEMPO REAL)
+     SOCKET (TEMPO REAL)
   ====================== */
   useEffect(() => {
     if (!companyId) return;
@@ -101,7 +103,9 @@ export default function Categories() {
 
       if (exists) {
         return prev.map((i) =>
-          i.id === product.id ? { ...i, quantity: i.quantity + 1 } : i
+          i.id === product.id
+            ? { ...i, quantity: i.quantity + 1 }
+            : i
         );
       }
 
@@ -116,9 +120,8 @@ export default function Categories() {
   ====================== */
   return (
     <div className="categories-container">
-      <h2 className="menu-title">
-        {company ? `Cardápio • ${company.fantasyName}` : "Carregando..."}
-      </h2>
+      {/* HEADER DA EMPRESA */}
+      {company && <StoreHeader company={company} />}
 
       {loading ? (
         <p>Carregando cardápio...</p>
