@@ -1,20 +1,14 @@
 import { useState } from "react";
-import CompanyPage from "./Company/CompanyPage";
 import UserPage from "./User/UserPage";
 import "./Index.css";
 
 export default function Admin() {
-  const [tab, setTab] = useState("company");
+  const [tab, setTab] = useState("user");
 
   return (
     <div className="admin-container">
       <div className="tabs">
-        <button
-          className={tab === "company" ? "active" : ""}
-          onClick={() => setTab("company")}
-        >
-          Empresas
-        </button>
+     
 
         <button
           className={tab === "user" ? "active" : ""}
@@ -25,7 +19,6 @@ export default function Admin() {
       </div>
 
       <div className="tab-content">
-        {tab === "company" && <CompanyPage />}
         {tab === "user" && <UserPage />}
       </div>
     </div>

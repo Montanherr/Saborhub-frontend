@@ -1,39 +1,40 @@
 /* =========================
-   VARIÁVEIS
+   VARIÁVEIS (iFood Style)
 ========================= */
 :root {
-  --primary: #f2b705;          /* amarelo food */
-  --primary-hover: #e0a800;
-  --bg: #f8f9fb;
+  --primary: #ea1d2c;          /* vermelho iFood */
+  --primary-hover: #c51723;
+  --bg: #f8f8f8;
   --card-bg: #ffffff;
   --text-main: #1f2937;
   --text-muted: #6b7280;
-  --border-light: #e5e7eb;
+  --border-light: #ececec;
 
   --radius-lg: 16px;
   --radius-md: 12px;
-  --shadow-sm: 0 4px 14px rgba(0,0,0,0.06);
-  --shadow-md: 0 8px 24px rgba(0,0,0,0.1);
+  --shadow-sm: 0 2px 8px rgba(0,0,0,0.06);
+  --shadow-md: 0 10px 28px rgba(0,0,0,0.12);
 }
 
 /* =========================
    CONTAINER
 ========================= */
 .companies-container {
-  padding: 32px 16px;
-  max-width: 1100px;
+  padding: 24px 16px 40px;
+  max-width: 1200px;
   margin: auto;
+  background: var(--bg);
 }
 
 /* =========================
    TÍTULO
 ========================= */
 .companies-title {
-  font-size: 2rem;
+  font-size: 1.8rem;
   font-weight: 800;
-  margin-bottom: 28px;
+  margin-bottom: 24px;
   color: var(--text-main);
-  text-align: center;
+  text-align: left;
 }
 
 /* =========================
@@ -41,8 +42,8 @@
 ========================= */
 .restaurant-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 24px;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 20px;
 }
 
 /* =========================
@@ -54,12 +55,12 @@
   overflow: hidden;
   border: 1px solid var(--border-light);
   box-shadow: var(--shadow-sm);
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
   cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .restaurant-card:hover {
-  transform: translateY(-6px);
+  transform: translateY(-4px);
   box-shadow: var(--shadow-md);
 }
 
@@ -67,48 +68,56 @@
    IMAGEM
 ========================= */
 .image-wrapper {
-  background: linear-gradient(180deg, #fafafa, #f1f1f1);
-  padding: 14px;
+  background: #fafafa;
+  padding: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .restaurant-image {
   width: 100%;
-  height: 140px;
+  height: 130px;
   object-fit: contain;
   border-radius: var(--radius-md);
-}
-
-/* Badge fallback */
-.no-image-badge {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background: rgba(0,0,0,0.65);
-  color: #fff;
-  font-size: 0.7rem;
-  padding: 4px 8px;
-  border-radius: 999px;
 }
 
 /* =========================
    INFO
 ========================= */
 .restaurant-info {
-  padding: 14px;
-  text-align: center;
+  padding: 12px 14px 16px;
 }
 
 .restaurant-info h3 {
-  font-size: 1rem;
+  font-size: 0.95rem;
   font-weight: 700;
-  margin-bottom: 6px;
   color: var(--text-main);
+  margin-bottom: 6px;
 }
 
-.restaurant-info p {
-  font-size: 0.85rem;
+.restaurant-meta {
+  font-size: 0.8rem;
   color: var(--text-muted);
   line-height: 1.4;
+  margin-bottom: 4px;
+}
+
+/* =========================
+   STATUS
+========================= */
+.status {
+  margin-top: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.status.open {
+  color: #16a34a;
+}
+
+.status.closed {
+  color: var(--primary);
 }
 
 /* =========================
@@ -125,9 +134,9 @@
 .pagination button {
   background: var(--primary);
   border: none;
-  color: #000;
-  font-size: 0.9rem;
-  font-weight: 600;
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 700;
   padding: 8px 12px;
   border-radius: 10px;
   cursor: pointer;
@@ -148,17 +157,21 @@
    RESPONSIVO
 ========================= */
 @media (max-width: 768px) {
+  .companies-title {
+    font-size: 1.4rem;
+  }
+
   .restaurant-grid {
     grid-template-columns: repeat(2, 1fr);
-    gap: 16px;
+    gap: 14px;
   }
 
   .restaurant-image {
     height: 110px;
   }
 
-  .companies-title {
-    font-size: 1.5rem;
+  .restaurant-meta {
+    font-size: 0.75rem;
   }
 }
 
@@ -170,34 +183,34 @@
 }
 
 .skeleton-box {
-  height: 160px;
+  height: 150px;
   border-radius: var(--radius-lg);
   background: linear-gradient(
     90deg,
-    #ececec 25%,
-    #f4f4f4 37%,
-    #ececec 63%
+    #ededed 25%,
+    #f5f5f5 37%,
+    #ededed 63%
   );
   background-size: 400% 100%;
-  animation: shimmer 1.3s ease infinite;
+  animation: shimmer 1.4s ease infinite;
 }
 
 .skeleton-line {
   height: 14px;
-  margin-top: 10px;
+  margin-top: 8px;
   border-radius: 8px;
   background: linear-gradient(
     90deg,
-    #ececec 25%,
-    #f4f4f4 37%,
-    #ececec 63%
+    #ededed 25%,
+    #f5f5f5 37%,
+    #ededed 63%
   );
   background-size: 400% 100%;
-  animation: shimmer 1.3s ease infinite;
+  animation: shimmer 1.4s ease infinite;
 }
 
 .skeleton-line.title {
-  width: 70%;
+  width: 65%;
   height: 18px;
 }
 
