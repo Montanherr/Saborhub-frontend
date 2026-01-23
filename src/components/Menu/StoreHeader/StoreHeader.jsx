@@ -1,3 +1,4 @@
+import { useEffect, useReducer } from "react";
 import { getRestaurantLogo } from "../../../utils/restaurantLogos";
 import "./StoreHeader.css";
 
@@ -28,39 +29,27 @@ function isStoreOpen(company) {
 
   const now = new Date();
   const currentDay = now.getDay(); // 0–6
-  const currentMinutes =
-    now.getHours() * 60 + now.getMinutes();
+  const currentMinutes = now.getHours() * 60 + now.getMinutes();
 
   // verifica se hoje está nos dias configurados
   const openToday = company.workingDays.some(
     (day) => DAY_MAP[day] === currentDay
   );
-
   if (!openToday) return false;
 
-  const [openH, openM] = company.openingTime
-    .split(":")
-    .map(Number);
-  const [closeH, closeM] = company.closingTime
-    .split(":")
-    .map(Number);
+  const [openH, openM] = company.openingTime.split(":").map(Number);
+  const [closeH, closeM] = company.closingTime.split(":").map(Number);
 
   const openMinutes = openH * 60 + openM;
   const closeMinutes = closeH * 60 + closeM;
 
-  // horário normal (ex: 18:00 → 23:00)
+  // horário normal (ex: 08:00 → 20:00)
   if (openMinutes < closeMinutes) {
-    return (
-      currentMinutes >= openMinutes &&
-      currentMinutes <= closeMinutes
-    );
+    return currentMinutes >= openMinutes && currentMinutes <= closeMinutes;
   }
 
-  // vira madrugada (ex: 18:30 → 00:00)
-  return (
-    currentMinutes >= openMinutes ||
-    currentMinutes <= closeMinutes
-  );
+  // vira madrugada (ex: 18:30 → 00:00 ou 01:00)
+  return currentMinutes >= openMinutes || currentMinutes <= closeMinutes;
 }
 
 /* =========================
@@ -87,37 +76,40 @@ function formatWorkingDays(days = []) {
     "sunday",
   ];
 
-  const sorted = order.filter(d => days.includes(d));
+  const sorted = order.filter((d) => days.includes(d));
 
-  if (sorted.length === 7) {
-    return "Todos os dias";
-  }
+  if (sorted.length === 7) return "Todos os dias";
 
   if (sorted.length > 1) {
     const start = sorted[0];
     const end = sorted[sorted.length - 1];
-
     const isSequential =
-      order.indexOf(end) -
-        order.indexOf(start) +
-        1 ===
-      sorted.length;
+      order.indexOf(end) - order.indexOf(start) + 1 === sorted.length;
 
     if (isSequential) {
       return `${labels[start]} a ${labels[end]}`;
     }
   }
 
-  return sorted.map(d => labels[d]).join(", ");
+  return sorted.map((d) => labels[d]).join(", ");
 }
 
 /* =========================
    COMPONENT
 ========================= */
 export default function StoreHeader({ company }) {
-  const imageSrc =
-    company.image || getRestaurantLogo(company.fantasyName);
+  // useReducer para forçar re-render automático sem warning do ESLint
+  const [, forceUpdate] = useReducer((x) => x + 1, 0);
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      forceUpdate(); // atualiza a cada minuto
+    }, 60000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  const imageSrc = company.image || getRestaurantLogo(company.fantasyName);
   const openNow = isStoreOpen(company);
 
   return (
@@ -128,8 +120,7 @@ export default function StoreHeader({ company }) {
           alt={company.fantasyName}
           className="store-logo"
           onError={(e) => {
-            e.target.src =
-              "/images/restaurant-placeholder.png";
+            e.target.src = "/images/restaurant-placeholder.png";
           }}
         />
 
@@ -137,37 +128,30 @@ export default function StoreHeader({ company }) {
           <h1>{company.fantasyName}</h1>
 
           {company.description && (
-            <p className="store-description">
-              {company.description}
-            </p>
+            <p className="store-description">{company.description}</p>
           )}
 
           {/* STATUS */}
-          <span
-            className={`store-status ${
-              openNow ? "open" : "closed"
-            }`}
-          >
+          <span className={`store-status ${openNow ? "open" : "closed"}`}>
             {openNow ? "Aberto agora" : "Fechado"}
           </span>
 
           {/* TEMPO DE ENTREGA */}
-          {company.deliveryTimeMin &&
-            company.deliveryTimeMax && (
-              <div className="store-meta">
-                ⏱ {company.deliveryTimeMin}–
-                {company.deliveryTimeMax} min
-              </div>
-            )}
+          {company.deliveryTimeMin && company.deliveryTimeMax && (
+            <div className="store-meta">
+              ⏱ {company.deliveryTimeMin}–{company.deliveryTimeMax} min
+            </div>
+          )}
 
           {/* HORÁRIO */}
-          {company.openingTime &&
-            company.closingTime && (
-              <div className="store-hours">
-                🕒 {company.openingTime.slice(0, 5)} às{" "}
-                {company.closingTime.slice(0, 5)}
-              </div>
-            )}
+          {company.openingTime && company.closingTime && (
+            <div className="store-hours">
+              🕒 {company.openingTime.slice(0, 5)} às{" "}
+              {company.closingTime === "00:00"
+                ? "meia-noite"
+                : company.closingTime.slice(0, 5)}
+            </div>
+          )}
 
           {/* DIAS */}
           {company.workingDays && (
