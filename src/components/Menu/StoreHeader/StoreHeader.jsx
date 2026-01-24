@@ -28,10 +28,9 @@ function isStoreOpen(company) {
   }
 
   const now = new Date();
-  const currentDay = now.getDay(); // 0–6
+  const currentDay = now.getDay();
   const currentMinutes = now.getHours() * 60 + now.getMinutes();
 
-  // verifica se hoje está nos dias configurados
   const openToday = company.workingDays.some(
     (day) => DAY_MAP[day] === currentDay
   );
@@ -43,17 +42,15 @@ function isStoreOpen(company) {
   const openMinutes = openH * 60 + openM;
   const closeMinutes = closeH * 60 + closeM;
 
-  // horário normal (ex: 08:00 → 20:00)
   if (openMinutes < closeMinutes) {
     return currentMinutes >= openMinutes && currentMinutes <= closeMinutes;
   }
 
-  // vira madrugada (ex: 18:30 → 00:00 ou 01:00)
   return currentMinutes >= openMinutes || currentMinutes <= closeMinutes;
 }
 
 /* =========================
-   FORMATAR DIAS (iFood)
+   FORMATAR DIAS
 ========================= */
 function formatWorkingDays(days = []) {
   const labels = {
@@ -98,12 +95,11 @@ function formatWorkingDays(days = []) {
    COMPONENT
 ========================= */
 export default function StoreHeader({ company }) {
-  // useReducer para forçar re-render automático sem warning do ESLint
   const [, forceUpdate] = useReducer((x) => x + 1, 0);
 
   useEffect(() => {
     const interval = setInterval(() => {
-      forceUpdate(); // atualiza a cada minuto
+      forceUpdate();
     }, 60000);
 
     return () => clearInterval(interval);
@@ -114,6 +110,7 @@ export default function StoreHeader({ company }) {
 
   return (
     <div className="store-header">
+      {/* ESQUERDA */}
       <div className="store-main">
         <img
           src={imageSrc}
@@ -131,19 +128,16 @@ export default function StoreHeader({ company }) {
             <p className="store-description">{company.description}</p>
           )}
 
-          {/* STATUS */}
           <span className={`store-status ${openNow ? "open" : "closed"}`}>
             {openNow ? "Aberto agora" : "Fechado"}
           </span>
 
-          {/* TEMPO DE ENTREGA */}
           {company.deliveryTimeMin && company.deliveryTimeMax && (
             <div className="store-meta">
               ⏱ {company.deliveryTimeMin}–{company.deliveryTimeMax} min
             </div>
           )}
 
-          {/* HORÁRIO */}
           {company.openingTime && company.closingTime && (
             <div className="store-hours">
               🕒 {company.openingTime.slice(0, 5)} às{" "}
@@ -153,13 +147,28 @@ export default function StoreHeader({ company }) {
             </div>
           )}
 
-          {/* DIAS */}
           {company.workingDays && (
             <div className="store-days">
               📆 {formatWorkingDays(company.workingDays)}
             </div>
           )}
         </div>
+      </div>
+
+      {/* DIREITA */}
+      <div className="store-right">
+        {company.has_delivery_fee && company.delivery_fee != null ? (
+          <div className="store-fee">
+            🚚 Taxa de entrega
+            <strong>
+              R$ {Number(company.delivery_fee).toFixed(2)}
+            </strong>
+          </div>
+        ) : (
+          <div className="store-fee free">
+            🚚 Entrega grátis
+          </div>
+        )}
       </div>
     </div>
   );

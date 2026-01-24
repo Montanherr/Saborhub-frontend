@@ -12,17 +12,17 @@
 /* =========================
    LAYOUT
 ========================= */
-.store-main {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
 .store-content {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
   flex: 1;
+}
+
+.store-main {
+  display: flex;
+  align-items: center;
+  gap: 16px;
 }
 
 /* =========================
@@ -53,17 +53,29 @@
   margin-top: 4px;
 }
 
+.store-meta,
+.store-hours,
+.store-days {
+  font-size: 0.8rem;
+  color: #6b7280;
+  margin-top: 4px;
+}
+
 /* =========================
    DIREITA
 ========================= */
 .store-right {
-  text-align: right;
   min-width: 160px;
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
 }
 
+/* STATUS */
 .store-status {
   display: inline-block;
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   font-weight: 700;
   margin-bottom: 6px;
 }
@@ -76,12 +88,23 @@
   color: #dc2626;
 }
 
-.store-meta,
-.store-hours,
-.store-days {
+/* TAXA DE ENTREGA */
+.store-fee {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #f3f4f6;
+  padding: 6px 10px;
+  border-radius: 999px;
   font-size: 0.8rem;
-  color: #6b7280;
-  margin-top: 4px;
+  font-weight: 600;
+  color: #374151;
+  line-height: 1;
+}
+
+.store-fee.free {
+  background: #e6f7ea;
+  color: #166534;
 }
 
 /* =========================
@@ -93,8 +116,9 @@
   }
 
   .store-right {
+    align-items: flex-start;
     text-align: left;
-    margin-top: 8px;
+    margin-top: 10px;
   }
 
   .store-logo {
@@ -104,5 +128,10 @@
 
   .store-info h1 {
     font-size: 1.2rem;
+  }
+
+  .store-fee {
+    font-size: 0.75rem;
+    padding: 5px 8px;
   }
 }
