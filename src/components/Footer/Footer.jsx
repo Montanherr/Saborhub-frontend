@@ -5,7 +5,7 @@ export default function Footer() {
   return (
     <footer className="main-footer">
       <p>
-        © 2025 <span>SaborHub</span> · Todos os direitos reservados
+        © 2026 <span>SaborHub</span> · Todos os direitos reservados
       </p>
     </footer>
   );

@@ -1,15 +1,15 @@
-/* ===== CONTAINER GERAL ===== */
+/* ===== CONTAINER GERAL (mais largo) ===== */
 .categories-container {
-  max-width: 960px;
+  max-width: 1280px; /* ocupa mais a tela */
   margin: 0 auto;
-  padding: 12px;
+  padding: 16px;
 }
 
 /* ===== TÍTULO ===== */
 .menu-title {
-  font-size: 1.5rem;
+  font-size: 1.6rem;
   font-weight: 700;
-  margin: 12px 0 20px;
+  margin: 12px 0 24px;
   color: #1c1c1c;
   text-align: center;
 }
@@ -18,14 +18,14 @@
 .category-grid {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 18px;
 }
 
 /* ===== CARD DA CATEGORIA ===== */
 .category-card {
   background: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.08);
+  border-radius: 14px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
   overflow: hidden;
 }
 
@@ -34,83 +34,110 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 14px 16px;
+  padding: 16px 18px;
   background: #ffffff;
-  border-bottom: 1px solid #eeeeee;
+  border-bottom: 1px solid #f0f0f0;
   cursor: pointer;
 }
 
 .category-header h3 {
   margin: 0;
-  font-size: 1.05rem;
+  font-size: 1.1rem;
   font-weight: 700;
-  color: #222;
+  color: #1c1c1c;
 }
 
+/* Botão estilo iFood */
 .category-header button {
-  background: #f2f2f2;
+  background: #f5f5f5;
   color: #333;
   border: none;
-  border-radius: 20px;
-  padding: 6px 14px;
+  border-radius: 999px;
+  padding: 7px 16px;
   font-size: 0.8rem;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.2s ease;
+  transition: background 0.2s ease, transform 0.1s ease;
 }
 
 .category-header button:hover {
-  background: #e6e6e6;
+  background: #eaeaea;
+  transform: scale(1.03);
 }
 
-
-
-/* Desktop */
+/* ===== GRID DE PRODUTOS (DESKTOP) ===== */
 .desktop-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
-  gap: 14px;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+  padding: 16px;
 }
 
 /* ===== CATEGORIA VAZIA ===== */
 .empty-category {
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   color: #888;
   text-align: center;
-  padding: 16px 0;
+  padding: 20px 0;
 }
 
 /* ===== BADGE PROMOÇÃO ===== */
 .promo-badge {
   position: absolute;
-  top: 8px;
-  left: 8px;
+  top: 10px;
+  left: 10px;
   background: #ea1d2c;
   color: #fff;
   font-size: 0.7rem;
   font-weight: 700;
-  padding: 4px 8px;
+  padding: 5px 10px;
   border-radius: 6px;
   z-index: 2;
 }
 
-/* ===== RESPONSIVO ===== */
+/* Força o conteúdo a usar a tela toda */
+.main-content {
+  max-width: 100% !important;
+  padding: 0;
+}
+
+.categories-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+.category-card {
+  background: #fff;
+  border-radius: 12px;
+  border: 1px solid #f0f0f0;
+  box-shadow: none; /* iFood quase não usa sombra aqui */
+}
+
+
+
+/* ===== RESPONSIVO (MOBILE FIRST) ===== */
 @media (max-width: 768px) {
+  .categories-container {
+    padding: 12px;
+  }
+
   .menu-title {
-    font-size: 1.35rem;
+    font-size: 1.4rem;
   }
 
   .desktop-grid {
     grid-template-columns: 1fr;
-    gap: 10px;
+    gap: 12px;
+    padding: 12px;
   }
 
   .category-header {
-    padding: 12px 14px;
+    padding: 14px 16px;
   }
 
   .category-header button {
-    padding: 5px 12px;
+    padding: 6px 14px;
     font-size: 0.75rem;
   }
 }
