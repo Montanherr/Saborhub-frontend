@@ -3,10 +3,14 @@ import { useParams } from "react-router-dom";
 
 import categoryService from "../../services/categoriesService";
 import companyService from "../../services/companyService";
+import productService from "../../services/productService";
 
 import ProductCard from "../../components/Menu/Product/ProductCard";
 import StoreHeader from "../../components/Menu/StoreHeader/StoreHeader";
 import OrdersModal from "../../components/Modal/Order/Order";
+
+import MostSoldSection from "../../components/Menu/StoreHeader/MostSoldSection";
+import NewProductsSection from "../../components/Menu/StoreHeader/NewProductsSection";
 
 import { socket } from "../../socket/socket";
 
@@ -21,6 +25,9 @@ export default function Categories() {
   const [expandedCategory, setExpandedCategory] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  const [mostSold, setMostSold] = useState([]);
+  const [newProducts, setNewProducts] = useState([]);
+
   const [orderItems, setOrderItems] = useState([]);
   const [showOrderModal, setShowOrderModal] = useState(false);
 
@@ -32,18 +39,27 @@ export default function Categories() {
       try {
         setLoading(true);
 
-        const [companyData, categoriesData] = await Promise.all([
+        const [
+          companyData,
+          categoriesData,
+          mostSoldData,
+          newProductsData,
+        ] = await Promise.all([
           companyService.getById(companyId),
           categoryService.getCategories(companyId),
+          productService.getMostSoldProducts(companyId),
+          productService.getNewProducts(companyId),
         ]);
 
         setCompany(companyData);
         setCategories(categoriesData);
+        setMostSold(mostSoldData || []);
+        setNewProducts(newProductsData || []);
 
-        // Produtos agrupados por categoria
         const grouped = {};
         categoriesData.forEach((category) => {
-          grouped[category.id] = category.Products || [];
+          grouped[category.id] =
+            category.Products?.filter(Boolean) || [];
         });
 
         setProductsByCategory(grouped);
@@ -58,7 +74,7 @@ export default function Categories() {
   }, [companyId]);
 
   /* ======================
-     SOCKET (TEMPO REAL)
+     SOCKET
   ====================== */
   useEffect(() => {
     if (!companyId) return;
@@ -67,6 +83,8 @@ export default function Categories() {
     socket.emit("join_company", Number(companyId));
 
     const updateProduct = (product) => {
+      if (!product?.categoryId) return;
+
       setProductsByCategory((prev) => {
         const updated = { ...prev };
         const list = updated[product.categoryId] || [];
@@ -89,14 +107,14 @@ export default function Categories() {
   }, [companyId]);
 
   /* ======================
-     UI HELPERS
+     HELPERS
   ====================== */
   const toggleCategory = (id) => {
     setExpandedCategory(expandedCategory === id ? null : id);
   };
 
   const addToOrder = (product) => {
-    if (!product.available) return;
+    if (!product?.available) return;
 
     setOrderItems((prev) => {
       const exists = prev.find((i) => i.id === product.id);
@@ -120,38 +138,54 @@ export default function Categories() {
   ====================== */
   return (
     <div className="categories-container">
-      {/* HEADER DA EMPRESA */}
       {company && <StoreHeader company={company} />}
 
       {loading ? (
         <p>Carregando cardápio...</p>
       ) : (
-        <div className="category-grid">
-          {categories.map((category) => (
-            <div key={category.id} className="category-card">
-              <div className="category-header">
-                <h3>{category.name}</h3>
-                <button onClick={() => toggleCategory(category.id)}>
-                  {expandedCategory === category.id
-                    ? "Ocultar"
-                    : "Ver produtos"}
-                </button>
-              </div>
+        <>
+          <MostSoldSection
+            products={mostSold}
+            onAdd={addToOrder}
+          />
 
-              {expandedCategory === category.id && (
-                <div className="product-grid">
-                  {productsByCategory[category.id]?.map((product) => (
-                    <ProductCard
-                      key={product.id}
-                      product={product}
-                      onAdd={addToOrder}
-                    />
-                  ))}
+          <NewProductsSection
+            products={newProducts}
+            onAdd={addToOrder}
+          />
+
+          {/* 📂 CATEGORIAS */}
+          <div className="category-grid">
+            {categories.map((category) => (
+              <div key={category.id} className="category-card">
+                <div className="category-header">
+                  <h3>{category.name}</h3>
+                  <button
+                    onClick={() => toggleCategory(category.id)}
+                  >
+                    {expandedCategory === category.id
+                      ? "Ocultar"
+                      : "Ver produtos"}
+                  </button>
                 </div>
-              )}
-            </div>
-          ))}
-        </div>
+
+                {expandedCategory === category.id && (
+                  <div className="product-grid">
+                    {productsByCategory[
+                      category.id
+                    ]?.map((product) => (
+                      <ProductCard
+                        key={product.id}
+                        product={product}
+                        onAdd={addToOrder}
+                      />
+                    ))}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </>
       )}
 
       {showOrderModal && (

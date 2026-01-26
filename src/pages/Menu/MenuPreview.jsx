@@ -14,9 +14,7 @@ export default function MenuPreview({
       <h2 className="preview-title">Preview do Menu</h2>
 
       {categories.length === 0 && (
-        <p className="empty-category">
-          Nenhuma categoria cadastrada
-        </p>
+        <p className="empty-category">Nenhuma categoria cadastrada</p>
       )}
 
       {categories.map((category) => {
@@ -31,12 +29,8 @@ export default function MenuPreview({
               <h3>{category.name}</h3>
 
               <div className="category-actions">
-                <button onClick={() => onEditCategory(category)}>
-                  ✏️
-                </button>
-                <button onClick={() => onDeleteCategory(category)}>
-                  🗑️
-                </button>
+                <button onClick={() => onEditCategory(category)}>✏️</button>
+                <button onClick={() => onDeleteCategory(category)}>🗑️</button>
               </div>
             </div>
 
@@ -59,14 +53,7 @@ export default function MenuPreview({
                         !product.available ? "inactive" : ""
                       }`}
                     >
-                      {/* IMAGEM */}
-                      {product.image && (
-                        <img
-                          src={product.image}
-                          alt={product.name}
-                          className="product-img"
-                        />
-                      )}
+               
 
                       {/* INFO */}
                       <div className="product-info">
@@ -87,7 +74,7 @@ export default function MenuPreview({
                           )}
 
                           <span className="price">
-                            R$ {" "}
+                            R${" "}
                             {Number(
                               hasPromotion
                                 ? product.promotion_value
@@ -96,7 +83,7 @@ export default function MenuPreview({
                           </span>
                         </div>
 
-                        {/* TAXA DE ENTREGA */}
+                        {/* TAXA */}
                         {product.has_delivery_fee && (
                           <div className="delivery-fee">
                             Taxa: R${" "}
@@ -106,9 +93,7 @@ export default function MenuPreview({
 
                         {/* PROMO */}
                         {hasPromotion && (
-                          <span className="promo-badge">
-                            PROMOÇÃO
-                          </span>
+                          <span className="promo-badge">PROMOÇÃO</span>
                         )}
 
                         {/* DISPONIBILIDADE */}

@@ -57,7 +57,7 @@ export default function Header() {
             title="Administração"
             items={[
               { label: "Empresas", to: "/companies" },
-              { label: "Cardápio", to: "/menu/create" },
+              { label: "Loja", to: "/menu/create" },
               { label: "Relatórios", to: "/reports" },
               { label: "Usuários", to: "/administrator" },
 

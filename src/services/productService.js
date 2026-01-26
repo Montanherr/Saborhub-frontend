@@ -25,6 +25,23 @@ getProductsByCompany: async (companyId) => {
   return response.data;
 },
 
+getMostSoldProducts: async (companyId) => {
+  const res = await api.get(
+    `/product-sections/company/${companyId}/products/most-sold`
+  );
+  return res.data;
+},
+
+getNewProducts: async (companyId) => {
+  const res = await api.get(
+    `/product-sections/company/${companyId}/products/new`
+  );
+  return res.data;
+},
+
+
+
+
   toggleProductAvailability(id) {
     return api.patch(`/products/${id}/availability`);
   },
