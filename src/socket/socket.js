@@ -1,9 +1,9 @@
 import { io } from "socket.io-client";
 
-export const socket = io(
-  "https://saborhub-backend-f7c4f594841a.herokuapp.com",
-  {
-    autoConnect: true,
-    transports: ["websocket"],
-  }
-);
+const SOCKET_URL =
+  process.env.REACT_APP_SOCKET_URL || "http://localhost:4000";
+
+export const socket = io(SOCKET_URL, {
+  autoConnect: true,
+  transports: ["websocket"],
+});

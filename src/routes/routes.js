@@ -7,6 +7,7 @@ import MenuCreate from "../pages/Menu/MenuCreate";
 
 import Login from "../pages/Login/Login";
 import Reports from "../pages/Reports/Reports.jsx";
+import Shop from "../pages/Administrator/Company/CompanyPage";
 import ReportsOrders from "../pages/Reports/Orders";
 import Register from "../pages/Login/Register.jsx";
 import Tables from "../pages/Table/Table.jsx";

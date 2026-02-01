@@ -43,7 +43,7 @@ export default function OrdersModal({ company, items, setItems, close }) {
       return Math.max(
         Number(item.price) -
           (Number(item.price) * Number(item.promotion_value)) / 100,
-        0
+        0,
       );
     }
     return Math.max(Number(item.price) - Number(item.promotion_value), 0);
@@ -104,21 +104,12 @@ export default function OrdersModal({ company, items, setItems, close }) {
   const handleSubmit = async () => {
     const subtotal = items.reduce(
       (sum, i) => sum + calculateFinalPrice(i) * i.quantity,
-      0
-    );
-
-    const hasAnyDeliveryFee = items.some((i) => i.has_delivery_fee);
-
-    const productDeliveryFee = Math.max(
-      ...items
-        .filter((i) => i.has_delivery_fee)
-        .map((i) => Number(i.delivery_fee || 0)),
-      0
+      0,
     );
 
     const deliveryFeeTotal =
-      orderType === "delivery" && hasAnyDeliveryFee
-        ? Number(company.deliveryFee || productDeliveryFee)
+      orderType === "delivery" && company?.delivery_fee
+        ? Number(company.delivery_fee)
         : 0;
 
     const total = subtotal + deliveryFeeTotal;
@@ -135,6 +126,8 @@ export default function OrdersModal({ company, items, setItems, close }) {
         paymentMethod === "dinheiro" && needChange
           ? Number(changeAmount) || 0
           : 0,
+      subtotal,
+      delivery_fee: deliveryFeeTotal,
       total,
       orderType,
       items: items.map((i) => ({
@@ -179,7 +172,7 @@ export default function OrdersModal({ company, items, setItems, close }) {
 
         window.open(
           `https://wa.me/${companyPhone}?text=${encodeURIComponent(msg)}`,
-          "_blank"
+          "_blank",
         );
       } catch (err) {
         console.warn("Não foi possível abrir o WhatsApp:", err);
@@ -211,24 +204,25 @@ export default function OrdersModal({ company, items, setItems, close }) {
   // ===================== MODAL PADRÃO =====================
   const subtotal = items.reduce(
     (sum, i) => sum + calculateFinalPrice(i) * i.quantity,
-    0
+    0,
   );
 
-  const hasAnyDeliveryFee = items.some((i) => i.has_delivery_fee);
+const deliveryFeeTotal =
+  orderType === "delivery" && company?.delivery_fee
+    ? Number(company.delivery_fee)
+    : 0;
+
+const total = subtotal + deliveryFeeTotal;
 
   const productDeliveryFee = Math.max(
     ...items
       .filter((i) => i.has_delivery_fee)
       .map((i) => Number(i.delivery_fee || 0)),
-    0
+    0,
   );
 
-  const deliveryFeeTotal =
-    orderType === "delivery" && hasAnyDeliveryFee
-      ? Number(company.deliveryFee || productDeliveryFee)
-      : 0;
 
-  const total = subtotal + deliveryFeeTotal;
+
 
   return (
     <div className="orders-modal-backdrop">

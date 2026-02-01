@@ -9,6 +9,9 @@ import ProductForm from "./ProductForm";
 import MenuPreview from "./MenuPreview";
 import Tabs from "./Tabs";
 
+// 👉 NOVO
+import CompanyPage from "../Administrator/Company/CompanyPage";
+
 import "./MenuCreate.css";
 
 export default function MenuCreate() {
@@ -23,8 +26,7 @@ export default function MenuCreate() {
   const [loading, setLoading] = useState(false);
 
   const loggedCompanyId = localStorage.getItem("companyId");
-
-  const companyIdNumber = Number(localStorage.getItem("companyId"));
+  const companyIdNumber = Number(loggedCompanyId);
 
   /* ======================
      LOAD CENTRALIZADO
@@ -35,14 +37,13 @@ export default function MenuCreate() {
 
       setLoading(true);
 
-      const categoriesData =
-        await categoryService.getCategories(loggedCompanyId);
+      const [categoriesData, productsData] = await Promise.all([
+        categoryService.getCategories(loggedCompanyId),
+        productService.getAdminProducts(loggedCompanyId),
+      ]);
 
-      const productsData =
-        await productService.getAdminProducts(loggedCompanyId);
-
-      setProducts(productsData);
       setCategories(categoriesData);
+      setProducts(productsData);
     } catch (err) {
       console.error(err);
       toast.error("Erro ao carregar menu");
@@ -63,13 +64,10 @@ export default function MenuCreate() {
      SOCKET
   ====================== */
   useEffect(() => {
-    if (!loggedCompanyId) return;
-
     if (!companyIdNumber) return;
 
-    if (companyIdNumber) {
-      socket.emit("join_company", companyIdNumber);
-    }
+    socket.emit("join_company", companyIdNumber);
+
     socket.on("produto_criado", loadMenu);
     socket.on("product_updated", loadMenu);
     socket.on("product_deleted", loadMenu);
@@ -79,7 +77,7 @@ export default function MenuCreate() {
       socket.off("product_updated", loadMenu);
       socket.off("product_deleted", loadMenu);
     };
-  }, [loggedCompanyId, companyIdNumber, loadMenu]);
+  }, [companyIdNumber, loadMenu]);
 
   /* ======================
      CATEGORY
@@ -171,20 +169,52 @@ export default function MenuCreate() {
     }
   }
 
+  /* ======================
+     RENDER
+  ====================== */
   return (
     <div className="menu-create-container">
-      <h1>Gerenciar Menu</h1>
+      <h1>Painel Administrativo</h1>
 
       <Tabs
         activeTab={activeTab}
         onChange={setActiveTab}
         tabs={[
           { id: "preview", label: "🧾 Preview do Menu" },
-          { id: "manage", label: "⚙️ Gerenciar Menu" },
+          { id: "menu", label: "⚙️ Gerenciar Menu" },
+          { id: "companies", label: "🏢 Empresas" },
         ]}
       />
 
-      {activeTab === "manage" && (
+      {/* PREVIEW */}
+      {activeTab === "preview" &&
+        (loading ? (
+          <p className="loading">Carregando menu...</p>
+        ) : (
+          <MenuPreview
+            categories={categories}
+            products={products}
+            onEdit={(product) => {
+              setEditingProduct(product);
+              setActiveTab("menu");
+            }}
+            onDelete={async (product) => {
+              if (!window.confirm("Deseja remover este produto?")) return;
+
+              await productService.deleteProduct(product.id);
+              toast.warn("Produto excluído!");
+              await loadMenu();
+            }}
+            onEditCategory={(category) => {
+              setEditingCategory(category);
+              setActiveTab("menu");
+            }}
+            onDeleteCategory={handleDeleteCategory}
+          />
+        ))}
+
+      {/* MENU */}
+      {activeTab === "menu" && (
         <div className="forms-row">
           <CategoryForm
             onSubmit={handleSaveCategory}
@@ -201,31 +231,12 @@ export default function MenuCreate() {
         </div>
       )}
 
-      {activeTab === "preview" &&
-        (loading ? (
-          <p className="loading">Carregando menu...</p>
-        ) : (
-          <MenuPreview
-            categories={categories}
-            products={products}
-            onEdit={(product) => {
-              setEditingProduct(product);
-              setActiveTab("manage");
-            }}
-            onDelete={async (product) => {
-              if (!window.confirm("Deseja remover este produto?")) return;
-
-              await productService.deleteProduct(product.id);
-              toast.warn("Produto excluído!");
-              await loadMenu();
-            }}
-            onEditCategory={(category) => {
-              setEditingCategory(category);
-              setActiveTab("manage");
-            }}
-            onDeleteCategory={handleDeleteCategory}
-          />
-        ))}
+      {/* EMPRESAS */}
+      {activeTab === "companies" && (
+        <div className="companies-tab">
+          <CompanyPage />
+        </div>
+      )}
     </div>
   );
 }
