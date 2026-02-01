@@ -214,14 +214,6 @@ const deliveryFeeTotal =
 
 const total = subtotal + deliveryFeeTotal;
 
-  const productDeliveryFee = Math.max(
-    ...items
-      .filter((i) => i.has_delivery_fee)
-      .map((i) => Number(i.delivery_fee || 0)),
-    0,
-  );
-
-
 
 
   return (
