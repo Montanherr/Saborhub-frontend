@@ -23,6 +23,7 @@ export default function OrderReviewModal({
             <div key={item.id} className="order-item">
               <div>
                 {item.name} x{item.quantity}
+
                 {item.promotion && (
                   <span className="promo-tag">
                     (Promo:{" "}

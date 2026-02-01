@@ -1,0 +1,242 @@
+:root {
+  --primary: #f59e0b;
+  --primary-dark: #d97706;
+  --danger: #ef4444;
+
+  --bg: #ffffff;
+  --soft-bg: #fafafa;
+
+  --border: #e5e7eb;
+
+  --text: #1f2937;
+  --muted: #6b7280;
+
+  --radius: 14px;
+
+  --shadow-soft: 0 6px 18px rgba(0,0,0,0.06);
+  --shadow-hover: 0 12px 28px rgba(0,0,0,0.12);
+}
+
+/* =========================
+   WRAPPER
+========================= */
+.company-table-wrapper {
+  width: 100%;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* =========================
+   DESKTOP TABLE
+========================= */
+.company-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--bg);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow-soft);
+}
+
+.company-table thead {
+  background: var(--soft-bg);
+}
+
+.company-table th {
+  padding: 16px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+
+.company-table td {
+  padding: 16px;
+  border-top: 1px solid var(--border);
+  font-size: 0.95rem;
+  vertical-align: middle;
+}
+
+.company-table td span {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+/* Hover linha */
+.company-table tbody tr:hover {
+  background: #fffaf0;
+}
+
+/* =========================
+   STATUS BADGES
+========================= */
+.badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.badge.plan {
+  background: rgba(245, 158, 11, 0.15);
+  color: var(--primary-dark);
+}
+
+.badge.blocked {
+  background: rgba(239, 68, 68, 0.15);
+  color: var(--danger);
+}
+
+.badge.active {
+  background: rgba(34, 197, 94, 0.15);
+  color: #16a34a;
+}
+
+/* =========================
+   ACTIONS (DESKTOP)
+========================= */
+.actions {
+  display: flex;
+  gap: 10px;
+}
+
+.actions button {
+  padding: 8px 14px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 600;
+  background: var(--primary);
+  color: #fff;
+  transition: background 0.2s, transform 0.15s;
+}
+
+.actions button:hover {
+  background: var(--primary-dark);
+  transform: translateY(-1px);
+}
+
+.actions button.danger {
+  background: var(--danger);
+}
+
+.actions button.danger:hover {
+  background: #dc2626;
+}
+
+/* =========================
+   MOBILE CARDS
+========================= */
+.company-cards {
+  display: none;
+  gap: 16px;
+}
+
+.company-card {
+  background: var(--bg);
+  border-radius: var(--radius);
+  padding: 18px;
+  box-shadow: var(--shadow-soft);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.company-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-hover);
+}
+
+/* Header */
+.card-header {
+  margin-bottom: 10px;
+}
+
+.card-header h4 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.card-header span {
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+/* Body */
+.card-body p {
+  font-size: 0.9rem;
+  margin: 6px 0;
+  color: var(--text);
+}
+
+.card-body p span {
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+/* =========================
+   CARD ACTIONS
+========================= */
+.card-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.card-actions button {
+  flex: 1;
+  padding: 10px;
+  border-radius: 10px;
+  border: none;
+  background: var(--primary);
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: background 0.2s, transform 0.15s;
+}
+
+.card-actions button:hover {
+  background: var(--primary-dark);
+  transform: translateY(-1px);
+}
+
+.card-actions button.danger {
+  background: var(--danger);
+}
+
+.card-actions button.danger:hover {
+  background: #dc2626;
+}
+
+/* =========================
+   STATES
+========================= */
+.table-loading,
+.table-empty {
+  padding: 28px;
+  text-align: center;
+  font-size: 0.95rem;
+  color: var(--muted);
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+@media (max-width: 768px) {
+  .company-table {
+    display: none;
+  }
+
+  .company-cards {
+    display: flex;
+    flex-direction: column;
+  }
+}

@@ -2,8 +2,10 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "https://saborhub-backend-f7c4f594841a.herokuapp.com/api",
+  baseURL: process.env.REACT_APP_API_URL,
 });
+console.log("API BASE URL:", process.env.REACT_APP_API_URL);
+
 
 // 👉 Interceptor de REQUEST (token)
 api.interceptors.request.use(config => {

@@ -1,186 +1,274 @@
-/* =========================
-   PÁGINA
-========================= */
-.company-page {
-  background: #f4f5f7;
-  min-height: 100vh;
-  padding: 32px 24px;
-}
-
-/* CONTAINER */
-.company-container {
-  max-width: 1400px;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  gap: 32px;
+:root {
+  --primary: #f59e0b;
+  --primary-dark: #d97706;
+  --bg: #ffffff;
+  --border: #e5e7eb;
+  --text: #1f2937;
+  --muted: #6b7280;
+  --radius: 14px;
+  --soft-bg: #fafafa;
 }
 
 /* =========================
-   CARD BASE
-========================= */
-.card {
-  background: #fff;
-  border-radius: 18px;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.06);
-  padding: 24px;
-}
-
-/* =========================
-   FORMULÁRIO
+   CONTAINER FORM
 ========================= */
 .company-form {
-  display: flex;
-  flex-direction: column;
+  background: var(--bg);
+  border-radius: var(--radius);
+  padding: 32px;
+  max-width: 1100px;
+  margin: auto;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08);
+}
+
+/* =========================
+   HEADER
+========================= */
+.form-header {
+  margin-bottom: 32px;
+}
+
+.form-header h2 {
+  font-size: 1.7rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.form-header p {
+  font-size: 0.95rem;
+  color: var(--muted);
+  margin-top: 4px;
+}
+
+/* =========================
+   SEÇÕES
+========================= */
+.form-section {
+  margin-bottom: 36px;
+}
+
+.form-section h3 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 18px;
+  color: var(--text);
+}
+
+/* =========================
+   GRID PRINCIPAL (FORM + FOTO)
+========================= */
+.form-layout {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 32px;
+  align-items: flex-start;
+}
+
+/* =========================
+   GRID DE CAMPOS
+========================= */
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
   gap: 20px;
 }
 
-/* TÍTULO */
-.company-form h3 {
-  margin: 0;
-  font-size: 20px;
-  font-weight: 600;
-  color: #333;
-  border-bottom: 1px solid #eee;
-  padding-bottom: 12px;
+.field {
+  display: flex;
+  flex-direction: column;
 }
 
-/* GRID DOS INPUTS */
-.company-form .form-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 16px;
+.field.full {
+  grid-column: span 2;
 }
 
-/* INPUT */
-.company-form input {
-  padding: 12px 14px;
+.field label {
+  font-size: 0.85rem;
+  margin-bottom: 6px;
+  color: var(--muted);
+}
+
+.field input,
+.field select {
+  padding: 14px 16px;
   border-radius: 10px;
-  border: 1px solid #ddd;
-  font-size: 14px;
+  border: 1px solid var(--border);
+  font-size: 0.95rem;
+  background: var(--bg);
   transition: border 0.2s, box-shadow 0.2s;
 }
 
-.company-form input:focus {
+.field input:focus,
+.field select:focus {
   outline: none;
-  border-color: #ff7a00;
-  box-shadow: 0 0 0 2px rgba(255,122,0,0.15);
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2);
 }
 
 /* =========================
-   AÇÕES FORM
+   UPLOAD DE IMAGEM
+========================= */
+.image-upload {
+  background: var(--soft-bg);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  text-align: center;
+}
+
+.image-upload img {
+  width: 100%;
+  height: 200px;
+  object-fit: contain;
+  border-radius: 12px;
+  background: #fff;
+  margin-bottom: 14px;
+}
+
+.image-placeholder {
+  height: 200px;
+  border-radius: 12px;
+  background: #f3f4f6;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  margin-bottom: 14px;
+}
+
+.upload-btn {
+  display: inline-block;
+  padding: 12px 18px;
+  background: var(--primary);
+  color: #fff;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.upload-btn:hover {
+  background: var(--primary-dark);
+}
+
+/* =========================
+   CHECKBOXES
+========================= */
+.checkbox {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.9rem;
+  color: var(--text);
+}
+
+.checkbox-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-top: 12px;
+}
+
+/* =========================
+   AÇÕES
 ========================= */
 .form-actions {
   display: flex;
   justify-content: flex-end;
   gap: 12px;
+  margin-top: 32px;
 }
 
-.form-actions button {
-  padding: 12px 22px;
-  border-radius: 10px;
-  font-size: 14px;
-  font-weight: 500;
+button {
   border: none;
-  cursor: pointer;
-  transition: transform 0.15s, box-shadow 0.15s;
-}
-
-.form-actions button:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 6px 14px rgba(0,0,0,0.15);
-}
-
-.form-actions button[type="submit"] {
-  background: #ff7a00;
-  color: #fff;
-}
-
-.form-actions .cancel {
-  background: #e0e0e0;
-  color: #333;
-}
-
-/* =========================
-   TABELA
-========================= */
-.company-table-wrapper {
-  overflow-x: auto;
-}
-
-.company-table {
-  width: 100%;
-  min-width: 900px;
-  border-collapse: collapse;
-}
-
-.company-table th,
-.company-table td {
-  padding: 14px 16px;
-  font-size: 14px;
-}
-
-.company-table th {
-  text-align: left;
-  background: #fafafa;
-  color: #555;
+  border-radius: 12px;
+  padding: 14px 22px;
+  font-size: 0.95rem;
   font-weight: 600;
-}
-
-.company-table td {
-  color: #333;
-}
-
-.company-table tr:not(:last-child) td {
-  border-bottom: 1px solid #eee;
-}
-
-.company-table tbody tr:hover {
-  background: #fff7ef;
-}
-
-/* =========================
-   AÇÕES TABELA
-========================= */
-.actions {
-  display: flex;
-  gap: 10px;
-}
-
-.actions button {
-  padding: 8px 12px;
-  border-radius: 8px;
-  border: none;
-  font-size: 13px;
   cursor: pointer;
 }
 
-.actions button:first-child {
-  background: #ffcc80;
-}
-
-.actions .delete {
-  background: #e53935;
+button.primary {
+  background: var(--primary);
   color: #fff;
 }
 
+button.primary:hover {
+  background: var(--primary-dark);
+}
+
+button.secondary {
+  background: #f3f4f6;
+  color: var(--text);
+}
+
+button.secondary:hover {
+  background: #e5e7eb;
+}
+
+.status-badge {
+  margin-top: 8px;
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+
+.status-badge.open {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.status-badge.closed {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+
 /* =========================
-   RESPONSIVO
+   📱 RESPONSIVO
 ========================= */
-@media (max-width: 768px) {
-  .company-page {
-    padding: 20px 14px;
+@media (max-width: 1024px) {
+  .form-layout {
+    grid-template-columns: 1fr;
   }
 
-  .card {
-    padding: 20px;
+  .image-upload {
+    max-width: 360px;
+  }
+}
+
+@media (max-width: 640px) {
+  .company-form {
+    padding: 22px;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .field.full {
+    grid-column: span 1;
+  }
+
+  .checkbox-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
 
   .form-actions {
     flex-direction: column;
   }
 
-  .form-actions button {
+  button {
     width: 100%;
   }
 }

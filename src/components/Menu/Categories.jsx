@@ -16,6 +16,68 @@ import { socket } from "../../socket/socket";
 
 import "./Categories.css";
 
+/* ======================
+   CONFIG PAGINAÇÃO
+====================== */
+const CATEGORIES_PER_PAGE = 5;
+
+/* ======================
+   HELPER → PRÓXIMA ABERTURA
+====================== */
+function getNextOpening(company) {
+  if (!company?.workingDays?.length || !company.openingTime) return null;
+
+  const DAY_MAP = {
+    sunday: 0,
+    monday: 1,
+    tuesday: 2,
+    wednesday: 3,
+    thursday: 4,
+    friday: 5,
+    saturday: 6,
+  };
+
+  const DAY_LABEL = {
+    sunday: "Domingo",
+    monday: "Segunda",
+    tuesday: "Terça",
+    wednesday: "Quarta",
+    thursday: "Quinta",
+    friday: "Sexta",
+    saturday: "Sábado",
+  };
+
+  const now = new Date(
+    new Date().toLocaleString("en-US", {
+      timeZone: "America/Sao_Paulo",
+    })
+  );
+
+  const today = now.getDay();
+  const currentMinutes = now.getHours() * 60 + now.getMinutes();
+  const [openH, openM] = company.openingTime.split(":").map(Number);
+  const openingMinutes = openH * 60 + openM;
+
+  for (let i = 0; i < 7; i++) {
+    const dayIndex = (today + i) % 7;
+    const dayKey = Object.keys(DAY_MAP).find(
+      (key) => DAY_MAP[key] === dayIndex
+    );
+
+    if (!company.workingDays.includes(dayKey)) continue;
+
+    if (i === 0 && openingMinutes > currentMinutes) {
+      return `Hoje às ${company.openingTime.slice(0, 5)}`;
+    }
+
+    if (i > 0) {
+      return `${DAY_LABEL[dayKey]} às ${company.openingTime.slice(0, 5)}`;
+    }
+  }
+
+  return null;
+}
+
 export default function Categories() {
   const { companyId } = useParams();
 
@@ -30,6 +92,9 @@ export default function Categories() {
 
   const [orderItems, setOrderItems] = useState([]);
   const [showOrderModal, setShowOrderModal] = useState(false);
+  const [showClosedModal, setShowClosedModal] = useState(false);
+
+  const [currentPage, setCurrentPage] = useState(1);
 
   /* ======================
      LOAD INICIAL
@@ -110,11 +175,19 @@ export default function Categories() {
      HELPERS
   ====================== */
   const toggleCategory = (id) => {
+    if (!company?.open) {
+      setShowClosedModal(true);
+      return;
+    }
+
     setExpandedCategory(expandedCategory === id ? null : id);
   };
 
   const addToOrder = (product) => {
-    if (!product?.available) return;
+    if (!company?.open || !product?.available) {
+      setShowClosedModal(true);
+      return;
+    }
 
     setOrderItems((prev) => {
       const exists = prev.find((i) => i.id === product.id);
@@ -134,6 +207,18 @@ export default function Categories() {
   };
 
   /* ======================
+     PAGINAÇÃO
+  ====================== */
+  const totalPages = Math.ceil(
+    categories.length / CATEGORIES_PER_PAGE
+  );
+
+  const paginatedCategories = categories.slice(
+    (currentPage - 1) * CATEGORIES_PER_PAGE,
+    currentPage * CATEGORIES_PER_PAGE
+  );
+
+  /* ======================
      RENDER
   ====================== */
   return (
@@ -144,28 +229,25 @@ export default function Categories() {
         <p>Carregando cardápio...</p>
       ) : (
         <>
-          <MostSoldSection
-            products={mostSold}
-            onAdd={addToOrder}
-          />
-
-          <NewProductsSection
-            products={newProducts}
-            onAdd={addToOrder}
-          />
+          <MostSoldSection products={mostSold} onAdd={addToOrder} />
+          <NewProductsSection products={newProducts} onAdd={addToOrder} />
 
           {/* 📂 CATEGORIAS */}
           <div className="category-grid">
-            {categories.map((category) => (
+            {paginatedCategories.map((category) => (
               <div key={category.id} className="category-card">
                 <div className="category-header">
                   <h3>{category.name}</h3>
+
                   <button
+                    className={!company?.open ? "btn-closed" : ""}
                     onClick={() => toggleCategory(category.id)}
                   >
-                    {expandedCategory === category.id
-                      ? "Ocultar"
-                      : "Ver produtos"}
+                    {company?.open
+                      ? expandedCategory === category.id
+                        ? "Ocultar"
+                        : "Ver produtos"
+                      : `🔒 Fechado • Abre ${getNextOpening(company)}`}
                   </button>
                 </div>
 
@@ -185,6 +267,29 @@ export default function Categories() {
               </div>
             ))}
           </div>
+
+          {/* 🔢 PAGINAÇÃO */}
+          {totalPages > 1 && (
+            <div className="pagination">
+              <button
+                disabled={currentPage === 1}
+                onClick={() => setCurrentPage((p) => p - 1)}
+              >
+                ◀ Anterior
+              </button>
+
+              <span>
+                Página {currentPage} de {totalPages}
+              </span>
+
+              <button
+                disabled={currentPage === totalPages}
+                onClick={() => setCurrentPage((p) => p + 1)}
+              >
+                Próxima ▶
+              </button>
+            </div>
+          )}
         </>
       )}
 
@@ -195,6 +300,22 @@ export default function Categories() {
           setItems={setOrderItems}
           close={() => setShowOrderModal(false)}
         />
+      )}
+
+      {/* 🔒 MODAL RESTAURANTE FECHADO */}
+      {showClosedModal && (
+        <div className="closed-modal">
+          <div className="closed-box">
+            <h2>🔒 Restaurante fechado</h2>
+            <p>
+              Abrimos{" "}
+              <strong>{getNextOpening(company)}</strong>
+            </p>
+            <button onClick={() => setShowClosedModal(false)}>
+              Entendi
+            </button>
+          </div>
+        </div>
       )}
     </div>
   );
