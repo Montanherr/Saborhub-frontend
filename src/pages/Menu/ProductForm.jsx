@@ -65,8 +65,6 @@ export default function ProductForm({
       return alert("O valor promocional deve ser menor que o preço original");
     }
 
-    // 🔥 DEBUG OPCIONAL
-    console.log("Arquivo selecionado:", form.imageFile);
 
     onSubmit({
       name: form.name,

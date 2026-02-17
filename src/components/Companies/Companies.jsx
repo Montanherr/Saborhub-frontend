@@ -110,7 +110,6 @@ export default function Companies() {
   );
 
  const handleViewMenu = (company) => {
-  console.log("Navegando para:", company.slug);
   if (!company.slug) return alert("Empresa sem slug definido!");
   navigate(`/cardapio/${company.slug}`);
 };

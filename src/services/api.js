@@ -5,7 +5,6 @@ const api = axios.create({
   baseURL: process.env.REACT_APP_API_URL,
 });
 
-console.log("API BASE URL:", process.env.REACT_APP_API_URL);
 
 /* ==================================================
    🔐 INTERCEPTOR DE REQUEST (envia token automaticamente)

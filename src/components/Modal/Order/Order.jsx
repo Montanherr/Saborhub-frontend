@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
 import orderService from "../../../services/orderService";
 import tableService from "../../../services/tableService";
 import tableAssignmentsService from "../../../services/tableAssignments";
@@ -34,19 +33,18 @@ export default function OrdersModal({ company, items, setItems, close }) {
   const [changeAmount, setChangeAmount] = useState("");
 
   const acceptedAudio = useRef(null);
-  const navigate = useNavigate();
 
   // Calcula preço final considerando promoção
   const calculateFinalPrice = (item) => {
-    if (!item.promotion) return Number(item.price);
+    const price = Number(item.price);
+    if (!item.promotion) return price;
+
     if (item.promotion_type === "percentage") {
-      return Math.max(
-        Number(item.price) -
-          (Number(item.price) * Number(item.promotion_value)) / 100,
-        0,
-      );
+      return Math.max(price - (price * Number(item.promotion_value)) / 100, 0);
     }
-    return Math.max(Number(item.price) - Number(item.promotion_value), 0);
+
+    // Promoção fixa
+    return Number(item.promotion_value) || price;
   };
 
   // ===================== MESA =====================
@@ -139,7 +137,6 @@ export default function OrdersModal({ company, items, setItems, close }) {
     try {
       setLoading(true);
       const order = await orderService.createOrder(company.id, payload);
-      console.log("Pedido criado:", order);
 
       setStep(2);
 
@@ -207,14 +204,12 @@ export default function OrdersModal({ company, items, setItems, close }) {
     0,
   );
 
-const deliveryFeeTotal =
-  orderType === "delivery" && company?.delivery_fee
-    ? Number(company.delivery_fee)
-    : 0;
+  const deliveryFeeTotal =
+    orderType === "delivery" && company?.delivery_fee
+      ? Number(company.delivery_fee)
+      : 0;
 
-const total = subtotal + deliveryFeeTotal;
-
-
+  const total = subtotal + deliveryFeeTotal;
 
   return (
     <div className="orders-modal-backdrop">
@@ -363,8 +358,7 @@ const total = subtotal + deliveryFeeTotal;
             onBack={() => setStep(0)}
             onConfirm={handleSubmit}
             onAddMore={() => {
-              close();
-              navigate(`/companies/${company.id}/categories`);
+              close(); // apenas fecha o modal
             }}
             onClose={close}
           />

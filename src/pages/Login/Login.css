@@ -1,85 +1,90 @@
-/* ========================================= */
-/* CONFIGURAÇÕES GLOBAIS / DESIGN SYSTEM     */
-/* ========================================= */
+/* ===============================
+   DESIGN SYSTEM
+================================= */
 :root {
-  /* Cores (Branding e UI) */
-  --primary: #ff6600;
-  --primary-hover: #e65c00;
-  --primary-light: rgba(255, 102, 0, 0.1);
-  --bg-gradient: linear-gradient(180deg, #ffffff 0%, #f8f9fa 100%);
-  
-  /* Texto */
-  --text-main: #1a1a1a;
-  --text-muted: #666666;
-  --text-error: #dc3545;
-  
-  /* Superfícies */
-  --border-color: #e0e0e0;
-  --card-bg: #ffffff;
-  
-  /* Sombras e Bordas */
-  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
-  --shadow-lg: 0 10px 40px rgba(0, 0, 0, 0.08);
-  --radius-md: 12px;
-  --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  --primary: #ff6a00;
+  --primary-dark: #e65c00;
+  --bg: #f6f7fb;
+
+  --text-main: #1f2933;
+  --text-muted: #6b7280;
+  --error: #dc2626;
+
+  --white: #ffffff;
+  --border: #e5e7eb;
+
+  --radius: 14px;
+  --shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+
+  --transition: 0.25s ease;
 }
 
-/* Reset básico para garantir consistência */
+/* RESET */
 * {
-  box-sizing: border-box;
   margin: 0;
   padding: 0;
-  font-family: 'Inter', -apple-system, sans-serif; /* Fontes de sistema modernas */
+  box-sizing: border-box;
+  font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont,
+    sans-serif;
 }
 
-/* ========================================= */
-/* CONTAINER PRINCIPAL                       */
-/* ========================================= */
+/* ===============================
+   CONTAINER
+================================= */
 .login-container {
   min-height: 100vh;
+  background: linear-gradient(180deg, #ffffff, #f3f4f6);
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   padding: 24px;
-  background: var(--bg-gradient);
 }
 
-/* ===== LOGO / TÍTULO ===== */
-.app-title {
-  font-size: 40px;
-  font-weight: 900;
-  color: var(--primary);
+/* ===============================
+   BRAND
+================================= */
+.brand-area {
+  text-align: center;
   margin-bottom: 32px;
-  letter-spacing: -1.5px;
-  /* Efeito sutil de gradiente no texto */
-  background: linear-gradient(to bottom right, #ff6600, #ff8533);
+}
+
+.app-title {
+  font-size: 42px;
+  font-weight: 900;
+  background: linear-gradient(135deg, #ff6a00, #ff9a3c);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
-/* ========================================= */
-/* CARD DE LOGIN (BOX)                       */
-/* ========================================= */
+.subtitle {
+  margin-top: 6px;
+  font-size: 15px;
+  color: var(--text-muted);
+}
+
+/* ===============================
+   CARD
+================================= */
 .login-box {
   width: 100%;
-  max-width: 400px;
-  background: var(--card-bg);
-  padding: 40px;
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-lg);
-  border: 1px solid rgba(0, 0, 0, 0.02); /* Borda quase invisível para definição */
+  max-width: 420px;
+  background: var(--white);
+  padding: 36px;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
 }
 
 .login-box h2 {
   text-align: center;
+  font-size: 22px;
   margin-bottom: 28px;
-  font-size: 24px;
-  font-weight: 700;
   color: var(--text-main);
 }
 
-/* ===== FORMULÁRIO ===== */
+/* ===============================
+   FORM
+================================= */
 .login-box form {
   display: flex;
   flex-direction: column;
@@ -96,115 +101,98 @@
   font-size: 14px;
   font-weight: 600;
   color: var(--text-muted);
-  margin-left: 2px;
 }
 
-/* ===== INPUTS ===== */
+/* ===============================
+   INPUT
+================================= */
 .login-box input {
-  width: 100%;
   padding: 14px 16px;
   border-radius: 10px;
-  border: 1.5px solid var(--border-color);
-  font-size: 16px;
-  color: var(--text-main);
-  background: #fff;
+  border: 1.5px solid var(--border);
+  font-size: 15px;
   transition: var(--transition);
 }
 
-.login-box input:hover {
-  border-color: #ccc;
-}
-
 .login-box input:focus {
-  border-color: var(--primary);
-  box-shadow: 0 0 0 4px var(--primary-light);
   outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px rgba(255, 106, 0, 0.15);
 }
 
-/* Placeholder mais elegante */
-.login-box input::placeholder {
-  color: #a0a0a0;
-}
-
-/* ===== MENSAGEM DE ERRO ===== */
+/* ===============================
+   ERROR
+================================= */
 .error {
   font-size: 13px;
-  font-weight: 500;
-  color: var(--text-error);
-  display: flex;
-  align-items: center;
-  gap: 4px;
+  color: var(--error);
+  text-align: center;
 }
 
-/* ===== BOTÃO PRINCIPAL ===== */
+/* ===============================
+   BUTTON
+================================= */
 .login-box button {
-  margin-top: 8px;
+  margin-top: 6px;
   padding: 14px;
   border-radius: 10px;
   border: none;
   background: var(--primary);
-  color: #fff;
+  color: white;
   font-size: 16px;
   font-weight: 700;
   cursor: pointer;
   transition: var(--transition);
-  box-shadow: 0 4px 12px rgba(255, 102, 0, 0.2);
 }
 
 .login-box button:hover {
-  background: var(--primary-hover);
+  background: var(--primary-dark);
   transform: translateY(-1px);
-  box-shadow: 0 6px 16px rgba(255, 102, 0, 0.3);
-}
-
-.login-box button:active {
-  transform: translateY(0);
 }
 
 .login-box button:disabled {
-  background: #ccc;
-  box-shadow: none;
+  opacity: 0.6;
   cursor: not-allowed;
   transform: none;
 }
 
-/* ========================================= */
-/* LINKS ADICIONAIS (Esqueci a senha, etc)   */
-/* ========================================= */
+/* ===============================
+   FOOTER
+================================= */
 .login-footer {
-  margin-top: 24px;
-  text-align: center;
+  margin-top: 22px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+}
+
+.login-footer span {
+  color: var(--text-muted);
 }
 
 .login-footer a {
-  font-size: 14px;
   color: var(--primary);
-  text-decoration: none;
   font-weight: 600;
-  transition: var(--transition);
+  text-decoration: none;
 }
 
 .login-footer a:hover {
-  color: var(--primary-hover);
   text-decoration: underline;
 }
 
-/* ========================================= */
-/* RESPONSIVIDADE                            */
-/* ========================================= */
+/* ===============================
+   RESPONSIVE
+================================= */
 @media (max-width: 480px) {
-  .login-container {
-    background: #fff; /* Em mobile, fundos sólidos costumam parecer mais limpos */
-    padding: 20px;
-  }
-
   .login-box {
+    padding: 26px 22px;
     box-shadow: none;
-    border: none;
-    padding: 0;
+    background: transparent;
   }
 
   .app-title {
-    font-size: 32px;
+    font-size: 34px;
   }
 }

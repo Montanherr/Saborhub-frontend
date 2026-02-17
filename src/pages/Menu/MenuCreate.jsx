@@ -19,6 +19,8 @@ export default function MenuCreate() {
 
   const [categories, setCategories] = useState([]);
   const [products, setProducts] = useState([]);
+  const [mostSold, setMostSold] = useState([]); // 🔹 adicionado
+  const [newProducts, setNewProducts] = useState([]); // 🔹 adicionado
 
   const [editingCategory, setEditingCategory] = useState(null);
   const [editingProduct, setEditingProduct] = useState(null);
@@ -37,13 +39,18 @@ export default function MenuCreate() {
 
       setLoading(true);
 
-      const [categoriesData, productsData] = await Promise.all([
-        categoryService.getCategories(loggedCompanyId),
-        productService.getAdminProducts(loggedCompanyId),
-      ]);
+      const [categoriesData, productsData, mostSoldData, newProductsData] =
+        await Promise.all([
+          categoryService.getCategories(loggedCompanyId),
+          productService.getAdminProducts(loggedCompanyId),
+          productService.getMostSoldProducts(loggedCompanyId),
+          productService.getNewProducts(loggedCompanyId),
+        ]);
 
       setCategories(categoriesData);
       setProducts(productsData);
+      setMostSold(mostSoldData || []);
+      setNewProducts(newProductsData || []);
     } catch (err) {
       console.error(err);
       toast.error("Erro ao carregar menu");
@@ -116,66 +123,70 @@ export default function MenuCreate() {
   /* ======================
      PRODUCT
   ====================== */
-async function handleSaveProduct(productData) {
-  try {
-    const formData = new FormData();
+  async function handleSaveProduct(productData) {
+    try {
+      const formData = new FormData();
 
-    // ======================
-    // CAMPOS PRINCIPAIS
-    // ======================
-    formData.append("name", productData.name);
-    formData.append("description", productData.description || "");
-    formData.append("price", productData.price);
-    formData.append("categoryId", productData.categoryId);
-    formData.append("available", productData.available ? "1" : "0");
+      // CAMPOS PRINCIPAIS
+      formData.append("name", productData.name);
+      formData.append("description", productData.description || "");
+      formData.append("price", productData.price);
+      formData.append("categoryId", productData.categoryId);
+      formData.append("available", productData.available ? "1" : "0");
 
-    // ======================
-    // PROMOÇÃO
-    // ======================
-    formData.append("promotion", productData.promotion ? "1" : "0");
-
-    formData.append(
-      "promotion_value",
-      productData.promotion
-        ? Number(productData.promotion_value || 0)
-        : 0,
-    );
-
-    formData.append(
-      "promotion_type",
-      productData.promotion ? "fixed" : "fixed",
-    );
-
-    // ======================
-    // IMAGEM
-    // ======================
-    if (productData.imageFile) {
-      formData.append("image", productData.imageFile);
-      console.log("Imagem anexada:", productData.imageFile);
-    }
-
-    // ======================
-    // SALVAR
-    // ======================
-    if (editingProduct) {
-      await productService.updateProduct(
-        editingProduct.id,
-        formData,
+      // PROMOÇÃO
+      formData.append("promotion", productData.promotion ? "1" : "0");
+      formData.append(
+        "promotion_value",
+        productData.promotion ? Number(productData.promotion_value || 0) : 0,
       );
-      toast.info("Produto atualizado!");
-    } else {
-      await productService.createProduct(formData);
-      toast.success("Produto criado!");
-    }
+      formData.append(
+        "promotion_type",
+        productData.promotion ? "fixed" : "fixed",
+      );
 
-    setEditingProduct(null);
-    await loadMenu();
-    setActiveTab("preview");
-  } catch (err) {
-    console.error(err);
-    toast.error("Erro ao salvar produto");
+      // IMAGEM
+      if (productData.imageFile) {
+        formData.append("image", productData.imageFile);
+      }
+
+      // SALVAR
+      if (editingProduct) {
+        const updatedProduct = await productService.updateProduct(
+          editingProduct.id,
+          formData,
+        );
+        toast.info("Produto atualizado!");
+
+        setProducts((prev) => updateList(prev, updatedProduct));
+        setMostSold((prev) => updateList(prev, updatedProduct));
+        setNewProducts((prev) => updateList(prev, updatedProduct));
+      } else {
+        const newProduct = await productService.createProduct(formData);
+        toast.success("Produto criado!");
+
+        setProducts((prev) => [...prev, newProduct]);
+        setMostSold((prev) => [...prev, newProduct]);
+        setNewProducts((prev) => [...prev, newProduct]);
+      }
+
+      setEditingProduct(null);
+      setActiveTab("preview");
+    } catch (err) {
+      console.error(err);
+      toast.error("Erro ao salvar produto");
+    }
   }
-}
+
+  // 🔹 Função utilitária para atualizar ou adicionar um produto na lista
+  const updateList = (list, product) => {
+    const exists = list.find((p) => p.id === product.id);
+    if (exists) {
+      return list.map((p) => (p.id === product.id ? product : p));
+    } else {
+      return [...list, product];
+    }
+  };
 
   /* ======================
      RENDER
@@ -202,13 +213,14 @@ async function handleSaveProduct(productData) {
           <MenuPreview
             categories={categories}
             products={products}
+            mostSold={mostSold} // 🔹 passar para preview, se precisar
+            newProducts={newProducts} // 🔹 passar para preview
             onEdit={(product) => {
               setEditingProduct(product);
               setActiveTab("menu");
             }}
             onDelete={async (product) => {
               if (!window.confirm("Deseja remover este produto?")) return;
-
               await productService.deleteProduct(product.id);
               toast.warn("Produto excluído!");
               await loadMenu();

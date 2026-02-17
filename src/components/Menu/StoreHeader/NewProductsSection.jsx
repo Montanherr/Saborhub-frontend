@@ -15,6 +15,13 @@ export default function NewProductsSection({ products, onAdd }) {
       <div className="product-scroll">
         {products.map((product) => {
           const isExpanded = expandedId === product.id;
+          const basePrice = Number(product.price);
+          const promoPrice = Number(product.promotion_value);
+          const hasPromotion =
+            product.promotion &&
+            promoPrice > 0 &&
+            promoPrice < basePrice;
+          const finalPrice = hasPromotion ? promoPrice : basePrice;
 
           return (
             <div
@@ -29,7 +36,6 @@ export default function NewProductsSection({ products, onAdd }) {
 
               <div className="product-info">
                 <strong>{product.name}</strong>
-
                 <p className={`description ${isExpanded ? "expanded" : ""}`}>
                   {product.description}
                 </p>
@@ -46,9 +52,17 @@ export default function NewProductsSection({ products, onAdd }) {
                   </small>
                 )}
 
-                <span className="price">
-                  R$ {Number(product.price).toFixed(2)}
-                </span>
+                <div className="price-area">
+                  {hasPromotion && (
+                    <span className="price-old">
+                      R$ {basePrice.toFixed(2).replace(".", ",")}
+                    </span>
+                  )}
+                  <span className="price">
+                    R$ {finalPrice.toFixed(2).replace(".", ",")}
+                  </span>
+                  {hasPromotion && <span className="promo-badge">PROMOÇÃO</span>}
+                </div>
               </div>
             </div>
           );

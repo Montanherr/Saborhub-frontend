@@ -31,7 +31,6 @@ export default function UserForm({
   ========================= */
   useEffect(() => {
     if (editingUser) {
-      console.log("🟡 Carregando usuário para edição:", editingUser);
 
       setForm({
         name: editingUser.name || "",
@@ -50,7 +49,6 @@ export default function UserForm({
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    console.log(`✏️ Alterando campo: ${name}`, value);
 
     setForm((prev) => ({ ...prev, [name]: value }));
   };
@@ -58,23 +56,18 @@ export default function UserForm({
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    console.log("📦 Form antes de enviar:", form);
 
     const payload = { ...form };
 
     // Não envia senha vazia na edição
     if (editingUser && !payload.password) {
-      console.log("🔵 Editando usuário sem alterar senha");
       delete payload.password;
     }
 
-    console.log("🚀 Payload final enviado:", payload);
 
     if (editingUser) {
-      console.log("🟢 Chamando onUpdate...");
       onUpdate(editingUser.id, payload);
     } else {
-      console.log("🟢 Chamando onCreate...");
       onCreate(payload);
     }
 
@@ -88,7 +81,6 @@ export default function UserForm({
       companyId: "",
     });
 
-    console.log("🔄 Form resetado");
   };
 
   /* =========================

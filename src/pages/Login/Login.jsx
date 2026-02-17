@@ -18,44 +18,32 @@ export default function Login() {
     setError("");
 
     if (!email || !password) {
-      setError("Informe e-mail e senha.");
+      setError("Preencha e-mail e senha.");
       return;
     }
 
     try {
       setLoading(true);
 
-      // 🔐 Login na API
-      const response = await userService.login({
+      const { token, user } = await userService.login({
         email,
         password,
       });
 
-      const { token, user } = response;
-
-      // 🔥 Persistência (importante para F5)
       localStorage.setItem("token", token);
       localStorage.setItem("userId", user.id);
       localStorage.setItem("companyId", user.companyId);
       localStorage.setItem("role", user.role);
-
-      // 👉 Flag derivada (NÃO é coluna do banco)
       localStorage.setItem(
         "isAdmin",
-        user.role === "admin" || user.role === "manager"
+        user.role === "admin" || user.role === "manager",
       );
 
-      // 🔥 Atualiza contexto global
-      login({
-        ...user,
-        token,
-      });
+      login({ ...user, token });
 
       navigate("/");
     } catch (err) {
-      setError(
-        err.response?.data?.error || "E-mail ou senha inválidos."
-      );
+      setError(err.response?.data?.error || "E-mail ou senha inválidos.");
     } finally {
       setLoading(false);
     }
@@ -63,40 +51,60 @@ export default function Login() {
 
   return (
     <div className="login-container">
-      <h1 className="app-title">SaborHub</h1>
+      {/* Branding */}
+      <div className="brand-area">
+        <h1 className="app-title">SaborHub</h1>
+        <p className="subtitle">Acesse o painel do seu cardápio digital</p>
+      </div>
 
+      {/* Card */}
       <div className="login-box">
         <h2>Entrar</h2>
 
         <form onSubmit={handleSubmit}>
-          <input
-            type="email"
-            placeholder="E-mail"
-            value={email}
-            onChange={(e) => {
-              setEmail(e.target.value);
-              setError("");
-            }}
-            required
-          />
+          <div className="input-group">
+            <label>E-mail</label>
+            <input
+              type="email"
+              placeholder="seu@email.com"
+              value={email}
+              onChange={(e) => {
+                setEmail(e.target.value);
+                setError("");
+              }}
+            />
+          </div>
 
-          <input
-            type="password"
-            placeholder="Senha"
-            value={password}
-            onChange={(e) => {
-              setPassword(e.target.value);
-              setError("");
-            }}
-            required
-          />
+          <div className="input-group">
+            <label>Senha</label>
+            <input
+              type="password"
+              placeholder="••••••••"
+              value={password}
+              onChange={(e) => {
+                setPassword(e.target.value);
+                setError("");
+              }}
+            />
+          </div>
 
           {error && <span className="error">{error}</span>}
 
           <button type="submit" disabled={loading}>
-            {loading ? "Entrando..." : "Acessar"}
+            {loading ? "Entrando..." : "Acessar painel"}
           </button>
         </form>
+
+        <div className="login-footer">
+          <span>Problemas para acessar?</span>
+          <button
+            type="button"
+            className="link-btn"
+            onClick={() => navigate("/forgot-password")}
+          >
+            Esqueci minha senha
+          </button>{" "}
+        </div>
       </div>
     </div>
   );
