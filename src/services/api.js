@@ -4,25 +4,59 @@ import axios from "axios";
 const api = axios.create({
   baseURL: process.env.REACT_APP_API_URL,
 });
+
 console.log("API BASE URL:", process.env.REACT_APP_API_URL);
 
+/* ==================================================
+   🔐 INTERCEPTOR DE REQUEST (envia token automaticamente)
+================================================== */
+api.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem("token");
 
-// 👉 Interceptor de REQUEST (token)
-api.interceptors.request.use(config => {
-  const token = localStorage.getItem("token");
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
   }
-  return config;
-});
+);
 
-// 👉 Interceptor de RESPONSE (plano / empresa)
+/* ==================================================
+   🚨 INTERCEPTOR DE RESPONSE (trata erros globais)
+================================================== */
 api.interceptors.response.use(
-  response => response,
-  error => {
+  (response) => response,
+
+  (error) => {
     const status = error.response?.status;
     const code = error.response?.data?.code;
 
+    console.error("Erro global interceptado:", {
+      status,
+      data: error.response?.data,
+    });
+
+    /* ========================
+       🔴 401 → Token inválido
+    ========================= */
+    if (status === 401) {
+      console.warn("Token inválido ou expirado. Redirecionando para login...");
+
+      localStorage.removeItem("token");
+
+      // Evita loop infinito se já estiver no login
+      if (window.location.pathname !== "/login") {
+        window.location.href = "/login";
+      }
+    }
+
+    /* ========================
+       🟠 403 → Bloqueios de plano
+    ========================= */
     if (status === 403) {
       switch (code) {
         case "TRIAL_EXPIRED":

@@ -3,7 +3,16 @@ import "./Company.css";
 import { socket } from "../../../socket/socket";
 import { toast } from "react-toastify";
 
-
+// Função para gerar slug igual ao backend
+function generateSlug(text) {
+  return text
+    .normalize("NFD") // remove acentos
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-zA-Z0-9 ]/g, "")
+    .trim()
+    .replace(/\s+/g, "-")
+    .toLowerCase();
+}
 
 const WEEK_DAYS = [
   { label: "Segunda", value: "monday" },
@@ -39,11 +48,11 @@ export default function CompanyForm({
     closingTime: "",
     workingDays: [],
     image: null,
-    open: false, // 👈 FLAG
+    open: false,
+    slug: "", // NOVO CAMPO
   });
 
   const [preview, setPreview] = useState(null);
-
   const [loading, setLoading] = useState(false);
 
   // =========================
@@ -52,24 +61,18 @@ export default function CompanyForm({
   useEffect(() => {
     const handleStatusUpdate = ({ companyId, open }) => {
       if (companyId !== editingCompany?.id) return;
-
-      setForm((prev) => ({
-        ...prev,
-        open,
-      }));
+      setForm((prev) => ({ ...prev, open }));
     };
-
     socket.on("company_status_updated", handleStatusUpdate);
-
-    return () => {
-      socket.off("company_status_updated", handleStatusUpdate);
-    };
+    return () => socket.off("company_status_updated", handleStatusUpdate);
   }, [editingCompany]);
+
   // =========================
   // PREENCHE AO EDITAR
   // =========================
   useEffect(() => {
     if (editingCompany) {
+      const slug = editingCompany.slug || generateSlug(editingCompany.fantasyName);
       setForm({
         fantasyName: editingCompany.fantasyName || "",
         corporateName: editingCompany.corporateName || "",
@@ -88,11 +91,11 @@ export default function CompanyForm({
         closingTime: editingCompany.closingTime || "",
         workingDays: editingCompany.workingDays || [],
         image: null,
-        open: editingCompany.open || false, // 👈 status vindo da API
+        open: editingCompany.open || false,
+        slug, // preenchendo slug
       });
-
       setPreview(
-        typeof editingCompany.image === "string" ? editingCompany.image : null,
+        typeof editingCompany.image === "string" ? editingCompany.image : null
       );
     }
   }, [editingCompany]);
@@ -103,11 +106,20 @@ export default function CompanyForm({
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
 
-    setForm((prev) => ({
-      ...prev,
-      [name]: type === "checkbox" ? checked : value,
-      ...(name === "has_delivery_fee" && !checked ? { delivery_fee: "" } : {}),
-    }));
+    setForm((prev) => {
+      const newForm = {
+        ...prev,
+        [name]: type === "checkbox" ? checked : value,
+        ...(name === "has_delivery_fee" && !checked ? { delivery_fee: "" } : {}),
+      };
+
+      // Atualiza o slug automaticamente ao mudar fantasyName
+      if (name === "fantasyName" && !editingCompany) {
+        newForm.slug = generateSlug(value);
+      }
+
+      return newForm;
+    });
   };
 
   const handleWorkingDays = (day) => {
@@ -122,11 +134,7 @@ export default function CompanyForm({
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (!file) return;
-
-    setForm((prev) => ({
-      ...prev,
-      image: file,
-    }));
+    setForm((prev) => ({ ...prev, image: file }));
     setPreview(URL.createObjectURL(file));
   };
 
@@ -135,29 +143,23 @@ export default function CompanyForm({
   // =========================
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     setLoading(true);
 
     const formData = new FormData();
-
     Object.entries(form).forEach(([key, value]) => {
       if (key === "workingDays") {
         formData.append(key, JSON.stringify(value));
         return;
       }
-
       if (key === "open") return;
-
       if (typeof value === "boolean") {
         formData.append(key, value);
         return;
       }
-
       if (key === "delivery_fee") {
         formData.append(key, value === "" ? null : Number(value));
         return;
       }
-
       if (value !== null && value !== "") {
         formData.append(key, value);
       }
@@ -171,12 +173,10 @@ export default function CompanyForm({
         await onCreate(formData);
         toast.success("Empresa criada com sucesso 🎉");
       }
-
-      // 🔄 refresh da tela (opção 1 — melhor UX)
       window.location.reload();
     } catch (error) {
       toast.error(
-        error?.response?.data?.message || "Erro ao salvar empresa ❌",
+        error?.response?.data?.message || "Erro ao salvar empresa ❌"
       );
     } finally {
       setLoading(false);
@@ -189,10 +189,8 @@ export default function CompanyForm({
   return (
     <form className="company-form card" onSubmit={handleSubmit}>
       <header className="form-header">
-        <h2>Editar empresa</h2>
+        <h2>{editingCompany ? "Editar empresa" : "Criar empresa"}</h2>
         <p>Informações completas do estabelecimento</p>
-
-        {/* STATUS */}
         {editingCompany && (
           <span className={`status-badge ${form.open ? "open" : "closed"}`}>
             {form.open ? "🟢 Aberto agora" : "🔴 Fechado agora"}
@@ -203,14 +201,12 @@ export default function CompanyForm({
       {/* LOGO */}
       <section className="form-section">
         <h3>🖼️ Logo da empresa</h3>
-
         <div className="image-upload">
           {preview ? (
             <img src={preview} alt="Logo da empresa" />
           ) : (
             <div className="image-placeholder">Sem imagem</div>
           )}
-
           <label className="upload-btn">
             Selecionar imagem
             <input
@@ -226,7 +222,6 @@ export default function CompanyForm({
       {/* DADOS PRINCIPAIS */}
       <section className="form-section">
         <h3>📌 Dados principais</h3>
-
         <div className="form-grid">
           <div className="field">
             <label>Nome fantasia</label>
@@ -272,13 +267,18 @@ export default function CompanyForm({
               onChange={handleChange}
             />
           </div>
+
+          {/* Campo somente visualização */}
+          <div className="field">
+            <label>Bloqueado</label>
+            <input type="checkbox" checked={form.isBlocked} disabled />
+          </div>
         </div>
       </section>
 
       {/* FUNCIONAMENTO */}
       <section className="form-section">
         <h3>⏰ Funcionamento</h3>
-
         <div className="form-grid">
           <div className="field">
             <label>Abertura</label>
@@ -289,7 +289,6 @@ export default function CompanyForm({
               onChange={handleChange}
             />
           </div>
-
           <div className="field">
             <label>Fechamento</label>
             <input
@@ -321,7 +320,6 @@ export default function CompanyForm({
       {/* ENTREGA */}
       <section className="form-section">
         <h3>🚚 Entrega</h3>
-
         <label className="checkbox">
           <input
             type="checkbox"
@@ -333,26 +331,74 @@ export default function CompanyForm({
         </label>
 
         {form.has_delivery_fee && (
-          <div className="field" style={{ marginTop: 12 }}>
-            <label>Valor da taxa (R$)</label>
-            <input
-              type="number"
-              name="delivery_fee"
-              step="0.01"
-              value={form.delivery_fee}
-              onChange={handleChange}
-              placeholder="Ex: 5.00"
-            />
+          <div className="form-grid" style={{ marginTop: 12 }}>
+            <div className="field">
+              <label>Valor da taxa (R$)</label>
+              <input
+                type="number"
+                name="delivery_fee"
+                step="0.01"
+                value={form.delivery_fee}
+                onChange={handleChange}
+                placeholder="Ex: 5.00"
+              />
+            </div>
+
+            <div className="field">
+              <label>Tempo mínimo de entrega (min)</label>
+              <input
+                type="number"
+                name="deliveryTimeMin"
+                value={form.deliveryTimeMin || ""}
+                onChange={handleChange}
+                placeholder="Ex: 30"
+              />
+            </div>
+
+            <div className="field">
+              <label>Tempo máximo de entrega (min)</label>
+              <input
+                type="number"
+                name="deliveryTimeMax"
+                value={form.deliveryTimeMax || ""}
+                onChange={handleChange}
+                placeholder="Ex: 60"
+              />
+            </div>
           </div>
         )}
       </section>
+
+      {/* LINK CARDÁPIO */}
+      {editingCompany && (
+        <section className="form-section">
+          <h3>🔗 Link do cardápio</h3>
+          <div className="field link-field">
+            <input
+              type="text"
+              readOnly
+              value={`https://saborhub.netlify.app/cardapio/${form.slug}`}
+            />
+            <button
+              type="button"
+              onClick={() => {
+                navigator.clipboard.writeText(
+                  `https://saborhub.netlify.app/cardapio/${form.slug}`
+                );
+                toast.success("Link copiado 📋");
+              }}
+            >
+              Copiar link
+            </button>
+          </div>
+        </section>
+      )}
 
       {/* AÇÕES */}
       <footer className="form-actions">
         <button type="submit" className="primary" disabled={loading}>
           {loading ? "Salvando..." : "Salvar alterações"}
         </button>
-
         <button type="button" className="secondary" onClick={cancelEdit}>
           Cancelar
         </button>

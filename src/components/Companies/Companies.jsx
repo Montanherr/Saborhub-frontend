@@ -58,7 +58,7 @@ function formatWorkingDays(days = []) {
   ];
 
   // filtra apenas dias válidos e ordena
-  const sorted = order.filter(d => days.includes(d) && labels[d]);
+  const sorted = order.filter((d) => days.includes(d) && labels[d]);
 
   if (!sorted.length) return "Dias não informados";
 
@@ -75,7 +75,7 @@ function formatWorkingDays(days = []) {
   }
 
   // dias isolados ou não sequenciais
-  return sorted.map(d => labels[d]).join(", ");
+  return sorted.map((d) => labels[d]).join(", ");
 }
 
 /* ======================
@@ -95,7 +95,7 @@ export default function Companies() {
       .getAll()
       .then((data) => {
         const filtered = data.filter(
-          (company) => company.plan !== "suspended" && !company.isBlocked
+          (company) => company.plan !== "suspended" && !company.isBlocked,
         );
         setRestaurants(filtered);
       })
@@ -106,12 +106,15 @@ export default function Companies() {
   const totalPages = Math.ceil(restaurants.length / itemsPerPage);
   const currentItems = restaurants.slice(
     (page - 1) * itemsPerPage,
-    page * itemsPerPage
+    page * itemsPerPage,
   );
 
-  const handleViewMenu = (companyId) => {
-    navigate(`/companies/${companyId}/categories`);
-  };
+ const handleViewMenu = (company) => {
+  console.log("Navegando para:", company.slug);
+  if (!company.slug) return alert("Empresa sem slug definido!");
+  navigate(`/cardapio/${company.slug}`);
+};
+
 
   /* ======================
      SKELETON CARD
@@ -146,7 +149,7 @@ export default function Companies() {
               <div
                 key={r.id}
                 className="restaurant-card"
-                onClick={() => handleViewMenu(r.id)}
+                onClick={() => handleViewMenu(r)}
               >
                 <div className="image-wrapper">
                   <img
@@ -190,7 +193,10 @@ export default function Companies() {
             {page} / {totalPages}
           </span>
 
-          <button onClick={() => setPage(page + 1)} disabled={page === totalPages}>
+          <button
+            onClick={() => setPage(page + 1)}
+            disabled={page === totalPages}
+          >
             ▶
           </button>
         </div>

@@ -18,9 +18,6 @@ import "./Categories.css";
 
 const CATEGORIES_PER_PAGE = 5;
 
-/* =========================
-   MAPA DE DIAS
-========================= */
 const DAY_MAP = {
   sunday: 0,
   monday: 1,
@@ -31,15 +28,8 @@ const DAY_MAP = {
   saturday: 6,
 };
 
-/* =========================
-   VERIFICA SE ESTÁ ABERTO
-========================= */
 function isStoreOpen(company) {
-  if (
-    !company?.openingTime ||
-    !company?.closingTime ||
-    !Array.isArray(company?.workingDays)
-  ) {
+  if (!company?.openingTime || !company?.closingTime || !Array.isArray(company?.workingDays)) {
     return false;
   }
 
@@ -47,10 +37,7 @@ function isStoreOpen(company) {
   const currentDay = now.getDay();
   const currentMinutes = now.getHours() * 60 + now.getMinutes();
 
-  const openToday = company.workingDays.some(
-    (day) => DAY_MAP[day] === currentDay
-  );
-
+  const openToday = company.workingDays.some(day => DAY_MAP[day] === currentDay);
   if (!openToday) return false;
 
   const [openH, openM] = company.openingTime.split(":").map(Number);
@@ -59,16 +46,14 @@ function isStoreOpen(company) {
   const openMinutes = openH * 60 + openM;
   const closeMinutes = closeH * 60 + closeM;
 
-  if (openMinutes < closeMinutes) {
-    return currentMinutes >= openMinutes && currentMinutes <= closeMinutes;
-  }
-
-  return currentMinutes >= openMinutes || currentMinutes <= closeMinutes;
+  return openMinutes < closeMinutes
+    ? currentMinutes >= openMinutes && currentMinutes <= closeMinutes
+    : currentMinutes >= openMinutes || currentMinutes <= closeMinutes;
 }
 
-export default function Categories() {
-  const { companyId } = useParams();
-  const [, forceUpdate] = useReducer((x) => x + 1, 0);
+export default function CategoriesScreen() {
+  const { companySlug } = useParams();
+  const [, forceUpdate] = useReducer(x => x + 1, 0);
 
   const [company, setCompany] = useState(null);
   const [categories, setCategories] = useState([]);
@@ -85,49 +70,42 @@ export default function Categories() {
 
   const [currentPage, setCurrentPage] = useState(1);
 
-  /* =========================
-     ATUALIZA A CADA MINUTO
-  ========================= */
+  // Atualiza hora a cada minuto
   useEffect(() => {
-    const interval = setInterval(() => {
-      forceUpdate();
-    }, 60000);
-
+    const interval = setInterval(() => forceUpdate(), 60000);
     return () => clearInterval(interval);
   }, []);
 
-  /* =========================
-     LOAD INICIAL
-  ========================= */
+  // Load inicial do cardápio
   useEffect(() => {
+    if (!companySlug) return;
+
     async function loadMenu() {
       try {
         setLoading(true);
 
-        const [
-          companyData,
-          categoriesData,
-          mostSoldData,
-          newProductsData,
-        ] = await Promise.all([
-          companyService.getById(companyId),
-          categoryService.getCategories(companyId),
-          productService.getMostSoldProducts(companyId),
-          productService.getNewProducts(companyId),
+        const companyData = await companyService.getBySlug(companySlug);
+        if (!companyData) throw new Error("Empresa não encontrada");
+
+        const [categoriesData, mostSoldData, newProductsData, productsData] = await Promise.all([
+          categoryService.getCategories(companyData.id),
+          productService.getMostSoldProducts(companyData.id),
+          productService.getNewProducts(companyData.id),
+          productService.getProductsByCompany(companyData.id), // ✅ Corrigido
         ]);
+
+        // Agrupa produtos por categoria
+        const grouped = {};
+        categoriesData.forEach(cat => {
+          grouped[cat.id] = productsData.filter(p => p.categoryId === cat.id);
+        });
 
         setCompany(companyData);
         setCategories(categoriesData);
         setMostSold(mostSoldData || []);
         setNewProducts(newProductsData || []);
-
-        const grouped = {};
-        categoriesData.forEach((category) => {
-          grouped[category.id] =
-            category.Products?.filter(Boolean) || [];
-        });
-
         setProductsByCategory(grouped);
+
       } catch (err) {
         console.error("Erro ao carregar cardápio:", err);
       } finally {
@@ -135,29 +113,21 @@ export default function Categories() {
       }
     }
 
-    if (companyId) loadMenu();
-  }, [companyId]);
+    loadMenu();
+  }, [companySlug]);
 
-  /* =========================
-     SOCKET
-  ========================= */
+  // Socket para atualizações em tempo real
   useEffect(() => {
-    if (!companyId) return;
+    if (!company?.id) return;
 
-    socket.connect();
-    socket.emit("join_company", Number(companyId));
+    socket.emit("join_company", company.id);
 
-    const updateProduct = (product) => {
+    const updateProduct = product => {
       if (!product?.categoryId) return;
-
-      setProductsByCategory((prev) => {
+      setProductsByCategory(prev => {
         const updated = { ...prev };
         const list = updated[product.categoryId] || [];
-
-        updated[product.categoryId] = list.map((p) =>
-          p.id === product.id ? { ...p, ...product } : p
-        );
-
+        updated[product.categoryId] = list.map(p => p.id === product.id ? { ...p, ...product } : p);
         return updated;
       });
     };
@@ -169,60 +139,44 @@ export default function Categories() {
       socket.off("product_updated", updateProduct);
       socket.off("product_availability_updated", updateProduct);
     };
-  }, [companyId]);
+  }, [company]);
 
   const openNow = isStoreOpen(company);
 
-  const toggleCategory = (id) => {
+  const toggleCategory = id => {
     if (!openNow) {
       setShowClosedModal(true);
       return;
     }
-
     setExpandedCategory(expandedCategory === id ? null : id);
   };
 
-  const addToOrder = (product) => {
+  const addToOrder = product => {
     if (!openNow || !product?.available) {
       setShowClosedModal(true);
       return;
     }
 
-    setOrderItems((prev) => {
-      const exists = prev.find((i) => i.id === product.id);
-
+    setOrderItems(prev => {
+      const exists = prev.find(i => i.id === product.id);
       if (exists) {
-        return prev.map((i) =>
-          i.id === product.id
-            ? { ...i, quantity: i.quantity + 1 }
-            : i
-        );
+        return prev.map(i => i.id === product.id ? { ...i, quantity: i.quantity + 1 } : i);
       }
-
       return [...prev, { ...product, quantity: 1 }];
     });
 
     setShowOrderModal(true);
   };
 
-  const totalPages = Math.ceil(
-    categories.length / CATEGORIES_PER_PAGE
-  );
-
+  const totalPages = Math.ceil(categories.length / CATEGORIES_PER_PAGE);
   const paginatedCategories = categories.slice(
     (currentPage - 1) * CATEGORIES_PER_PAGE,
     currentPage * CATEGORIES_PER_PAGE
   );
 
   return (
-    <div
-      className={`categories-container ${
-        !openNow ? "store-closed" : ""
-      }`}
-    >
-      {company && (
-        <StoreHeader company={company} openNow={openNow} />
-      )}
+    <div className={`categories-container ${!openNow ? "store-closed" : ""}`}>
+      {company && <StoreHeader company={company} openNow={openNow} />}
 
       {loading ? (
         <p className="loading">Carregando cardápio...</p>
@@ -232,15 +186,11 @@ export default function Categories() {
           <NewProductsSection products={newProducts} onAdd={addToOrder} />
 
           <div className="category-grid">
-            {paginatedCategories.map((category) => (
+            {paginatedCategories.map(category => (
               <div key={category.id} className="category-card">
                 <div className="category-header">
                   <h3>{category.name}</h3>
-
-                  <button
-                    className={!openNow ? "btn-closed" : ""}
-                    onClick={() => toggleCategory(category.id)}
-                  >
+                  <button className={!openNow ? "btn-closed" : ""} onClick={() => toggleCategory(category.id)}>
                     {openNow
                       ? expandedCategory === category.id
                         ? "Ocultar"
@@ -251,14 +201,8 @@ export default function Categories() {
 
                 {expandedCategory === category.id && (
                   <div className="product-grid">
-                    {productsByCategory[
-                      category.id
-                    ]?.map((product) => (
-                      <ProductCard
-                        key={product.id}
-                        product={product}
-                        onAdd={addToOrder}
-                      />
+                    {productsByCategory[category.id]?.map(product => (
+                      <ProductCard key={product.id} product={product} onAdd={addToOrder} />
                     ))}
                   </div>
                 )}
@@ -268,35 +212,16 @@ export default function Categories() {
 
           {totalPages > 1 && (
             <div className="pagination">
-              <button
-                disabled={currentPage === 1}
-                onClick={() => setCurrentPage((p) => p - 1)}
-              >
-                ◀ Anterior
-              </button>
-
-              <span>
-                Página {currentPage} de {totalPages}
-              </span>
-
-              <button
-                disabled={currentPage === totalPages}
-                onClick={() => setCurrentPage((p) => p + 1)}
-              >
-                Próxima ▶
-              </button>
+              <button disabled={currentPage === 1} onClick={() => setCurrentPage(p => p - 1)}>◀ Anterior</button>
+              <span>Página {currentPage} de {totalPages}</span>
+              <button disabled={currentPage === totalPages} onClick={() => setCurrentPage(p => p + 1)}>Próxima ▶</button>
             </div>
           )}
         </>
       )}
 
       {showOrderModal && (
-        <OrdersModal
-          company={company}
-          items={orderItems}
-          setItems={setOrderItems}
-          close={() => setShowOrderModal(false)}
-        />
+        <OrdersModal company={company} items={orderItems} setItems={setOrderItems} close={() => setShowOrderModal(false)} />
       )}
 
       {showClosedModal && (
@@ -304,9 +229,7 @@ export default function Categories() {
           <div className="closed-box">
             <h2>🔒 Restaurante fechado</h2>
             <p>Estamos fora do horário de funcionamento.</p>
-            <button onClick={() => setShowClosedModal(false)}>
-              Entendi
-            </button>
+            <button onClick={() => setShowClosedModal(false)}>Entendi</button>
           </div>
         </div>
       )}

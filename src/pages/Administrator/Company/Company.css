@@ -208,6 +208,48 @@ button.secondary:hover {
   background: #e5e7eb;
 }
 
+.company-form .form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+}
+
+.image-upload {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.image-upload img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+}
+
+.link-field {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.link-field input {
+  flex: 1;
+  min-width: 150px;
+}
+
+@media (max-width: 600px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+  .link-field {
+    flex-direction: column;
+  }
+  .link-field button {
+    width: 100%;
+  }
+}
+
+
 .status-badge {
   margin-top: 8px;
   display: inline-block;

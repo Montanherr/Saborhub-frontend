@@ -23,11 +23,7 @@ export default function AppRoutes() {
       <Route path="/companies" element={<Companies />} />
       <Route path="/trial-expired" element={<TrialExpired />} />
 
-      <Route
-        path="/companies/:companyId/categories"
-        element={<CategoriesScreen />}
-      />
-
+   
       <Route
         path="/reports"
         element={
@@ -37,7 +33,9 @@ export default function AppRoutes() {
         }
       />
 
-         <Route
+      <Route path="/cardapio/:companySlug" element={<CategoriesScreen />} />
+
+      <Route
         path="/reports_orders"
         element={
           <ProtectedRoute roles={["admin", "manager", "waiter"]}>
@@ -67,7 +65,7 @@ export default function AppRoutes() {
       <Route
         path="/menu/create"
         element={
-          <ProtectedRoute  roles={["admin", "manager"]}>
+          <ProtectedRoute roles={["admin", "manager"]}>
             <MenuCreate />
           </ProtectedRoute>
         }

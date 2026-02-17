@@ -1,4 +1,3 @@
-// src/services/companyService.js
 import api from "./api";
 
 const companyService = {
@@ -8,12 +7,17 @@ const companyService = {
   },
 
   getAdminCompanies: async () => {
-  const response = await api.get("/companies/admin");
-  return response.data;
-},
+    const response = await api.get("/companies/admin");
+    return response.data;
+  },
 
   getById: async (id) => {
     const response = await api.get(`/companies/${id}`);
+    return response.data;
+  },
+
+  getBySlug: async (slug) => {
+    const response = await api.get(`/companies/slug/${slug}`);
     return response.data;
   },
 
