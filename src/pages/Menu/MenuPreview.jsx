@@ -46,6 +46,10 @@ export default function MenuPreview({
                     product.promotion &&
                     Number(product.promotion_value) > 0;
 
+                  const finalPrice = hasPromotion
+                    ? product.promotion_value
+                    : product.price;
+
                   return (
                     <div
                       key={product.id}
@@ -53,7 +57,18 @@ export default function MenuPreview({
                         !product.available ? "inactive" : ""
                       }`}
                     >
-               
+                      {/* IMAGEM */}
+                      <div className="product-img-wrapper">
+                        <img
+                          src={
+                            product.image
+                              ? product.image
+                              : "/assets/default-product.png"
+                          }
+                          alt={product.name}
+                          className="product-img"
+                        />
+                      </div>
 
                       {/* INFO */}
                       <div className="product-info">
@@ -74,20 +89,14 @@ export default function MenuPreview({
                           )}
 
                           <span className="price">
-                            R${" "}
-                            {Number(
-                              hasPromotion
-                                ? product.promotion_value
-                                : product.price
-                            ).toFixed(2)}
+                            R$ {Number(finalPrice).toFixed(2)}
                           </span>
                         </div>
 
                         {/* TAXA */}
                         {product.has_delivery_fee && (
                           <div className="delivery-fee">
-                            Taxa: R${" "}
-                            {Number(product.delivery_fee).toFixed(2)}
+                            Taxa: R$ {Number(product.delivery_fee).toFixed(2)}
                           </div>
                         )}
 
@@ -97,7 +106,7 @@ export default function MenuPreview({
                         )}
 
                         {/* DISPONIBILIDADE */}
-                        <label className="toggle availability-toggle">
+                        <label className="availability-toggle">
                           <input
                             type="checkbox"
                             checked={product.available}
@@ -107,15 +116,24 @@ export default function MenuPreview({
                               )
                             }
                           />
-                          {product.available ? "Ativo" : "Inativo"}
+                          <span>
+                            {product.available ? "Ativo" : "Inativo"}
+                          </span>
                         </label>
 
                         {/* AÇÕES */}
                         <div className="actions">
-                          <button onClick={() => onEdit(product)}>
+                          <button
+                            className="edit-btn"
+                            onClick={() => onEdit(product)}
+                          >
                             Editar
                           </button>
-                          <button onClick={() => onDelete(product)}>
+
+                          <button
+                            className="delete-btn"
+                            onClick={() => onDelete(product)}
+                          >
                             Excluir
                           </button>
                         </div>

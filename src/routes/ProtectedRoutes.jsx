@@ -10,8 +10,12 @@ export default function ProtectedRoute({ children, roles }) {
     return <Navigate to="/" replace />;
   }
 
-  if (roles && !roles.includes(user.role)) {
-    return <Navigate to="/" replace />; // ou /403 se tiver
+  if (roles && user?.role) {
+    const userRole = user.role.toLowerCase();
+
+    if (!roles.map(r => r.toLowerCase()).includes(userRole)) {
+      return <Navigate to="/" replace />;
+    }
   }
 
   return children;

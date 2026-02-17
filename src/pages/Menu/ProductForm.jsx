@@ -14,13 +14,10 @@ export default function ProductForm({
     categoryId: "",
     imageFile: null,
 
-    available: true, // 🔥 NOVO
+    available: true,
 
     promotion: false,
     promotion_value: "",
-
-    has_delivery_fee: false,
-    delivery_fee: "",
   });
 
   /* ======================
@@ -33,19 +30,17 @@ export default function ProductForm({
       name: editingProduct.name ?? "",
       description: editingProduct.description ?? "",
       price: editingProduct.price ?? "",
-      categoryId: Number(editingProduct.categoryId),
+      categoryId: Number(editingProduct.categoryId) || "",
       imageFile: null,
 
-      available: editingProduct.available ?? true,
+      available:
+        editingProduct.available !== undefined
+          ? editingProduct.available
+          : true,
 
-      promotion: !!editingProduct.promotion,
+      promotion: Boolean(editingProduct.promotion),
       promotion_value: editingProduct.promotion
         ? editingProduct.promotion_value
-        : "",
-
-      has_delivery_fee: !!editingProduct.has_delivery_fee,
-      delivery_fee: editingProduct.has_delivery_fee
-        ? editingProduct.delivery_fee
         : "",
     });
   }, [editingProduct]);
@@ -67,10 +62,11 @@ export default function ProductForm({
       form.promotion &&
       Number(form.promotion_value) >= Number(form.price)
     ) {
-      return alert(
-        "O valor promocional deve ser menor que o preço original"
-      );
+      return alert("O valor promocional deve ser menor que o preço original");
     }
+
+    // 🔥 DEBUG OPCIONAL
+    console.log("Arquivo selecionado:", form.imageFile);
 
     onSubmit({
       name: form.name,
@@ -79,29 +75,19 @@ export default function ProductForm({
       categoryId: Number(form.categoryId),
       imageFile: form.imageFile,
 
-      available: form.available, // 🔥
+      available: form.available,
 
       promotion: form.promotion,
-      promotion_value: form.promotion
-        ? Number(form.promotion_value)
-        : 0,
-
-      has_delivery_fee: form.has_delivery_fee,
-      delivery_fee: form.has_delivery_fee
-        ? Number(form.delivery_fee)
-        : 0,
+      promotion_value: form.promotion ? Number(form.promotion_value) : 0,
     });
   }
 
   return (
     <div className="form-box">
-      <h2>
-        {editingProduct
-          ? "Editar Produto"
-          : "Cadastrar Produto"}
-      </h2>
+      <h2>{editingProduct ? "Editar Produto" : "Cadastrar Produto"}</h2>
 
       <form className="form" onSubmit={handleSubmit}>
+        {/* NOME */}
         <input
           className="input"
           placeholder="Nome"
@@ -110,39 +96,36 @@ export default function ProductForm({
           required
         />
 
+        {/* DESCRIÇÃO */}
         <input
           className="input"
           placeholder="Descrição"
           value={form.description}
-          onChange={(e) =>
-            update("description", e.target.value)
-          }
+          onChange={(e) => update("description", e.target.value)}
         />
 
+        {/* PREÇO */}
         <input
           className="input"
           type="number"
           placeholder="Preço"
           value={form.price}
-          onChange={(e) =>
-            update("price", e.target.value)
-          }
+          onChange={(e) => update("price", e.target.value)}
           required
         />
 
+        {/* IMAGEM */}
         <input
           type="file"
-          onChange={(e) =>
-            update("imageFile", e.target.files[0])
-          }
+          accept="image/*"
+          onChange={(e) => update("imageFile", e.target.files[0])}
         />
 
+        {/* CATEGORIA */}
         <select
           className="select"
           value={form.categoryId}
-          onChange={(e) =>
-            update("categoryId", e.target.value)
-          }
+          onChange={(e) => update("categoryId", e.target.value)}
           required
         >
           <option value="">Categoria</option>
@@ -153,14 +136,12 @@ export default function ProductForm({
           ))}
         </select>
 
-        {/* 🔥 DISPONIBILIDADE */}
+        {/* DISPONÍVEL */}
         <label className="toggle">
           <input
             type="checkbox"
             checked={form.available}
-            onChange={(e) =>
-              update("available", e.target.checked)
-            }
+            onChange={(e) => update("available", e.target.checked)}
           />
           Produto disponível
         </label>
@@ -170,9 +151,7 @@ export default function ProductForm({
           <input
             type="checkbox"
             checked={form.promotion}
-            onChange={(e) =>
-              update("promotion", e.target.checked)
-            }
+            onChange={(e) => update("promotion", e.target.checked)}
           />
           Promoção
         </label>
@@ -183,37 +162,12 @@ export default function ProductForm({
             type="number"
             placeholder="Valor promocional"
             value={form.promotion_value}
-            onChange={(e) =>
-              update("promotion_value", e.target.value)
-            }
+            onChange={(e) => update("promotion_value", e.target.value)}
             required
           />
         )}
 
-        {/* TAXA ENTREGA */}
-        <label className="toggle">
-          <input
-            type="checkbox"
-            checked={form.has_delivery_fee}
-            onChange={(e) =>
-              update("has_delivery_fee", e.target.checked)
-            }
-          />
-          Taxa de entrega
-        </label>
-
-        {form.has_delivery_fee && (
-          <input
-            className="input"
-            type="number"
-            placeholder="Valor da taxa"
-            value={form.delivery_fee}
-            onChange={(e) =>
-              update("delivery_fee", e.target.value)
-            }
-          />
-        )}
-
+        {/* BOTÕES */}
         <div className="actions">
           <button className="btn btn-primary" type="submit">
             Salvar

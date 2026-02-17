@@ -116,58 +116,66 @@ export default function MenuCreate() {
   /* ======================
      PRODUCT
   ====================== */
-  async function handleSaveProduct(productData) {
-    try {
-      const formData = new FormData();
+async function handleSaveProduct(productData) {
+  try {
+    const formData = new FormData();
 
-      formData.append("name", productData.name);
-      formData.append("description", productData.description || "");
-      formData.append("price", Number(productData.price));
-      formData.append("categoryId", Number(productData.categoryId));
-      formData.append("companyId", loggedCompanyId);
-      formData.append("available", productData.available ? "1" : "0");
+    // ======================
+    // CAMPOS PRINCIPAIS
+    // ======================
+    formData.append("name", productData.name);
+    formData.append("description", productData.description || "");
+    formData.append("price", productData.price);
+    formData.append("categoryId", productData.categoryId);
+    formData.append("available", productData.available ? "1" : "0");
 
-      // PROMOÇÃO
-      formData.append("promotion", productData.promotion ? "1" : "0");
-      formData.append(
-        "promotion_value",
-        productData.promotion ? Number(productData.promotion_value) : 0,
-      );
-      formData.append(
-        "promotion_type",
-        productData.promotion ? productData.promotion_type : "fixed",
-      );
+    // ======================
+    // PROMOÇÃO
+    // ======================
+    formData.append("promotion", productData.promotion ? "1" : "0");
 
-      // TAXA DE ENTREGA
-      formData.append(
-        "has_delivery_fee",
-        productData.has_delivery_fee ? "1" : "0",
-      );
-      formData.append(
-        "delivery_fee",
-        productData.has_delivery_fee ? Number(productData.delivery_fee) : 0,
-      );
+    formData.append(
+      "promotion_value",
+      productData.promotion
+        ? Number(productData.promotion_value || 0)
+        : 0,
+    );
 
-      if (productData.imageFile) {
-        formData.append("image", productData.imageFile);
-      }
+    formData.append(
+      "promotion_type",
+      productData.promotion ? "fixed" : "fixed",
+    );
 
-      if (editingProduct) {
-        await productService.updateProduct(editingProduct.id, formData);
-        toast.info("Produto atualizado!");
-      } else {
-        await productService.createProduct(formData);
-        toast.success("Produto criado!");
-      }
-
-      setEditingProduct(null);
-      await loadMenu();
-      setActiveTab("preview");
-    } catch (err) {
-      console.error(err);
-      toast.error("Erro ao salvar produto");
+    // ======================
+    // IMAGEM
+    // ======================
+    if (productData.imageFile) {
+      formData.append("image", productData.imageFile);
+      console.log("Imagem anexada:", productData.imageFile);
     }
+
+    // ======================
+    // SALVAR
+    // ======================
+    if (editingProduct) {
+      await productService.updateProduct(
+        editingProduct.id,
+        formData,
+      );
+      toast.info("Produto atualizado!");
+    } else {
+      await productService.createProduct(formData);
+      toast.success("Produto criado!");
+    }
+
+    setEditingProduct(null);
+    await loadMenu();
+    setActiveTab("preview");
+  } catch (err) {
+    console.error(err);
+    toast.error("Erro ao salvar produto");
   }
+}
 
   /* ======================
      RENDER

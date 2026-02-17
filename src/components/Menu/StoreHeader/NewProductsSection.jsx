@@ -1,6 +1,9 @@
+import { useState } from "react";
 import "./ProductSection.css";
 
 export default function NewProductsSection({ products, onAdd }) {
+  const [expandedId, setExpandedId] = useState(null);
+
   if (!Array.isArray(products) || products.length === 0) return null;
 
   return (
@@ -10,27 +13,46 @@ export default function NewProductsSection({ products, onAdd }) {
       </div>
 
       <div className="product-scroll">
-        {products.map((product) => (
-          <div
-            className="product-card"
-            key={product.id}
-            onClick={() => onAdd?.(product)}
-          >
-            <img
-              src={product.image || "/assets/default-product.png"}
-              alt={product.name}
-            />
+        {products.map((product) => {
+          const isExpanded = expandedId === product.id;
 
-            <div className="product-info">
-              <strong>{product.name}</strong>
-                        <p>{product.description}</p>
+          return (
+            <div
+              className="product-card"
+              key={product.id}
+              onClick={() => onAdd?.(product)}
+            >
+              <img
+                src={product.image || "/assets/default-product.png"}
+                alt={product.name}
+              />
 
-              <span className="price">
-                R$ {Number(product.price).toFixed(2)}
-              </span>
+              <div className="product-info">
+                <strong>{product.name}</strong>
+
+                <p className={`description ${isExpanded ? "expanded" : ""}`}>
+                  {product.description}
+                </p>
+
+                {product.description?.length > 60 && (
+                  <small
+                    className="see-more"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setExpandedId(isExpanded ? null : product.id);
+                    }}
+                  >
+                    {isExpanded ? "Ver menos" : "Ver mais"}
+                  </small>
+                )}
+
+                <span className="price">
+                  R$ {Number(product.price).toFixed(2)}
+                </span>
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </section>
   );

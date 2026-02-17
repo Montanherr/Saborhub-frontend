@@ -1,143 +1,261 @@
-/* ===== CONTAINER GERAL (mais largo) ===== */
+/* =============================
+   CONTAINER PRINCIPAL
+============================= */
+
 .categories-container {
-  max-width: 1280px; /* ocupa mais a tela */
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 16px;
+  padding: 24px 20px 80px;
+  background: #fafafa;
+  min-height: 100vh;
 }
 
-/* ===== TÍTULO ===== */
-.menu-title {
-  font-size: 1.6rem;
-  font-weight: 700;
-  margin: 12px 0 24px;
-  color: #1c1c1c;
+/* =============================
+   LOADING
+============================= */
+
+.loading {
   text-align: center;
+  margin-top: 60px;
+  font-size: 18px;
+  font-weight: 500;
+  color: #ff6b00;
 }
 
-/* ===== GRID DE CATEGORIAS ===== */
+/* =============================
+   ESTADO FECHADO
+============================= */
+
+.store-closed {
+  filter: grayscale(100%);
+  opacity: 0.75;
+}
+
+.store-closed .category-card,
+.store-closed .product-card {
+  pointer-events: none;
+}
+
+.store-closed button {
+  cursor: not-allowed;
+}
+
+/* =============================
+   GRID CATEGORIAS
+============================= */
+
 .category-grid {
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 20px;
+  margin-top: 32px;
 }
 
-/* ===== CARD DA CATEGORIA ===== */
 .category-card {
   background: #ffffff;
-  border-radius: 14px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
-  overflow: hidden;
+  border-radius: 18px;
+  padding: 22px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+  transition: all 0.25s ease;
+  border: 1px solid #f2f2f2;
 }
 
-/* ===== HEADER DA CATEGORIA ===== */
+.category-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 22px rgba(255, 107, 0, 0.15);
+}
+
+/* =============================
+   HEADER CATEGORIA
+============================= */
+
 .category-header {
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  padding: 16px 18px;
-  background: #ffffff;
-  border-bottom: 1px solid #f0f0f0;
-  cursor: pointer;
+  align-items: center;
+  gap: 12px;
 }
 
 .category-header h3 {
-  margin: 0;
-  font-size: 1.1rem;
+  font-size: 20px;
   font-weight: 700;
-  color: #1c1c1c;
+  margin: 0;
+  color: #222;
 }
 
-/* Botão estilo iFood */
+/* =============================
+   BOTÕES MODERNOS
+============================= */
+
 .category-header button {
-  background: #f5f5f5;
-  color: #333;
+  background: linear-gradient(135deg, #ff6b00, #ff8c00);
+  color: #fff;
   border: none;
-  border-radius: 999px;
-  padding: 7px 16px;
-  font-size: 0.8rem;
-  font-weight: 600;
+  padding: 10px 18px;
+  border-radius: 12px;
   cursor: pointer;
-  transition: background 0.2s ease, transform 0.1s ease;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 12px rgba(255, 107, 0, 0.3);
 }
 
 .category-header button:hover {
-  background: #eaeaea;
-  transform: scale(1.03);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(255, 107, 0, 0.4);
 }
 
-/* ===== GRID DE PRODUTOS (DESKTOP) ===== */
-.desktop-grid {
+.btn-closed {
+  background: #bdbdbd !important;
+  box-shadow: none !important;
+}
+
+/* =============================
+   PRODUTOS
+============================= */
+
+.product-grid {
+  margin-top: 20px;
   display: grid;
+  gap: 20px;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 16px;
-  padding: 16px;
 }
 
-/* ===== CATEGORIA VAZIA ===== */
-.empty-category {
-  font-size: 0.9rem;
-  color: #888;
-  text-align: center;
-  padding: 20px 0;
+/* =============================
+   PAGINAÇÃO
+============================= */
+
+.pagination {
+  margin-top: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 24px;
 }
 
-/* ===== BADGE PROMOÇÃO ===== */
-.promo-badge {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  background: #ea1d2c;
+.pagination button {
+  background: linear-gradient(135deg, #ff6b00, #ff8c00);
   color: #fff;
-  font-size: 0.7rem;
-  font-weight: 700;
-  padding: 5px 10px;
-  border-radius: 6px;
-  z-index: 2;
-}
-
-/* Força o conteúdo a usar a tela toda */
-.main-content {
-  max-width: 100% !important;
-  padding: 0;
-}
-
-.categories-container {
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 16px;
-}
-
-.category-card {
-  background: #fff;
+  border: none;
+  padding: 10px 18px;
   border-radius: 12px;
-  border: 1px solid #f0f0f0;
-  box-shadow: none; /* iFood quase não usa sombra aqui */
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.2s ease;
+  box-shadow: 0 4px 12px rgba(255, 107, 0, 0.3);
 }
 
+.pagination button:hover:not(:disabled) {
+  transform: translateY(-2px);
+}
 
+.pagination button:disabled {
+  background: #ddd;
+  cursor: not-allowed;
+  box-shadow: none;
+}
 
-/* ===== RESPONSIVO (MOBILE FIRST) ===== */
-@media (max-width: 768px) {
+.pagination span {
+  font-weight: 600;
+  color: #444;
+}
+
+/* =============================
+   MODAL FECHADO MODERNO
+============================= */
+
+.closed-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(6px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.closed-box {
+  background: white;
+  padding: 40px 30px;
+  border-radius: 20px;
+  text-align: center;
+  width: 90%;
+  max-width: 420px;
+  animation: fadeIn 0.3s ease;
+}
+
+.closed-box h2 {
+  margin-bottom: 16px;
+  font-size: 22px;
+  color: #ff6b00;
+}
+
+.closed-box p {
+  color: #666;
+  font-size: 15px;
+}
+
+.closed-box button {
+  margin-top: 24px;
+  padding: 12px 22px;
+  background: linear-gradient(135deg, #ff6b00, #ff8c00);
+  color: #fff;
+  border: none;
+  border-radius: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.closed-box button:hover {
+  transform: translateY(-2px);
+}
+
+/* =============================
+   ANIMAÇÃO
+============================= */
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* =============================
+   RESPONSIVO
+============================= */
+
+@media (max-width: 1024px) {
   .categories-container {
-    padding: 12px;
+    padding: 20px 16px 60px;
   }
 
-  .menu-title {
-    font-size: 1.4rem;
+  .product-grid {
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   }
+}
 
-  .desktop-grid {
-    grid-template-columns: 1fr;
-    gap: 12px;
-    padding: 12px;
-  }
-
+@media (max-width: 768px) {
   .category-header {
-    padding: 14px 16px;
+    flex-direction: column;
+    align-items: stretch;
   }
 
   .category-header button {
-    padding: 6px 14px;
-    font-size: 0.75rem;
+    width: 100%;
+  }
+
+  .product-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .closed-box {
+    padding: 30px 20px;
   }
 }

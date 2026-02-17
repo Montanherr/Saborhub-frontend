@@ -20,9 +20,9 @@ const DAY_MAP = {
 ========================= */
 function isStoreOpen(company) {
   if (
-    !company.openingTime ||
-    !company.closingTime ||
-    !Array.isArray(company.workingDays)
+    !company?.openingTime ||
+    !company?.closingTime ||
+    !Array.isArray(company?.workingDays)
   ) {
     return false;
   }
@@ -34,6 +34,7 @@ function isStoreOpen(company) {
   const openToday = company.workingDays.some(
     (day) => DAY_MAP[day] === currentDay
   );
+
   if (!openToday) return false;
 
   const [openH, openM] = company.openingTime.split(":").map(Number);
@@ -105,16 +106,26 @@ export default function StoreHeader({ company }) {
     return () => clearInterval(interval);
   }, []);
 
-  const imageSrc = company.image || getRestaurantLogo(company.fantasyName);
+  const imageSrc = company?.image || getRestaurantLogo(company?.fantasyName);
   const openNow = isStoreOpen(company);
 
+  /* =========================
+     TAXA DE ENTREGA (CORRIGIDO)
+  ========================= */
+  const deliveryFee = Number(company?.delivery_fee);
+
+  const isFreeDelivery =
+    !company?.delivery_fee ||
+    deliveryFee === 0 ||
+    isNaN(deliveryFee);
+
   return (
-    <div className="store-header">
+    <div className={`store-header ${!openNow ? "store-closed" : ""}`}>
       {/* ESQUERDA */}
       <div className="store-main">
         <img
           src={imageSrc}
-          alt={company.fantasyName}
+          alt={company?.fantasyName}
           className="store-logo"
           onError={(e) => {
             e.target.src = "/images/restaurant-placeholder.png";
@@ -122,9 +133,9 @@ export default function StoreHeader({ company }) {
         />
 
         <div className="store-info">
-          <h1>{company.fantasyName}</h1>
+          <h1>{company?.fantasyName}</h1>
 
-          {company.description && (
+          {company?.description && (
             <p className="store-description">{company.description}</p>
           )}
 
@@ -132,13 +143,13 @@ export default function StoreHeader({ company }) {
             {openNow ? "Aberto agora" : "Fechado"}
           </span>
 
-          {company.deliveryTimeMin && company.deliveryTimeMax && (
+          {company?.deliveryTimeMin && company?.deliveryTimeMax && (
             <div className="store-meta">
               ⏱ {company.deliveryTimeMin}–{company.deliveryTimeMax} min
             </div>
           )}
 
-          {company.openingTime && company.closingTime && (
+          {company?.openingTime && company?.closingTime && (
             <div className="store-hours">
               🕒 {company.openingTime.slice(0, 5)} às{" "}
               {company.closingTime === "00:00"
@@ -147,7 +158,7 @@ export default function StoreHeader({ company }) {
             </div>
           )}
 
-          {company.workingDays && (
+          {company?.workingDays && (
             <div className="store-days">
               📆 {formatWorkingDays(company.workingDays)}
             </div>
@@ -157,16 +168,16 @@ export default function StoreHeader({ company }) {
 
       {/* DIREITA */}
       <div className="store-right">
-        {company.has_delivery_fee && company.delivery_fee != null ? (
+        {isFreeDelivery ? (
+          <div className="store-fee free">
+            🚚 Entrega grátis
+          </div>
+        ) : (
           <div className="store-fee">
             🚚 Taxa de entrega
             <strong>
-              R$ {Number(company.delivery_fee).toFixed(2)}
+              R$ {deliveryFee.toFixed(2)}
             </strong>
-          </div>
-        ) : (
-          <div className="store-fee free">
-            🚚 Entrega grátis
           </div>
         )}
       </div>

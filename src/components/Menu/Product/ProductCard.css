@@ -1,112 +1,142 @@
-/* ===== VARIÁVEIS (opcional, mas recomendado) ===== */
+/* ===== VARIÁVEIS ===== */
 :root {
   --brand: #ff7a00;
   --brand-dark: #e86e00;
-  --text-main: #222;
-  --text-muted: #777;
-  --card-bg: #fff;
-  --shadow: 0 1px 6px rgba(0,0,0,0.08);
+  --brand-soft: #fff3e6;
+  --text-main: #1f1f1f;
+  --text-muted: #6e6e6e;
+  --border-soft: #e5e7eb;
+  --card-bg: #ffffff;
+  --shadow: 0 3px 10px rgba(0, 0, 0, 0.06);
+  --radius: 14px;
 }
 
 /* ===== CARD ===== */
-.ifood-card {
+.saborhub-card {
   display: flex;
   justify-content: space-between;
   gap: 16px;
   background: var(--card-bg);
-  border-radius: 14px;
+  border-radius: var(--radius);
   padding: 14px;
   box-shadow: var(--shadow);
-  margin-bottom: 12px;
+  border: 1px solid var(--border-soft);
+  transition: all 0.25s ease;
 }
 
-/* ===== TEXTO ===== */
-.ifood-info {
+.saborhub-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 18px rgba(255, 122, 0, 0.12);
+}
+
+/* ===== INDISPONÍVEL ===== */
+.saborhub-inactive {
+  opacity: 0.55;
+  filter: grayscale(40%);
+  pointer-events: none;
+}
+
+/* ===== CONTEÚDO ===== */
+.saborhub-content {
   flex: 1;
   display: flex;
   flex-direction: column;
+  min-width: 0;
 }
 
-.ifood-info h4 {
+.saborhub-title {
   font-size: 1rem;
-  font-weight: 600;
+  font-weight: 700;
   margin: 0;
   color: var(--text-main);
-}
-
-.ifood-info p {
-  font-size: 0.85rem;
-  color: var(--text-muted);
-  margin: 4px 0 10px;
   line-height: 1.3;
-  max-width: 95%;
 }
 
-/* ===== FOOTER (PREÇO + BOTÃO JUNTOS) ===== */
-.ifood-footer {
+.saborhub-description {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin: 6px 0 12px;
+  line-height: 1.3;
+
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ===== FOOTER ===== */
+.saborhub-footer {
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  gap: 12px;
   margin-top: auto;
+  gap: 12px;
 }
 
-/* preços juntos */
-.prices {
+.saborhub-prices {
   display: flex;
   flex-direction: column;
 }
 
-.price-old {
+.saborhub-price-old {
   font-size: 0.75rem;
-  color: #999;
+  color: #9ca3af;
   text-decoration: line-through;
 }
 
-.price {
+.saborhub-price {
   font-size: 1rem;
-  font-weight: 700;
+  font-weight: 800;
   color: var(--text-main);
 }
 
-/* botão colado no preço */
-.ifood-footer button {
-  background: var(--brand);
+/* ===== BOTÃO ===== */
+.saborhub-button {
+  background: linear-gradient(135deg, var(--brand), #ff9b32);
   color: #fff;
   border: none;
-  border-radius: 18px;
+  border-radius: 20px;
   padding: 6px 14px;
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   font-weight: 700;
   cursor: pointer;
-  transition: background 0.2s ease, transform 0.1s ease;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  box-shadow: 0 4px 12px rgba(255, 122, 0, 0.25);
 }
 
-.ifood-footer button:hover {
-  background: var(--brand-dark);
+.saborhub-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(255, 122, 0, 0.35);
 }
 
-.ifood-footer button:active {
+.saborhub-button:active {
   transform: scale(0.96);
 }
 
-/* ===== IMAGEM ===== */
-.ifood-image {
+/* ===== IMAGEM (PADRÃO NOVIDADES) ===== */
+.saborhub-image {
   position: relative;
-  width: 130px;
-  height: 130px;
+  width: 120px;
+  height: 100px;
   flex-shrink: 0;
 }
 
-.ifood-image img {
+.saborhub-image img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   border-radius: 12px;
-  background: #f2f2f2;
+  background: #f3f4f6;
+  transition: transform 0.3s ease;
 }
 
-/* ===== PROMO ===== */
-.promo-badge {
+.saborhub-card:hover .saborhub-image img {
+  transform: scale(1.05);
+}
+
+/* ===== BADGE ===== */
+.saborhub-badge {
   position: absolute;
   top: 6px;
   left: 6px;
@@ -114,44 +144,63 @@
   color: #fff;
   font-size: 0.65rem;
   font-weight: 700;
-  padding: 4px 6px;
-  border-radius: 6px;
+  padding: 4px 8px;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(255, 122, 0, 0.3);
 }
 
-/* ===== INDISPONÍVEL ===== */
-.ifood-card.inactive {
-  opacity: 0.5;
-  pointer-events: none;
-}
-
-.unavailable-label {
+/* ===== INDISPONÍVEL TEXTO ===== */
+.saborhub-unavailable {
   margin-top: 8px;
   font-size: 0.75rem;
-  color: #888;
+  color: #9ca3af;
+  font-weight: 500;
 }
 
-/* ===== RESPONSIVO (MOBILE) ===== */
-@media (max-width: 600px) {
-  .ifood-card {
-    gap: 12px;
-    padding: 12px;
-  }
+/* ===== RESPONSIVO ===== */
 
-  .ifood-image {
+/* Tablet */
+@media (max-width: 900px) {
+  .saborhub-image {
     width: 110px;
-    height: 110px;
+    height: 90px;
+  }
+}
+
+/* Mobile */
+@media (max-width: 700px) {
+  .saborhub-card {
+    flex-direction: row; /* mantém lado a lado */
   }
 
-  .ifood-info h4 {
+  .saborhub-image {
+    width: 100px;
+    height: 85px;
+  }
+}
+
+/* Mobile pequeno */
+@media (max-width: 480px) {
+  .saborhub-card {
+    padding: 12px;
+    gap: 12px;
+  }
+
+  .saborhub-image {
+    width: 90px;
+    height: 80px;
+  }
+
+  .saborhub-title {
     font-size: 0.95rem;
   }
 
-  .price {
+  .saborhub-price {
     font-size: 0.95rem;
   }
 
-  .ifood-footer button {
-    padding: 6px 12px;
-    font-size: 0.75rem;
+  .saborhub-button {
+    padding: 5px 12px;
+    font-size: 0.7rem;
   }
 }

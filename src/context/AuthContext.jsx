@@ -30,14 +30,9 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     if (!user) return;
 
-    // conecta socket
     socket.connect();
 
-    // 🔥 espera o connect de verdade
     const onConnect = () => {
-      console.log("🟢 Socket conectado com sucesso");
-      console.log("Socket ID:", socket.id);
-
       socket.emit("join_company", {
         companyId: user.companyId,
         userId: user.id,
@@ -45,16 +40,10 @@ export function AuthProvider({ children }) {
       });
     };
 
-    const onDisconnect = () => {
-      console.log("🔴 Socket desconectado");
-    };
-
     socket.on("connect", onConnect);
-    socket.on("disconnect", onDisconnect);
 
     return () => {
       socket.off("connect", onConnect);
-      socket.off("disconnect", onDisconnect);
       socket.disconnect();
     };
   }, [user]);
@@ -74,7 +63,7 @@ export function AuthProvider({ children }) {
   }
 
   function logout() {
-    socket.disconnect(); // garante desconexão
+    socket.disconnect();
     localStorage.clear();
     setUser(null);
   }

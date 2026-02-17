@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useReducer } from "react";
 import { useParams } from "react-router-dom";
 
 import categoryService from "../../services/categoriesService";
@@ -16,70 +16,59 @@ import { socket } from "../../socket/socket";
 
 import "./Categories.css";
 
-/* ======================
-   CONFIG PAGINAÇÃO
-====================== */
 const CATEGORIES_PER_PAGE = 5;
 
-/* ======================
-   HELPER → PRÓXIMA ABERTURA
-====================== */
-function getNextOpening(company) {
-  if (!company?.workingDays?.length || !company.openingTime) return null;
+/* =========================
+   MAPA DE DIAS
+========================= */
+const DAY_MAP = {
+  sunday: 0,
+  monday: 1,
+  tuesday: 2,
+  wednesday: 3,
+  thursday: 4,
+  friday: 5,
+  saturday: 6,
+};
 
-  const DAY_MAP = {
-    sunday: 0,
-    monday: 1,
-    tuesday: 2,
-    wednesday: 3,
-    thursday: 4,
-    friday: 5,
-    saturday: 6,
-  };
-
-  const DAY_LABEL = {
-    sunday: "Domingo",
-    monday: "Segunda",
-    tuesday: "Terça",
-    wednesday: "Quarta",
-    thursday: "Quinta",
-    friday: "Sexta",
-    saturday: "Sábado",
-  };
-
-  const now = new Date(
-    new Date().toLocaleString("en-US", {
-      timeZone: "America/Sao_Paulo",
-    })
-  );
-
-  const today = now.getDay();
-  const currentMinutes = now.getHours() * 60 + now.getMinutes();
-  const [openH, openM] = company.openingTime.split(":").map(Number);
-  const openingMinutes = openH * 60 + openM;
-
-  for (let i = 0; i < 7; i++) {
-    const dayIndex = (today + i) % 7;
-    const dayKey = Object.keys(DAY_MAP).find(
-      (key) => DAY_MAP[key] === dayIndex
-    );
-
-    if (!company.workingDays.includes(dayKey)) continue;
-
-    if (i === 0 && openingMinutes > currentMinutes) {
-      return `Hoje às ${company.openingTime.slice(0, 5)}`;
-    }
-
-    if (i > 0) {
-      return `${DAY_LABEL[dayKey]} às ${company.openingTime.slice(0, 5)}`;
-    }
+/* =========================
+   VERIFICA SE ESTÁ ABERTO
+========================= */
+function isStoreOpen(company) {
+  if (
+    !company?.openingTime ||
+    !company?.closingTime ||
+    !Array.isArray(company?.workingDays)
+  ) {
+    return false;
   }
 
-  return null;
+  const now = new Date();
+  const currentDay = now.getDay();
+  const currentMinutes = now.getHours() * 60 + now.getMinutes();
+
+  const openToday = company.workingDays.some(
+    (day) => DAY_MAP[day] === currentDay
+  );
+
+  if (!openToday) return false;
+
+  const [openH, openM] = company.openingTime.split(":").map(Number);
+  const [closeH, closeM] = company.closingTime.split(":").map(Number);
+
+  const openMinutes = openH * 60 + openM;
+  const closeMinutes = closeH * 60 + closeM;
+
+  if (openMinutes < closeMinutes) {
+    return currentMinutes >= openMinutes && currentMinutes <= closeMinutes;
+  }
+
+  return currentMinutes >= openMinutes || currentMinutes <= closeMinutes;
 }
 
 export default function Categories() {
   const { companyId } = useParams();
+  const [, forceUpdate] = useReducer((x) => x + 1, 0);
 
   const [company, setCompany] = useState(null);
   const [categories, setCategories] = useState([]);
@@ -96,9 +85,20 @@ export default function Categories() {
 
   const [currentPage, setCurrentPage] = useState(1);
 
-  /* ======================
+  /* =========================
+     ATUALIZA A CADA MINUTO
+  ========================= */
+  useEffect(() => {
+    const interval = setInterval(() => {
+      forceUpdate();
+    }, 60000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  /* =========================
      LOAD INICIAL
-  ====================== */
+  ========================= */
   useEffect(() => {
     async function loadMenu() {
       try {
@@ -138,9 +138,9 @@ export default function Categories() {
     if (companyId) loadMenu();
   }, [companyId]);
 
-  /* ======================
+  /* =========================
      SOCKET
-  ====================== */
+  ========================= */
   useEffect(() => {
     if (!companyId) return;
 
@@ -171,11 +171,10 @@ export default function Categories() {
     };
   }, [companyId]);
 
-  /* ======================
-     HELPERS
-  ====================== */
+  const openNow = isStoreOpen(company);
+
   const toggleCategory = (id) => {
-    if (!company?.open) {
+    if (!openNow) {
       setShowClosedModal(true);
       return;
     }
@@ -184,7 +183,7 @@ export default function Categories() {
   };
 
   const addToOrder = (product) => {
-    if (!company?.open || !product?.available) {
+    if (!openNow || !product?.available) {
       setShowClosedModal(true);
       return;
     }
@@ -206,9 +205,6 @@ export default function Categories() {
     setShowOrderModal(true);
   };
 
-  /* ======================
-     PAGINAÇÃO
-  ====================== */
   const totalPages = Math.ceil(
     categories.length / CATEGORIES_PER_PAGE
   );
@@ -218,21 +214,23 @@ export default function Categories() {
     currentPage * CATEGORIES_PER_PAGE
   );
 
-  /* ======================
-     RENDER
-  ====================== */
   return (
-    <div className="categories-container">
-      {company && <StoreHeader company={company} />}
+    <div
+      className={`categories-container ${
+        !openNow ? "store-closed" : ""
+      }`}
+    >
+      {company && (
+        <StoreHeader company={company} openNow={openNow} />
+      )}
 
       {loading ? (
-        <p>Carregando cardápio...</p>
+        <p className="loading">Carregando cardápio...</p>
       ) : (
         <>
           <MostSoldSection products={mostSold} onAdd={addToOrder} />
           <NewProductsSection products={newProducts} onAdd={addToOrder} />
 
-          {/* 📂 CATEGORIAS */}
           <div className="category-grid">
             {paginatedCategories.map((category) => (
               <div key={category.id} className="category-card">
@@ -240,14 +238,14 @@ export default function Categories() {
                   <h3>{category.name}</h3>
 
                   <button
-                    className={!company?.open ? "btn-closed" : ""}
+                    className={!openNow ? "btn-closed" : ""}
                     onClick={() => toggleCategory(category.id)}
                   >
-                    {company?.open
+                    {openNow
                       ? expandedCategory === category.id
                         ? "Ocultar"
                         : "Ver produtos"
-                      : `🔒 Fechado • Abre ${getNextOpening(company)}`}
+                      : "🔒 Fechado"}
                   </button>
                 </div>
 
@@ -268,7 +266,6 @@ export default function Categories() {
             ))}
           </div>
 
-          {/* 🔢 PAGINAÇÃO */}
           {totalPages > 1 && (
             <div className="pagination">
               <button
@@ -302,15 +299,11 @@ export default function Categories() {
         />
       )}
 
-      {/* 🔒 MODAL RESTAURANTE FECHADO */}
       {showClosedModal && (
         <div className="closed-modal">
           <div className="closed-box">
             <h2>🔒 Restaurante fechado</h2>
-            <p>
-              Abrimos{" "}
-              <strong>{getNextOpening(company)}</strong>
-            </p>
+            <p>Estamos fora do horário de funcionamento.</p>
             <button onClick={() => setShowClosedModal(false)}>
               Entendi
             </button>

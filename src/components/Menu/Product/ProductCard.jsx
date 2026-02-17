@@ -5,56 +5,70 @@ export default function ProductCard({ product, onAdd }) {
     product.promotion &&
     Number(product.promotion_value) > 0;
 
-  const finalPrice = hasPromotion
-    ? Number(product.promotion_value)
-    : Number(product.price);
+  const basePrice = Number(product.price);
+  const promoPrice = Number(product.promotion_value);
 
+  const finalPrice = hasPromotion ? promoPrice : basePrice;
   const isUnavailable = !product.available;
 
   return (
-    <div className={`ifood-card ${isUnavailable ? "inactive" : ""}`}>
-      <div className="ifood-info">
-        <h4>{product.name}</h4>
+    <article
+      className={`saborhub-card ${
+        isUnavailable ? "saborhub-inactive" : ""
+      }`}
+    >
+      <div className="saborhub-content">
+        <h4 className="saborhub-title">{product.name}</h4>
 
         {product.description && (
-          <p>{product.description}</p>
+          <p className="saborhub-description">
+            {product.description}
+          </p>
         )}
 
-        <div className="ifood-footer">
-          <div className="prices">
+        <div className="saborhub-footer">
+          <div className="saborhub-prices">
             {hasPromotion && (
-              <span className="price-old">
-                R$ {Number(product.price).toFixed(2).replace(".", ",")}
+              <span className="saborhub-price-old">
+                R$ {basePrice.toFixed(2).replace(".", ",")}
               </span>
             )}
 
-            <span className="price">
+            <span className="saborhub-price">
               R$ {finalPrice.toFixed(2).replace(".", ",")}
             </span>
           </div>
 
           {!isUnavailable && (
-            <button onClick={() => onAdd(product)}>
-              Adicionar
+            <button
+              className="saborhub-button"
+              onClick={() => onAdd(product)}
+            >
+              + Adicionar
             </button>
           )}
         </div>
 
         {isUnavailable && (
-          <span className="unavailable-label">
+          <span className="saborhub-unavailable">
             Produto indisponível
           </span>
         )}
       </div>
 
-      <div className="ifood-image">
-        {hasPromotion && <span className="promo-badge">PROMO</span>}
+      <div className="saborhub-image">
+        {hasPromotion && (
+          <span className="saborhub-badge">
+            Oferta
+          </span>
+        )}
 
         <img
           src={product.image || "/assets/default-product.png"}
           alt={product.name}
+          loading="lazy"
         />
       </div>
-    </div>
+    </article>
   );
 }

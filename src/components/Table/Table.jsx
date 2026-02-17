@@ -27,10 +27,14 @@ function resolveTableStatus(assignments = []) {
 
 export default function TablesView() {
   const { user } = useAuth();
+
   const companyId = user?.companyId;
-  const isWaiter = user?.role === "waiter";
-  const canManageTables =
-    user?.role === "admin" || user?.role === "manager";
+
+  // 🔥 NORMALIZA ROLE (CORREÇÃO DEFINITIVA)
+  const role = (user?.role || "").toLowerCase();
+
+  const isWaiter = role === "waiter";
+  const canManageTables = ["admin", "manager"].includes(role);
 
   const [tables, setTables] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -183,7 +187,6 @@ export default function TablesView() {
   return (
     <div className="tables-container">
       <div className="header">
-
         {canManageTables && (
           <button
             className="btn primary"

@@ -2,56 +2,44 @@ import api from "./api";
 
 const productService = {
   createProduct: async (data) => {
-    // Se data for FormData, não setar headers manualmente
-    const response = await api.post("/products", data, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
+    const response = await api.post("/products", data);
     return response.data;
   },
 
   updateProduct: async (id, data) => {
-    const response = await api.put(`/products/${id}`, data, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
+    const response = await api.put(`/products/${id}`, data);
     return response.data;
   },
 
-getProductsByCompany: async (companyId) => {
-  const response = await api.get(`/products/company/${companyId}`);
-  return response.data;
-},
+  getProductsByCompany: async (companyId) => {
+    const response = await api.get(`/products/company/${companyId}`);
+    return response.data;
+  },
 
-getMostSoldProducts: async (companyId) => {
-  const res = await api.get(
-    `/product-sections/company/${companyId}/products/most-sold`
-  );
-  return res.data;
-},
+  getMostSoldProducts: async (companyId) => {
+    const res = await api.get(
+      `/product-sections/company/${companyId}/products/most-sold`
+    );
+    return res.data;
+  },
 
-getNewProducts: async (companyId) => {
-  const res = await api.get(
-    `/product-sections/company/${companyId}/products/new`
-  );
-  return res.data;
-},
-
-
-
+  getNewProducts: async (companyId) => {
+    const res = await api.get(
+      `/product-sections/company/${companyId}/products/new`
+    );
+    return res.data;
+  },
 
   toggleProductAvailability(id) {
     return api.patch(`/products/${id}/availability`);
   },
 
-getAdminProducts: async (companyId) => {
-  const response = await api.get(
-    `/products/admin/company/${companyId}`
-  );
-  return response.data;
-},
+  getAdminProducts: async (companyId) => {
+    const response = await api.get(
+      `/products/admin/company/${companyId}`
+    );
+    return response.data;
+  },
 
   getProductById: async (id) => {
     const response = await api.get(`/products/${id}`);
