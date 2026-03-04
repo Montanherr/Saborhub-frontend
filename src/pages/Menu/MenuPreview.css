@@ -101,13 +101,13 @@
    PRODUCT CARD
 ===================================== */
 .product-card {
-  background: var(--card);
-  border-radius: var(--radius-md);
+  background: var(--cor-card);
+  border-radius: 14px;
   padding: 16px;
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--sombra-leve);
   display: flex;
   flex-direction: column;
-  transition: var(--transition);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
 .product-card:hover {

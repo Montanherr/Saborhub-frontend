@@ -1,56 +1,111 @@
+/* =========================
+   VARIÁVEIS SABORHUB
+========================= */
+:root {
+  --primary: #ff7a00;        /* Laranja principal */
+  --primary-hover: #e66900;  /* Laranja escuro */
+  --bg-soft: #fff6ed;        /* Fundo suave alaranjado */
+  --text-main: #1f2937;
+  --text-muted: #6b7280;
+}
+
+/* =========================
+   CONTAINER
+========================= */
 .about-container {
-  background: white;
-  padding: 40px 20px;
+  background: #ffffff;
+  padding: 70px 24px;
   max-width: 1000px;
-  margin: 20px auto;
+  margin: 50px auto;
   text-align: center;
-  border-radius: 12px;
-  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+  border-radius: 24px;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08);
+  position: relative;
+  overflow: hidden;
 }
 
+/* Fundo decorativo laranja suave */
+.about-container::before {
+  content: "";
+  position: absolute;
+  top: -100px;
+  right: -100px;
+  width: 260px;
+  height: 260px;
+  background: radial-gradient(circle, var(--primary) 0%, transparent 70%);
+  opacity: 0.08;
+  border-radius: 50%;
+}
+
+/* =========================
+   TÍTULO
+========================= */
 .about-title {
-  font-size: 28px;
-  font-weight: bold;
-  margin-bottom: 15px;
-  color: #333;
+  font-size: 2.2rem;
+  font-weight: 900;
+  margin-bottom: 20px;
+  color: var(--primary);
+  line-height: 1.3;
 }
 
+/* =========================
+   TEXTO
+========================= */
 .about-text {
-  font-size: 17px;
-  color: #555;
-  margin-bottom: 12px;
-  line-height: 1.6;
+  font-size: 1.1rem;
+  color: var(--text-muted);
+  margin-bottom: 18px;
+  line-height: 1.8;
+  max-width: 720px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
+/* =========================
+   BOTÃO
+========================= */
 .about-btn {
   display: inline-block;
-  margin-top: 20px;
-  padding: 12px 28px;
-  background: #2c2c2c;
-  color: white;
+  margin-top: 35px;
+  padding: 16px 36px;
+  background: var(--primary);
+  color: #ffffff;
   text-decoration: none;
-  border-radius: 8px;
-  font-size: 16px;
-  transition: 0.2s ease;
+  border-radius: 50px;
+  font-size: 1rem;
+  font-weight: 800;
+  transition: all 0.25s ease;
+  box-shadow: 0 10px 25px rgba(255, 122, 0, 0.35);
 }
 
 .about-btn:hover {
-  background: #ffcc00;
-  color: #2c2c2c;
+  background: var(--primary-hover);
+  transform: translateY(-4px);
+  box-shadow: 0 16px 35px rgba(255, 122, 0, 0.45);
 }
 
-/* Responsivo */
-@media (max-width: 600px) {
+/* =========================
+   RESPONSIVO
+========================= */
+@media (max-width: 768px) {
+  .about-container {
+    padding: 45px 20px;
+    margin: 25px 14px;
+    border-radius: 18px;
+  }
+
   .about-title {
-    font-size: 22px;
+    font-size: 1.6rem;
   }
 
   .about-text {
-    font-size: 15px;
+    font-size: 1rem;
+    line-height: 1.7;
   }
 
   .about-btn {
-    font-size: 15px;
-    padding: 10px 20px;
+    width: 100%;
+    padding: 14px;
+    font-size: 0.95rem;
   }
 }

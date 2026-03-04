@@ -23,6 +23,17 @@
   padding-bottom: 16px;
 }
 
+/* Layout padrão (conteúdo centralizado) */
+.main-content.container {
+  max-width: 780px;
+}
+
+/* Layout full width (páginas especiais como auth) */
+.main-content.full {
+  max-width: 100%;
+  padding: 0;
+}
+
 /* ========================================= */
 /* CONTEÚDO PRINCIPAL */
 /* ========================================= */
@@ -30,10 +41,8 @@
 .main-content {
   flex: 1;
   padding: 20px 16px;
-  max-width: 780px;       /* <- redução principal */
   width: 100%;
   margin: 0 auto;
-  animation: fadeIn 0.3s ease;
 }
 
 @keyframes fadeIn {

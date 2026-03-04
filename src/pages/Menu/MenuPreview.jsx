@@ -67,6 +67,7 @@ export default function MenuPreview({
                           }
                           alt={product.name}
                           className="product-img"
+                          loading="lazy"
                         />
                       </div>
 
@@ -96,13 +97,16 @@ export default function MenuPreview({
                         {/* TAXA */}
                         {product.has_delivery_fee && (
                           <div className="delivery-fee">
-                            Taxa: R$ {Number(product.delivery_fee).toFixed(2)}
+                            Taxa: R${" "}
+                            {Number(product.delivery_fee).toFixed(2)}
                           </div>
                         )}
 
                         {/* PROMO */}
                         {hasPromotion && (
-                          <span className="promo-badge">PROMOÇÃO</span>
+                          <span className="promo-badge">
+                            🔥 PROMOÇÃO
+                          </span>
                         )}
 
                         {/* DISPONIBILIDADE */}
