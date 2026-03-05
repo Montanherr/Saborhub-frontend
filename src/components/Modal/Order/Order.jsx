@@ -47,6 +47,28 @@ export default function OrdersModal({ company, items, setItems, close }) {
     return Number(item.promotion_value) || price;
   };
 
+  const handleIncrease = (id) => {
+    setItems((prev) =>
+      prev.map((item) =>
+        item.id === id ? { ...item, quantity: item.quantity + 1 } : item,
+      ),
+    );
+  };
+
+  const handleDecrease = (id) => {
+    setItems((prev) =>
+      prev
+        .map((item) =>
+          item.id === id ? { ...item, quantity: item.quantity - 1 } : item,
+        )
+        .filter((item) => item.quantity > 0),
+    );
+  };
+
+  const handleRemove = (id) => {
+    setItems((prev) => prev.filter((item) => item.id !== id));
+  };
+
   // ===================== MESA =====================
   useEffect(() => {
     if (orderType === "table" && company?.id) {
@@ -360,6 +382,9 @@ export default function OrdersModal({ company, items, setItems, close }) {
             onAddMore={() => {
               close(); // apenas fecha o modal
             }}
+            onIncrease={handleIncrease} // ✅ AGORA PASSA
+            onDecrease={handleDecrease} // ✅ AGORA PASSA
+            onRemove={handleRemove} // ✅ AGORA PASSA
             onClose={close}
           />
         )}

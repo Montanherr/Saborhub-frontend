@@ -1,16 +1,20 @@
-/* TableCallModal.css */
+/* =========================================
+   🎨 BASE
+========================================= */
 
-/* Reset & Base */
 .orders-modal-backdrop * {
   box-sizing: border-box;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
-/* BACKDROP - Glassmorphism suave */
+/* =========================================
+   🌑 BACKDROP
+========================================= */
+
 .orders-modal-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(31, 41, 55, 0.75); /* Fundo escuro suave */
+  background: rgba(15, 23, 42, 0.75);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   display: flex;
@@ -18,131 +22,265 @@
   align-items: center;
   z-index: 1000;
   padding: 20px;
-  animation: fadeIn 0.3s ease-out;
+  animation: fadeIn 0.25s ease-out;
 }
 
-/* MODAL */
+/* =========================================
+   📦 MODAL
+========================================= */
+
 .orders-modal {
   position: relative;
-  background: #27303f; /* Card escuro elegante */
+  background: #1e293b;
   color: #e5e7eb;
-  border-radius: 16px;
-  padding: 32px;
+  border-radius: 18px;
+  padding: 30px;
   width: 100%;
-  max-width: 400px;
+  max-width: 420px;
   max-height: 90vh;
   overflow-y: auto;
-  box-shadow: 0 10px 15px rgba(0,0,0,0.15);
+  box-shadow: 0 25px 50px rgba(0,0,0,0.35);
   border: 1px solid rgba(255,255,255,0.05);
-  animation: modalSlideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  animation: modalSlideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* ANIMAÇÕES */
+/* =========================================
+   ✨ ANIMAÇÕES
+========================================= */
+
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
 }
 
 @keyframes modalSlideUp {
-  from { opacity: 0; transform: translateY(30px) scale(0.98); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
-/* TÍTULO */
+/* =========================================
+   🧾 TÍTULO
+========================================= */
+
 .orders-modal h3 {
   text-align: center;
-  font-size: 1.75rem;
+  font-size: 1.6rem;
   font-weight: 800;
   margin-bottom: 24px;
-  background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%);
+  background: linear-gradient(135deg, #f59e0b, #fbbf24);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  letter-spacing: -0.025em;
 }
 
-/* SELECT MESA */
-.orders-modal select {
-  width: 100%;
-  padding: 12px 16px;
-  margin-bottom: 20px;
-  border-radius: 12px;
-  border: 1px solid rgba(255,255,255,0.1);
-  background: #323a4b;
-  color: #e5e7eb;
-  font-size: 1rem;
-  transition: all 0.3s ease;
+/* =========================================
+   🛒 HEADER DO CARRINHO
+========================================= */
+
+.cart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
 }
 
-.orders-modal select:focus {
-  outline: none;
-  border-color: #f59e0b;
-  background: #2b3446;
-  box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.1);
-}
-
-/* BOTÃO CHAMAR GARÇOM */
-.call-waiter-btn {
-  width: 100%;
-  background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%);
+.cart-count {
+  background: linear-gradient(135deg, #f59e0b, #fbbf24);
   color: #1f2937;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.25);
+}
+
+/* =========================================
+   📦 LISTA DE ITENS
+========================================= */
+
+.order-items {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.order-item {
+  background: #27303f;
+  padding: 14px;
+  border-radius: 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid rgba(255,255,255,0.05);
+  transition: all 0.2s ease;
+}
+
+.order-item:hover {
+  background: #323a4b;
+  transform: translateY(-2px);
+}
+
+/* =========================================
+   📌 ITEM INFO
+========================================= */
+
+.item-info {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.item-name {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: #f3f4f6;
+}
+
+.promo-tag {
+  display: inline-block;
+  margin-left: 6px;
+  background: rgba(245,158,11,0.15);
+  color: #fbbf24;
+  padding: 3px 6px;
+  border-radius: 6px;
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+
+/* =========================================
+   ➕➖ CONTROLES
+========================================= */
+
+.item-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.item-controls button {
+  width: 30px;
+  height: 30px;
+  border-radius: 10px;
+  border: none;
+  background: #1e293b;
+  color: #e5e7eb;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.item-controls button:hover {
+  background: #f59e0b;
+  color: #1f2937;
+}
+
+.item-controls span {
+  min-width: 20px;
+  text-align: center;
+  font-weight: 600;
+}
+
+/* Botão remover */
+
+.remove-btn {
+  background: rgba(239,68,68,0.15) !important;
+  color: #ef4444 !important;
+}
+
+.remove-btn:hover {
+  background: #ef4444 !important;
+  color: #fff !important;
+}
+
+/* =========================================
+   💰 PREÇO
+========================================= */
+
+.item-price {
+  font-weight: 700;
+  color: #fbbf24;
+}
+
+/* =========================================
+   📊 RESUMO
+========================================= */
+
+.order-summary {
+  background: #27303f;
   padding: 16px;
+  border-radius: 14px;
+  margin-bottom: 20px;
+  border: 1px solid rgba(255,255,255,0.05);
+}
+
+.order-summary p {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 6px;
+  color: #cbd5e1;
+}
+
+.order-total {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #fbbf24;
+}
+
+/* =========================================
+   🎛 BOTÕES
+========================================= */
+
+.order-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.btn {
+  padding: 14px;
   border-radius: 12px;
   font-weight: 700;
-  font-size: 1.1rem;
-  border: none;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(245,158,11,0.3);
-  margin-bottom: 16px;
-}
-
-.call-waiter-btn:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(245,158,11,0.35);
-}
-
-.call-waiter-btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-  filter: grayscale(0.5);
-}
-
-.call-waiter-btn.loading {
-  background: #384357;
-  color: #94a3b8;
-  cursor: progress;
-}
-
-.call-waiter-btn.success {
-  background: #22c55e;
-  color: #fff;
-  cursor: default;
-}
-
-/* BOTÃO FECHAR */
-.btn.cancel {
-  width: 100%;
-  padding: 14px 0;
-  border-radius: 12px;
-  font-weight: 600;
   font-size: 1rem;
   cursor: pointer;
-  border: 1px solid rgba(255,255,255,0.15);
-  background: transparent;
-  color: #94a3b8;
-  transition: all 0.3s ease;
+  transition: all 0.25s ease;
 }
 
-.btn.cancel:hover {
-  background: rgba(255,255,255,0.05);
+.btn.primary {
+  background: linear-gradient(135deg, #f59e0b, #fbbf24);
+  color: #1f2937;
+  border: none;
+  box-shadow: 0 8px 18px rgba(245,158,11,0.25);
+}
+
+.btn.primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 22px rgba(245,158,11,0.35);
+}
+
+.btn.secondary {
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.15);
   color: #e5e7eb;
 }
 
-/* RESPONSIVIDADE */
+.btn.secondary:hover {
+  background: rgba(255,255,255,0.05);
+}
+
+/* =========================================
+   📱 RESPONSIVO
+========================================= */
+
 @media (max-width: 480px) {
   .orders-modal {
     padding: 24px 20px;
-    border-radius: 16px 16px 0 0;
+    border-radius: 20px 20px 0 0;
     position: fixed;
     bottom: 0;
     max-height: 95vh;

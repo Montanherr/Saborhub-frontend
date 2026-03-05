@@ -9,7 +9,6 @@ import ProductForm from "./ProductForm";
 import MenuPreview from "./MenuPreview";
 import Tabs from "./Tabs";
 
-// 👉 NOVO
 import CompanyPage from "../Administrator/Company/CompanyPage";
 
 import "./MenuCreate.css";
@@ -19,13 +18,16 @@ export default function MenuCreate() {
 
   const [categories, setCategories] = useState([]);
   const [products, setProducts] = useState([]);
-  const [mostSold, setMostSold] = useState([]); // 🔹 adicionado
-  const [newProducts, setNewProducts] = useState([]); // 🔹 adicionado
+  const [mostSold, setMostSold] = useState([]);
+  const [newProducts, setNewProducts] = useState([]);
 
   const [editingCategory, setEditingCategory] = useState(null);
   const [editingProduct, setEditingProduct] = useState(null);
 
   const [loading, setLoading] = useState(false);
+
+  // 🔥 NOVO → força re-render da preview
+  const [previewKey, setPreviewKey] = useState(0);
 
   const loggedCompanyId = localStorage.getItem("companyId");
   const companyIdNumber = Number(loggedCompanyId);
@@ -51,6 +53,10 @@ export default function MenuCreate() {
       setProducts(productsData);
       setMostSold(mostSoldData || []);
       setNewProducts(newProductsData || []);
+
+      // 🔥 força atualização visual
+      setPreviewKey((prev) => prev + 1);
+
     } catch (err) {
       console.error(err);
       toast.error("Erro ao carregar menu");
@@ -127,66 +133,43 @@ export default function MenuCreate() {
     try {
       const formData = new FormData();
 
-      // CAMPOS PRINCIPAIS
       formData.append("name", productData.name);
       formData.append("description", productData.description || "");
       formData.append("price", productData.price);
       formData.append("categoryId", productData.categoryId);
       formData.append("available", productData.available ? "1" : "0");
 
-      // PROMOÇÃO
       formData.append("promotion", productData.promotion ? "1" : "0");
       formData.append(
         "promotion_value",
-        productData.promotion ? Number(productData.promotion_value || 0) : 0,
+        productData.promotion
+          ? Number(productData.promotion_value || 0)
+          : 0
       );
-      formData.append(
-        "promotion_type",
-        productData.promotion ? "fixed" : "fixed",
-      );
+      formData.append("promotion_type", "fixed");
 
-      // IMAGEM
       if (productData.imageFile) {
         formData.append("image", productData.imageFile);
       }
 
-      // SALVAR
       if (editingProduct) {
-        const updatedProduct = await productService.updateProduct(
-          editingProduct.id,
-          formData,
-        );
+        await productService.updateProduct(editingProduct.id, formData);
         toast.info("Produto atualizado!");
-
-        setProducts((prev) => updateList(prev, updatedProduct));
-        setMostSold((prev) => updateList(prev, updatedProduct));
-        setNewProducts((prev) => updateList(prev, updatedProduct));
       } else {
-        const newProduct = await productService.createProduct(formData);
+        await productService.createProduct(formData);
         toast.success("Produto criado!");
-
-        setProducts((prev) => [...prev, newProduct]);
-        setMostSold((prev) => [...prev, newProduct]);
-        setNewProducts((prev) => [...prev, newProduct]);
       }
+
+      await loadMenu();
 
       setEditingProduct(null);
       setActiveTab("preview");
+
     } catch (err) {
       console.error(err);
       toast.error("Erro ao salvar produto");
     }
   }
-
-  // 🔹 Função utilitária para atualizar ou adicionar um produto na lista
-  const updateList = (list, product) => {
-    const exists = list.find((p) => p.id === product.id);
-    if (exists) {
-      return list.map((p) => (p.id === product.id ? product : p));
-    } else {
-      return [...list, product];
-    }
-  };
 
   /* ======================
      RENDER
@@ -211,10 +194,11 @@ export default function MenuCreate() {
           <p className="loading">Carregando menu...</p>
         ) : (
           <MenuPreview
+            key={previewKey}   // 🔥 força re-render
             categories={categories}
             products={products}
-            mostSold={mostSold} // 🔹 passar para preview, se precisar
-            newProducts={newProducts} // 🔹 passar para preview
+            mostSold={mostSold}
+            newProducts={newProducts}
             onEdit={(product) => {
               setEditingProduct(product);
               setActiveTab("menu");

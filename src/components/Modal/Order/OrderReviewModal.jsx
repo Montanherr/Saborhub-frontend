@@ -9,11 +9,20 @@ export default function OrderReviewModal({
   loading,
   onConfirm,
   onBack,
-  onAddMore
+  onAddMore,
+  onIncrease,
+  onDecrease,
+  onRemove
 }) {
+
+  const totalItems = items.reduce((acc, item) => acc + item.quantity, 0);
+
   return (
     <>
-      <h3>Revisar Pedido</h3>
+      <div className="cart-header">
+        <h3>🛒 Seu Carrinho</h3>
+        <span className="cart-count">{totalItems} itens</span>
+      </div>
 
       <div className="order-items">
         {items.map((item) => {
@@ -21,21 +30,35 @@ export default function OrderReviewModal({
 
           return (
             <div key={item.id} className="order-item">
-              <div>
-                {item.name} x{item.quantity}
+              <div className="item-info">
+                <div className="item-name">
+                  {item.name}
 
-                {item.promotion && (
-                  <span className="promo-tag">
-                    (Promo:{" "}
-                    {item.promotion_type === "percentage"
-                      ? `-${item.promotion_value}%`
-                      : `R$ ${Number(item.promotion_value).toFixed(2)}`}
-                    )
-                  </span>
-                )}
+                  {item.promotion && (
+                    <span className="promo-tag">
+                      (Promo:{" "}
+                      {item.promotion_type === "percentage"
+                        ? `-${item.promotion_value}%`
+                        : `R$ ${Number(item.promotion_value).toFixed(2)}`}
+                      )
+                    </span>
+                  )}
+                </div>
+
+                <div className="item-controls">
+                  <button onClick={() => onDecrease(item.id)}>-</button>
+                  <span>{item.quantity}</span>
+                  <button onClick={() => onIncrease(item.id)}>+</button>
+                  <button
+                    className="remove-btn"
+                    onClick={() => onRemove(item.id)}
+                  >
+                    ✕
+                  </button>
+                </div>
               </div>
 
-              <div>
+              <div className="item-price">
                 R$ {(finalPrice * item.quantity).toFixed(2)}
               </div>
             </div>

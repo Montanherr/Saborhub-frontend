@@ -22,9 +22,9 @@
   --cor-remocao: #ff5c5c;
   --cor-remocao-hover: #e04848;
 
-  --sombra-leve: 0 2px 10px rgba(0, 0, 0, 0.04);
-  --sombra-media: 0 6px 20px rgba(0, 0, 0, 0.06);
-  --sombra-hover: 0 12px 32px rgba(0, 0, 0, 0.12);
+  --sombra-leve: 0 2px 8px rgba(0, 0, 0, 0.04);
+  --sombra-media: 0 6px 18px rgba(0, 0, 0, 0.06);
+  --sombra-hover: 0 10px 30px rgba(0, 0, 0, 0.12);
 
   --padding-padrao: 24px;
   --gap-padrao: 20px;
@@ -37,6 +37,9 @@
 ========================= */
 * {
   box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: "Inter", Arial, sans-serif;
 }
 
 /* =========================
@@ -44,9 +47,8 @@
 ========================= */
 body {
   background-color: var(--cor-fundo);
-  font-family: "Inter", Arial, sans-serif;
   color: var(--cor-texto-principal);
-  margin: 0;
+  line-height: 1.5;
 }
 
 /* =========================
@@ -56,7 +58,7 @@ body {
   max-width: 1200px;
   margin: auto;
   padding: clamp(16px, 4vw, 32px);
-  animation: fadeIn 0.25s ease-in-out;
+  animation: fadeIn 0.3s ease-in-out;
 }
 
 @keyframes fadeIn {
@@ -75,6 +77,7 @@ body {
   margin-bottom: 32px;
   font-size: clamp(1.6rem, 4vw, 2.2rem);
   font-weight: 700;
+  color: var(--cor-texto-principal);
 }
 
 /* =========================
@@ -92,12 +95,12 @@ body {
   border-radius: var(--borda-raio-grande);
   border: 1px solid var(--cor-borda-clara);
   box-shadow: var(--sombra-media);
-  transition: box-shadow 0.3s ease, transform 0.2s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .form-box:hover {
-  box-shadow: var(--sombra-hover);
   transform: translateY(-2px);
+  box-shadow: var(--sombra-hover);
 }
 
 .form-box h2 {
@@ -117,8 +120,8 @@ body {
   width: 100%;
   padding: 12px 14px;
   margin-top: 6px;
-  border-radius: 10px;
-  border: 1px solid #ccc;
+  border-radius: var(--borda-raio-pequeno);
+  border: 1px solid var(--cor-borda-clara);
   font-size: 0.95rem;
   transition: border-color 0.2s, box-shadow 0.2s;
 }
@@ -126,7 +129,7 @@ body {
 .form-box input:focus,
 .form-box select:focus {
   border-color: var(--cor-primaria);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--cor-primaria) 25%, transparent);
+  box-shadow: 0 0 0 3px rgba(244, 180, 0, 0.25);
   outline: none;
 }
 
@@ -137,11 +140,7 @@ body {
   margin-top: 22px;
   padding: 14px;
   width: 100%;
-  background: linear-gradient(
-    135deg,
-    var(--cor-primaria),
-    var(--cor-secundaria)
-  );
+  background: linear-gradient(135deg, var(--cor-primaria), var(--cor-secundaria));
   color: #fff;
   border: none;
   border-radius: var(--borda-raio-pequeno);
@@ -161,9 +160,14 @@ body {
   width: 100%;
   border: none;
   background: #e0e0e0;
-  border-radius: 8px;
+  border-radius: var(--borda-raio-pequeno);
   cursor: pointer;
   font-weight: 600;
+  transition: background 0.15s;
+}
+
+.cancel-btn:hover {
+  background: #d5d5d5;
 }
 
 /* =========================
@@ -173,6 +177,8 @@ body {
   text-align: center;
   font-size: clamp(1.4rem, 4vw, 1.9rem);
   margin-bottom: 24px;
+  font-weight: 700;
+  color: var(--cor-texto-principal);
 }
 
 .preview-category {
@@ -182,6 +188,12 @@ body {
   border: 1px solid var(--cor-borda-clara);
   box-shadow: var(--sombra-media);
   margin-bottom: 32px;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.preview-category:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--sombra-hover);
 }
 
 .category-header {
@@ -189,18 +201,14 @@ body {
   justify-content: space-between;
   gap: 12px;
   flex-wrap: wrap;
+  align-items: center;
 }
 
 .category-header h3 {
   font-size: 1.4rem;
+  font-weight: 600;
 }
 
-.category-actions button {
-  background: none;
-  border: none;
-  font-size: 1.2rem;
-  cursor: pointer;
-}
 
 /* =========================
    GRID PRODUTOS
@@ -219,6 +227,7 @@ body {
   display: flex;
   flex-direction: column;
   transition: transform 0.25s ease, box-shadow 0.25s ease;
+  position: relative;
 }
 
 .product-card:hover {
@@ -226,18 +235,36 @@ body {
   box-shadow: var(--sombra-hover);
 }
 
+.product-card.inactive::after {
+  content: "Inativo";
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: rgba(0,0,0,0.7);
+  color: #fff;
+  padding: 4px 8px;
+  border-radius: 8px;
+  font-size: 12px;
+}
+
 .product-img {
   width: 100%;
   height: 160px;
-  object-fit: contain;
+  object-fit: cover;
   background: #f7f7f7;
   border-radius: 12px;
   margin-bottom: 10px;
+  transition: transform 0.2s;
+}
+
+.product-card:hover .product-img {
+  transform: scale(1.03);
 }
 
 .product-card h4 {
   font-size: 1.1rem;
   margin-bottom: 6px;
+  font-weight: 600;
 }
 
 .price {
@@ -259,10 +286,11 @@ body {
 .delete-btn {
   flex: 1;
   padding: 10px;
-  border-radius: 8px;
+  border-radius: var(--borda-raio-pequeno);
   font-weight: 600;
   cursor: pointer;
   border: none;
+  transition: background 0.2s;
 }
 
 .edit-btn {
@@ -270,13 +298,21 @@ body {
   color: var(--cor-edicao-texto);
 }
 
+.edit-btn:hover {
+  background: var(--cor-edicao-hover);
+}
+
 .delete-btn {
   background: var(--cor-remocao);
   color: #fff;
 }
 
+.delete-btn:hover {
+  background: var(--cor-remocao-hover);
+}
+
 /* =========================
-   MOBILE EXTRA
+   MOBILE
 ========================= */
 @media (max-width: 480px) {
   .menu-create-container h1 {
@@ -290,5 +326,10 @@ body {
 
   .actions {
     flex-direction: column;
+  }
+
+  .preview-products {
+    grid-template-columns: 1fr;
+    gap: 16px;
   }
 }

@@ -86,6 +86,8 @@ export default function Header() {
                 { label: "Empresas", to: "/companies" },
                 { label: "Loja", to: "/menu/create" },
                 { label: "Relatórios", to: "/reports" },
+                { label: "Usuários", to: "/administrator" },
+
               ]}
               onSelect={closeMenu}
             />
