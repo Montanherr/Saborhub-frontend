@@ -50,6 +50,41 @@
   scroll-snap-align: start;
   display: flex;
   flex-direction: column;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* =========================
+   CARD MAIS VENDIDOS (MENOR)
+========================= */
+.product-sold {
+  min-width: 115px;   /* 🔥 menor */
+  max-width: 115px;
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid #e5e7eb;
+  scroll-snap-align: start;
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.product-sold:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.08);
+}
+
+/* 🔥 IMAGEM MENOR E PROPORCIONAL */
+.product-sold img {
+  width: 100%;
+  aspect-ratio: 1 / 1;   /* 🔥 deixa quadrada e responsiva */
+  object-fit: cover;
+  display: block;
+}
+.product-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.08);
 }
 
 /* =========================
@@ -78,24 +113,67 @@
   color: #111827;
 }
 
-/* DESCRIÇÃO */
-.product-info p {
+/* =========================
+   DESCRIÇÃO COM EXPANSÃO
+========================= */
+.description {
   font-size: 0.75rem;
   color: #6b7280;
   line-height: 1.3;
-
-  display: -webkit-box;
-  -webkit-line-clamp: 2; /* 🔥 2 linhas */
-  -webkit-box-orient: vertical;
   overflow: hidden;
+  max-height: 2.6em; /* aproximadamente 2 linhas */
+  transition: max-height 0.3s ease;
 }
 
-/* PREÇO */
+.description.expanded {
+  max-height: 500px;
+}
+
+/* BOTÃO VER MAIS */
+.see-more {
+  font-size: 0.7rem;
+  color: #ea1d2c;
+  font-weight: 600;
+  cursor: pointer;
+  width: fit-content;
+  margin-top: 2px;
+  transition: opacity 0.2s ease;
+}
+
+.see-more:hover {
+  opacity: 0.7;
+}
+
+/* =========================
+   PREÇO
+========================= */
+.price-area {
+  margin-top: 6px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.price-old {
+  font-size: 0.75rem;
+  color: #9ca3af;
+  text-decoration: line-through;
+}
+
 .price {
   font-size: 0.85rem;
   font-weight: 700;
   color: #15803d;
-  margin-top: 6px;
+}
+
+.promo-badge {
+  background: #ef4444;
+  color: #fff;
+  font-size: 0.6rem;
+  padding: 2px 6px;
+  border-radius: 6px;
+  font-weight: 600;
 }
 
 /* =========================
@@ -112,15 +190,19 @@
     height: 120px;
   }
 }
-.description {
-  font-size: 0.75rem;
-  color: #6b7280;
-  line-height: 1.3;
+
+@media (max-width: 768px) {
+  .product-sold {
+    min-width: 120px;
+    max-width: 120px;
+    
+  }
 }
 
-.see-more {
-  font-size: 0.7rem;
-  color: #ea1d2c;
-  font-weight: 600;
-  cursor: pointer;
+@media (max-width: 480px) {
+  .product-sold {
+
+    min-width: 120px;
+    max-width: 120px;
+  }
 }

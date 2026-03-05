@@ -21,6 +21,7 @@ export default function NewProductsSection({ products, onAdd }) {
             product.promotion &&
             promoPrice > 0 &&
             promoPrice < basePrice;
+
           const finalPrice = hasPromotion ? promoPrice : basePrice;
 
           return (
@@ -36,6 +37,7 @@ export default function NewProductsSection({ products, onAdd }) {
 
               <div className="product-info">
                 <strong>{product.name}</strong>
+
                 <p className={`description ${isExpanded ? "expanded" : ""}`}>
                   {product.description}
                 </p>
@@ -58,10 +60,14 @@ export default function NewProductsSection({ products, onAdd }) {
                       R$ {basePrice.toFixed(2).replace(".", ",")}
                     </span>
                   )}
+
                   <span className="price">
                     R$ {finalPrice.toFixed(2).replace(".", ",")}
                   </span>
-                  {hasPromotion && <span className="promo-badge">PROMOÇÃO</span>}
+
+                  {hasPromotion && (
+                    <span className="promo-badge">PROMOÇÃO</span>
+                  )}
                 </div>
               </div>
             </div>

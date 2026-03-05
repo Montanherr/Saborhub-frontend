@@ -1,6 +1,9 @@
+import { useState } from "react";
 import "./ProductSection.css";
 
 export default function MostSoldSection({ products, onAdd }) {
+  const [expandedId, setExpandedId] = useState(null);
+
   if (!Array.isArray(products) || products.length === 0) return null;
 
   return (
@@ -11,15 +14,19 @@ export default function MostSoldSection({ products, onAdd }) {
 
       <div className="product-scroll">
         {products.map((product) => {
+          const isExpanded = expandedId === product.id;
           const basePrice = Number(product.price);
           const promoPrice = Number(product.promotion_value);
           const hasPromotion =
-            product.promotion && promoPrice > 0 && promoPrice < basePrice;
+            product.promotion &&
+            promoPrice > 0 &&
+            promoPrice < basePrice;
+
           const finalPrice = hasPromotion ? promoPrice : basePrice;
 
           return (
             <div
-              className="product-card"
+              className="product-sold"
               key={product.id}
               onClick={() => onAdd?.(product)}
             >
@@ -30,7 +37,22 @@ export default function MostSoldSection({ products, onAdd }) {
 
               <div className="product-info">
                 <strong>{product.name}</strong>
-                <p>{product.description}</p>
+
+                <p className={`description ${isExpanded ? "expanded" : ""}`}>
+                  {product.description}
+                </p>
+
+                {product.description?.length > 60 && (
+                  <small
+                    className="see-more"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setExpandedId(isExpanded ? null : product.id);
+                    }}
+                  >
+                    {isExpanded ? "Ver menos" : "Ver mais"}
+                  </small>
+                )}
 
                 <div className="price-area">
                   {hasPromotion && (
@@ -38,11 +60,14 @@ export default function MostSoldSection({ products, onAdd }) {
                       R$ {basePrice.toFixed(2).replace(".", ",")}
                     </span>
                   )}
+
                   <span className="price">
                     R$ {finalPrice.toFixed(2).replace(".", ",")}
                   </span>
 
-                  {hasPromotion && <span className="promo-badge">PROMOÇÃO</span>}
+                  {hasPromotion && (
+                    <span className="promo-badge">PROMOÇÃO</span>
+                  )}
                 </div>
               </div>
             </div>

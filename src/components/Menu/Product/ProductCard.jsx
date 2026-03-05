@@ -1,15 +1,32 @@
+import { useState, useRef, useEffect } from "react";
 import "./ProductCard.css";
 
 export default function ProductCard({ product, onAdd }) {
+  const [expanded, setExpanded] = useState(false);
+  const [isOverflowing, setIsOverflowing] = useState(false);
+  const descriptionRef = useRef(null);
+
   const hasPromotion =
     product.promotion &&
     Number(product.promotion_value) > 0;
 
   const basePrice = Number(product.price);
   const promoPrice = Number(product.promotion_value);
-
   const finalPrice = hasPromotion ? promoPrice : basePrice;
+
   const isUnavailable = !product.available;
+
+  // 🔥 Detecta se o texto está realmente sendo cortado
+  useEffect(() => {
+    if (descriptionRef.current) {
+      const el = descriptionRef.current;
+
+      // Pequeno timeout garante cálculo correto após render
+      setTimeout(() => {
+        setIsOverflowing(el.scrollHeight > el.clientHeight);
+      }, 0);
+    }
+  }, [product.description]);
 
   return (
     <article
@@ -21,9 +38,32 @@ export default function ProductCard({ product, onAdd }) {
         <h4 className="saborhub-title">{product.name}</h4>
 
         {product.description && (
-          <p className="saborhub-description">
-            {product.description}
-          </p>
+          <div className="saborhub-description-wrapper">
+            <p
+              ref={descriptionRef}
+              className={`saborhub-description ${
+                expanded ? "expanded" : ""
+              }`}
+            >
+              {product.description}
+            </p>
+
+            {!expanded && isOverflowing && (
+              <div className="saborhub-fade" />
+            )}
+
+            {isOverflowing && (
+              <span
+                className="saborhub-see-more"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setExpanded(!expanded);
+                }}
+              >
+                {expanded ? "Ver menos" : "Ver mais"}
+              </span>
+            )}
+          </div>
         )}
 
         <div className="saborhub-footer">
