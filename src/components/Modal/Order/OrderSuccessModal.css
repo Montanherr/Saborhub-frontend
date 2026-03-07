@@ -1,0 +1,19 @@
+.order-success {
+  text-align: center;
+  padding: 20px;
+}
+
+.pix-payment {
+  margin-top: 20px;
+}
+
+.pix-qrcode {
+  width: 220px;
+  margin: 20px auto;
+}
+
+.pix-code {
+  width: 100%;
+  height: 80px;
+  margin: 10px 0;
+}

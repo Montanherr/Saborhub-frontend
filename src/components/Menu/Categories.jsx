@@ -16,8 +16,6 @@ import { socket } from "../../socket/socket";
 
 import "./Categories.css";
 
-const CATEGORIES_PER_PAGE = 5;
-
 const DAY_MAP = {
   sunday: 0,
   monday: 1,
@@ -52,13 +50,13 @@ function isStoreOpen(company) {
 }
 
 export default function CategoriesScreen() {
+
   const { companySlug } = useParams();
   const [, forceUpdate] = useReducer(x => x + 1, 0);
 
   const [company, setCompany] = useState(null);
   const [categories, setCategories] = useState([]);
   const [productsByCategory, setProductsByCategory] = useState({});
-  const [expandedCategory, setExpandedCategory] = useState(null);
   const [loading, setLoading] = useState(true);
 
   const [mostSold, setMostSold] = useState([]);
@@ -68,36 +66,45 @@ export default function CategoriesScreen() {
   const [showOrderModal, setShowOrderModal] = useState(false);
   const [showClosedModal, setShowClosedModal] = useState(false);
 
-  const [currentPage, setCurrentPage] = useState(1);
-
-  // Atualiza hora a cada minuto
+  // atualização automática da hora
   useEffect(() => {
     const interval = setInterval(() => forceUpdate(), 60000);
     return () => clearInterval(interval);
   }, []);
 
-  // Load inicial do cardápio
+  // carregar cardápio
   useEffect(() => {
+
     if (!companySlug) return;
 
     async function loadMenu() {
+
       try {
+
         setLoading(true);
 
         const companyData = await companyService.getBySlug(companySlug);
+
         if (!companyData) throw new Error("Empresa não encontrada");
 
-        const [categoriesData, mostSoldData, newProductsData, productsData] = await Promise.all([
+        const [
+          categoriesData,
+          mostSoldData,
+          newProductsData,
+          productsData
+        ] = await Promise.all([
           categoryService.getCategories(companyData.id),
           productService.getMostSoldProducts(companyData.id),
           productService.getNewProducts(companyData.id),
-          productService.getProductsByCompany(companyData.id), // ✅ Corrigido
+          productService.getProductsByCompany(companyData.id),
         ]);
 
-        // Agrupa produtos por categoria
         const grouped = {};
+
         categoriesData.forEach(cat => {
-          grouped[cat.id] = productsData.filter(p => p.categoryId === cat.id);
+          grouped[cat.id] = productsData.filter(
+            p => p.categoryId === cat.id
+          );
         });
 
         setCompany(companyData);
@@ -107,132 +114,237 @@ export default function CategoriesScreen() {
         setProductsByCategory(grouped);
 
       } catch (err) {
+
         console.error("Erro ao carregar cardápio:", err);
+
       } finally {
+
         setLoading(false);
+
       }
+
     }
 
     loadMenu();
+
   }, [companySlug]);
 
-  // Socket para atualizações em tempo real
+  // websocket atualização produtos
   useEffect(() => {
+
     if (!company?.id) return;
 
     socket.emit("join_company", company.id);
 
     const updateProduct = product => {
+
       if (!product?.categoryId) return;
+
       setProductsByCategory(prev => {
+
         const updated = { ...prev };
+
         const list = updated[product.categoryId] || [];
-        updated[product.categoryId] = list.map(p => p.id === product.id ? { ...p, ...product } : p);
+
+        updated[product.categoryId] = list.map(p =>
+          p.id === product.id ? { ...p, ...product } : p
+        );
+
         return updated;
+
       });
+
     };
 
     socket.on("product_updated", updateProduct);
     socket.on("product_availability_updated", updateProduct);
 
     return () => {
+
       socket.off("product_updated", updateProduct);
       socket.off("product_availability_updated", updateProduct);
+
     };
+
   }, [company]);
 
   const openNow = isStoreOpen(company);
 
-  const toggleCategory = id => {
-    if (!openNow) {
-      setShowClosedModal(true);
-      return;
-    }
-    setExpandedCategory(expandedCategory === id ? null : id);
-  };
-
   const addToOrder = product => {
+
     if (!openNow || !product?.available) {
       setShowClosedModal(true);
       return;
     }
 
     setOrderItems(prev => {
+
       const exists = prev.find(i => i.id === product.id);
+
       if (exists) {
-        return prev.map(i => i.id === product.id ? { ...i, quantity: i.quantity + 1 } : i);
+
+        return prev.map(i =>
+          i.id === product.id
+            ? { ...i, quantity: i.quantity + 1 }
+            : i
+        );
+
       }
+
       return [...prev, { ...product, quantity: 1 }];
+
     });
 
     setShowOrderModal(true);
+
   };
 
-  const totalPages = Math.ceil(categories.length / CATEGORIES_PER_PAGE);
-  const paginatedCategories = categories.slice(
-    (currentPage - 1) * CATEGORIES_PER_PAGE,
-    currentPage * CATEGORIES_PER_PAGE
-  );
+  const scrollToCategory = id => {
+
+    const element = document.getElementById(`category-${id}`);
+
+    if (element) {
+      element.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+      });
+    }
+
+  };
 
   return (
+
     <div className={`categories-container ${!openNow ? "store-closed" : ""}`}>
-      {company && <StoreHeader company={company} openNow={openNow} />}
+
+      {company && (
+        <StoreHeader
+          company={company}
+          openNow={openNow}
+        />
+      )}
 
       {loading ? (
+
         <p className="loading">Carregando cardápio...</p>
+
       ) : (
+
         <>
-          <MostSoldSection products={mostSold} onAdd={addToOrder} />
-          <NewProductsSection products={newProducts} onAdd={addToOrder} />
 
-          <div className="category-grid">
-            {paginatedCategories.map(category => (
-              <div key={category.id} className="category-card">
-                <div className="category-header">
-                  <h3>{category.name}</h3>
-                  <button className={!openNow ? "btn-closed" : ""} onClick={() => toggleCategory(category.id)}>
-                    {openNow
-                      ? expandedCategory === category.id
-                        ? "Ocultar"
-                        : "Ver produtos"
-                      : "🔒 Fechado"}
-                  </button>
-                </div>
+          {/* MENU DE CATEGORIAS */}
 
-                {expandedCategory === category.id && (
-                  <div className="product-grid">
-                    {productsByCategory[category.id]?.map(product => (
-                      <ProductCard key={product.id} product={product} onAdd={addToOrder} />
-                    ))}
-                  </div>
-                )}
-              </div>
+          <div className="categories-menu">
+
+            {categories.map(cat => (
+
+              <button
+                key={cat.id}
+                onClick={() => scrollToCategory(cat.id)}
+              >
+                {cat.name}
+              </button>
+
             ))}
+
           </div>
 
-          {totalPages > 1 && (
-            <div className="pagination">
-              <button disabled={currentPage === 1} onClick={() => setCurrentPage(p => p - 1)}>◀ Anterior</button>
-              <span>Página {currentPage} de {totalPages}</span>
-              <button disabled={currentPage === totalPages} onClick={() => setCurrentPage(p => p + 1)}>Próxima ▶</button>
-            </div>
-          )}
+          {/* SEÇÕES ESPECIAIS */}
+
+          <MostSoldSection
+            products={mostSold}
+            onAdd={addToOrder}
+          />
+
+          <NewProductsSection
+            products={newProducts}
+            onAdd={addToOrder}
+          />
+
+          {/* LISTA DE CATEGORIAS */}
+
+          <div className="categories-sections">
+
+            {categories.map(category => {
+
+              const products = productsByCategory[category.id] || [];
+
+              if (!products.length) return null;
+
+              return (
+
+                <section
+                  key={category.id}
+                  id={`category-${category.id}`}
+                  className="category-section"
+                >
+
+                  <h2 className="category-title">
+                    {category.name}
+                  </h2>
+
+                  <div className="product-grid">
+
+                    {products.map(product => (
+
+                      <ProductCard
+                        key={product.id}
+                        product={product}
+                        onAdd={addToOrder}
+                      />
+
+                    ))}
+
+                  </div>
+
+                </section>
+
+              );
+
+            })}
+
+          </div>
+
         </>
+
       )}
 
       {showOrderModal && (
-        <OrdersModal company={company} items={orderItems} setItems={setOrderItems} close={() => setShowOrderModal(false)} />
+
+        <OrdersModal
+          company={company}
+          items={orderItems}
+          setItems={setOrderItems}
+          close={() => setShowOrderModal(false)}
+        />
+
       )}
 
       {showClosedModal && (
+
         <div className="closed-modal">
+
           <div className="closed-box">
+
             <h2>🔒 Restaurante fechado</h2>
-            <p>Estamos fora do horário de funcionamento.</p>
-            <button onClick={() => setShowClosedModal(false)}>Entendi</button>
+
+            <p>
+              Estamos fora do horário de funcionamento.
+            </p>
+
+            <button
+              onClick={() => setShowClosedModal(false)}
+            >
+              Entendi
+            </button>
+
           </div>
+
         </div>
+
       )}
+
     </div>
+
   );
+
 }

@@ -8,9 +8,11 @@ import { ToastContainer } from "react-toastify";
 import { socket } from "../src/socket/socket"; // 2. Importe sua instância do socket
 import "react-toastify/dist/ReactToastify.css";
 import "./App.css";
+import { initMercadoPago } from "@mercadopago/sdk-react";
 
 function App() {
   // 3. Gerenciamento da conexão única do Socket
+  initMercadoPago(process.env.REACT_APP_MP_PUBLIC_KEY);
   useEffect(() => {
     // Conecta ao servidor se ainda não estiver conectado
     if (!socket.connected) {
@@ -37,7 +39,7 @@ function App() {
           <div className="app-container">
             <div className="content-area">
               <Header />
-              <main className="main-content">
+              <main className="main-content full">
                 <AppRoutes />
               </main>
             </div>

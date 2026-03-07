@@ -2,38 +2,34 @@
    SECTION
 ============================= */
 
-.new-products-section {
-  margin-top: 32px;
+.most-sold-section {
+  margin-top: 30px;
 }
 
-.new-products-header h2 {
+.most-sold-header h2 {
   font-size: 22px;
   font-weight: 700;
   margin-bottom: 16px;
 }
 
 /* =============================
-   LIST
+   LISTA
 ============================= */
 
-.new-products-list {
-
+.most-sold-scroll {
   display: flex;
   flex-direction: column;
-
   gap: 14px;
-
 }
 
 /* =============================
    CARD
 ============================= */
 
-.new-products-card {
+.most-sold-card {
 
   display: flex;
   align-items: center;
-
   gap: 14px;
 
   background: white;
@@ -44,33 +40,27 @@
 
   cursor: pointer;
 
-  transition: .2s;
+  transition: 0.2s;
 
-  box-shadow:
-    0 4px 10px rgba(0,0,0,0.05);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
 
 }
 
-.new-products-card:hover {
-
+.most-sold-card:hover {
   transform: translateY(-2px);
-
 }
 
 /* =============================
    IMAGE
 ============================= */
 
-.new-products-image {
-
+.most-sold-image {
   width: 90px;
   height: 90px;
-
   flex-shrink: 0;
-
 }
 
-.new-products-image img {
+.most-sold-image img {
 
   width: 100%;
   height: 100%;
@@ -85,11 +75,10 @@
    CONTENT
 ============================= */
 
-.new-products-content {
+.most-sold-content {
 
   display: flex;
   flex-direction: column;
-
   gap: 6px;
 
   flex: 1;
@@ -100,7 +89,7 @@
    TITLE
 ============================= */
 
-.new-products-title {
+.most-sold-title {
 
   font-size: 16px;
   font-weight: 700;
@@ -111,7 +100,7 @@
    DESCRIPTION
 ============================= */
 
-.new-products-description {
+.most-sold-description {
 
   font-size: 13px;
   color: #666;
@@ -124,7 +113,7 @@
 
 }
 
-.new-products-description.expanded {
+.most-sold-description.expanded {
   -webkit-line-clamp: unset;
 }
 
@@ -132,10 +121,9 @@
    SEE MORE
 ============================= */
 
-.new-products-see-more {
+.most-sold-see-more {
 
   font-size: 12px;
-
   color: #ff6b00;
 
   cursor: pointer;
@@ -146,28 +134,26 @@
    PRICE
 ============================= */
 
-.new-products-price-area {
+.most-sold-price-area {
 
   display: flex;
   align-items: center;
-
   gap: 6px;
 
   margin-top: 4px;
 
 }
 
-.new-products-price-old {
+.most-sold-price-old {
 
   font-size: 13px;
-
   text-decoration: line-through;
 
   color: #999;
 
 }
 
-.new-products-price {
+.most-sold-price {
 
   font-size: 15px;
   font-weight: 700;
@@ -177,33 +163,12 @@
 }
 
 /* =============================
-   BADGE
-============================= */
-
-.new-products-promo-badge {
-
-  margin-left: auto;
-
-  font-size: 10px;
-  font-weight: 700;
-
-  padding: 3px 6px;
-
-  border-radius: 6px;
-
-  background: #ffe7d6;
-
-  color: #ff6b00;
-
-}
-
-/* =============================
    RESPONSIVO
 ============================= */
 
-@media (max-width:768px){
+@media (max-width: 768px){
 
-  .new-products-image{
+  .most-sold-image{
     width:80px;
     height:80px;
   }

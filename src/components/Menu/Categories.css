@@ -1,13 +1,24 @@
 /* =============================
-   CONTAINER PRINCIPAL
+   CONTAINER
 ============================= */
 
 .categories-container {
-  max-width: 1200px;
+
+  width: 100%;
+  max-width: 1300px;
+
   margin: 0 auto;
-  padding: 32px 20px 100px;
-  background: linear-gradient(to bottom, #fafafa, #f5f5f5);
+
+  padding: 20px 24px 120px;
+
   min-height: 100vh;
+
+  background: linear-gradient(
+    to bottom,
+    #fafafa,
+    #f6f6f6
+  );
+
 }
 
 /* =============================
@@ -15,225 +26,257 @@
 ============================= */
 
 .loading {
+
   text-align: center;
   margin-top: 80px;
+
   font-size: 18px;
   font-weight: 600;
+
   color: #ff6b00;
-  animation: pulse 1.2s infinite ease-in-out;
+
+  animation: pulse 1.2s infinite;
+
 }
 
 @keyframes pulse {
-  0% { opacity: 0.4; }
+
+  0% { opacity: .4; }
   50% { opacity: 1; }
-  100% { opacity: 0.4; }
+  100% { opacity: .4; }
+
 }
 
 /* =============================
-   ESTADO FECHADO
+   MENU DE CATEGORIAS
 ============================= */
 
-.store-closed {
-  filter: grayscale(100%);
-  opacity: 0.65;
-  transition: all 0.3s ease;
+.categories-menu {
+
+  position: sticky;
+  top: 0;
+
+  z-index: 100;
+
+  display: flex;
+  gap: 18px;
+
+  overflow-x: auto;
+  scrollbar-width: none;
+
+  padding: 14px 4px;
+
+  background: #fff;
+
+  border-bottom: 1px solid #eee;
+
 }
 
-.store-closed .category-card,
-.store-closed .product-card {
-  pointer-events: none;
+.categories-menu::-webkit-scrollbar {
+  display: none;
 }
 
-.store-closed button {
-  cursor: not-allowed;
+.categories-menu button {
+
+  border: none;
+  background: none;
+
+  font-weight: 600;
+  font-size: 14px;
+
+  white-space: nowrap;
+
+  padding: 6px 4px;
+
+  cursor: pointer;
+
+  color: #444;
+
+  transition: .2s;
+
+}
+
+.categories-menu button:hover {
+
+  color: #ff6b00;
+
 }
 
 /* =============================
-   GRID CATEGORIAS
+   SEÇÕES
 ============================= */
 
-.category-grid {
+.categories-sections {
+
   display: flex;
   flex-direction: column;
-  gap: 28px;
-  margin-top: 36px;
+
+  gap: 40px;
+
+  margin-top: 30px;
+
 }
 
-.category-card {
-  background: #ffffff;
-  border-radius: 20px;
-  padding: 26px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
-  transition: all 0.3s ease;
-  border: 1px solid #f1f1f1;
+.category-section {
+
+  scroll-margin-top: 90px;
+
 }
 
-.category-card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 14px 28px rgba(255, 107, 0, 0.15);
-}
+.category-title {
 
-/* =============================
-   HEADER CATEGORIA
-============================= */
-
-.category-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 16px;
-}
-
-.category-header h3 {
   font-size: 22px;
   font-weight: 700;
-  margin: 0;
+
+  margin-bottom: 18px;
+
   color: #1f1f1f;
+
 }
 
 /* =============================
-   BOTÕES MODERNOS
-============================= */
-
-.category-header button {
-  background: linear-gradient(135deg, #ff6b00, #ff8c00);
-  color: #fff;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 14px;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 600;
-  transition: all 0.25s ease;
-  box-shadow: 0 6px 16px rgba(255, 107, 0, 0.35);
-}
-
-.category-header button:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 22px rgba(255, 107, 0, 0.45);
-}
-
-.btn-closed {
-  background: #c9c9c9 !important;
-  box-shadow: none !important;
-}
-
-/* =============================
-   PRODUTOS
+   LISTA DE PRODUTOS
 ============================= */
 
 .product-grid {
-  margin-top: 24px;
-  display: grid;
-  gap: 24px;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    display: flex;
+  align-items: center;
+
+  gap: 14px;
+
+  background: white;
+
+  border-radius: 14px;
+
+  padding: 10px;
+
+  cursor: pointer;
+
+  transition: .2s;
+
+  box-shadow:
+    0 4px 10px rgba(0,0,0,0.05);
 }
 
+
 /* =============================
-   PAGINAÇÃO
+   LOJA FECHADA
 ============================= */
 
-.pagination {
-  margin-top: 50px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 28px;
+.store-closed {
+
+  filter: grayscale(.7);
+  opacity: .75;
+
 }
 
-.pagination button {
-  background: linear-gradient(135deg, #ff6b00, #ff8c00);
-  color: #fff;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 14px;
-  cursor: pointer;
-  font-weight: 600;
-  transition: 0.25s ease;
-  box-shadow: 0 6px 16px rgba(255, 107, 0, 0.35);
-}
+.store-closed .product-card {
 
-.pagination button:hover:not(:disabled) {
-  transform: translateY(-3px);
-}
+  pointer-events: none;
 
-.pagination button:disabled {
-  background: #ddd;
-  cursor: not-allowed;
-  box-shadow: none;
-}
-
-.pagination span {
-  font-weight: 600;
-  color: #444;
 }
 
 /* =============================
-   MODAL FECHADO PREMIUM
+   MODAL LOJA FECHADA
 ============================= */
 
 .closed-modal {
+
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(8px);
+
+  background: rgba(0,0,0,.6);
+  backdrop-filter: blur(6px);
+
   display: flex;
   justify-content: center;
   align-items: center;
+
   z-index: 1000;
+
 }
 
 .closed-box {
-  background: white;
-  padding: 40px 30px;
-  border-radius: 24px;
-  text-align: center;
+
+  background: #fff;
+
+  padding: 34px 28px;
+
+  border-radius: 22px;
+
   width: 90%;
-  max-width: 420px;
-  animation: modalFade 0.3s ease;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  max-width: 380px;
+
+  text-align: center;
+
+  box-shadow:
+    0 20px 40px rgba(0,0,0,.15);
+
+  animation: modalFade .3s;
+
 }
 
 .closed-box h2 {
-  margin-bottom: 16px;
+
+  margin-bottom: 10px;
+
   font-size: 22px;
+
   color: #ff6b00;
+
 }
 
 .closed-box p {
+
   color: #666;
-  font-size: 15px;
+  font-size: 14px;
+
 }
 
 .closed-box button {
-  margin-top: 24px;
-  padding: 12px 24px;
-  background: linear-gradient(135deg, #ff6b00, #ff8c00);
-  color: #fff;
+
+  margin-top: 20px;
+
+  padding: 12px 22px;
+
+  border-radius: 14px;
+
   border: none;
-  border-radius: 16px;
+
+  background: linear-gradient(
+    135deg,
+    #ff6b00,
+    #ff8c00
+  );
+
+  color: white;
+
   font-weight: 600;
+
   cursor: pointer;
-  transition: 0.2s ease;
+
+  transition: .2s;
+
 }
 
 .closed-box button:hover {
+
   transform: translateY(-2px);
+
 }
 
-/* =============================
-   ANIMAÇÃO
-============================= */
-
 @keyframes modalFade {
+
   from {
     opacity: 0;
-    transform: translateY(20px) scale(0.97);
+    transform: translateY(20px);
   }
+
   to {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: translateY(0);
   }
+
 }
 
 /* =============================
@@ -241,30 +284,21 @@
 ============================= */
 
 @media (max-width: 1024px) {
+
   .categories-container {
-    padding: 24px 16px 80px;
+    max-width: 900px;
   }
 
-  .product-grid {
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  }
 }
 
 @media (max-width: 768px) {
-  .category-header {
-    flex-direction: column;
-    align-items: stretch;
-  }
 
-  .category-header button {
-    width: 100%;
+  .categories-container {
+    padding: 18px 16px 100px;
   }
 
   .product-grid {
     grid-template-columns: 1fr;
   }
 
-  .closed-box {
-    padding: 30px 20px;
-  }
 }

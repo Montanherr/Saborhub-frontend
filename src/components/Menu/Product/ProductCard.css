@@ -14,15 +14,11 @@
 /* ===== CARD ===== */
 .saborhub-card {
   display: flex;
-  justify-content: space-between;
-  gap: 22px;
-  background: var(--card-bg);
-  border-radius: var(--radius);
-  padding: 20px;
-  box-shadow: var(--shadow);
-  border: 1px solid var(--border-soft);
-  transition: all 0.3s ease;
+ 
 }
+
+/* =============================
+
 
 .saborhub-card:hover {
   transform: translateY(-5px);
