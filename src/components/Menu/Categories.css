@@ -1,75 +1,60 @@
 /* =============================
-   CONTAINER
+   VARIÁVEIS GLOBAIS
 ============================= */
+:root {
+  --primary-color: #ff6b00;
+  --secondary-color: #ff8c00;
+  --text-color: #1f1f1f;
+  --subtext-color: #666;
+  --bg-gradient: linear-gradient(to bottom, #fafafa, #f6f6f6);
+  --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --transition-speed: 0.25s;
+}
 
+/* =============================
+   CONTAINER PRINCIPAL
+============================= */
 .categories-container {
-
   width: 100%;
   max-width: 1300px;
-
   margin: 0 auto;
-
   padding: 20px 24px 120px;
-
   min-height: 100vh;
-
-  background: linear-gradient(
-    to bottom,
-    #fafafa,
-    #f6f6f6
-  );
-
+  background: var(--bg-gradient);
+  font-family: 'Inter', sans-serif;
 }
 
 /* =============================
    LOADING
 ============================= */
-
 .loading {
-
   text-align: center;
   margin-top: 80px;
-
   font-size: 18px;
   font-weight: 600;
-
-  color: #ff6b00;
-
+  color: var(--primary-color);
   animation: pulse 1.2s infinite;
-
 }
 
 @keyframes pulse {
-
-  0% { opacity: .4; }
+  0%, 100% { opacity: 0.4; }
   50% { opacity: 1; }
-  100% { opacity: .4; }
-
 }
 
 /* =============================
    MENU DE CATEGORIAS
 ============================= */
-
 .categories-menu {
-
   position: sticky;
   top: 0;
-
   z-index: 100;
-
   display: flex;
   gap: 18px;
-
   overflow-x: auto;
   scrollbar-width: none;
-
   padding: 14px 4px;
-
   background: #fff;
-
   border-bottom: 1px solid #eee;
-
 }
 
 .categories-menu::-webkit-scrollbar {
@@ -77,228 +62,149 @@
 }
 
 .categories-menu button {
-
   border: none;
   background: none;
-
   font-weight: 600;
   font-size: 14px;
-
   white-space: nowrap;
-
   padding: 6px 4px;
-
   cursor: pointer;
-
   color: #444;
-
-  transition: .2s;
-
+  transition: color var(--transition-speed);
 }
 
 .categories-menu button:hover {
-
-  color: #ff6b00;
-
+  color: var(--primary-color);
 }
 
 /* =============================
-   SEÇÕES
+   SEÇÕES DE CATEGORIAS
 ============================= */
-
 .categories-sections {
-
   display: flex;
   flex-direction: column;
-
-  gap: 40px;
-
+  gap: 50px;
   margin-top: 30px;
-
 }
 
 .category-section {
-
   scroll-margin-top: 90px;
-
 }
 
 .category-title {
-
-  font-size: 22px;
+  font-size: 24px;
   font-weight: 700;
-
-  margin-bottom: 18px;
-
-  color: #1f1f1f;
-
+  margin-bottom: 20px;
+  color: var(--text-color);
 }
 
 /* =============================
-   LISTA DE PRODUTOS
+   GRID DE PRODUTOS
 ============================= */
-
 .product-grid {
-    display: flex;
-  align-items: center;
-
-  gap: 14px;
-
-  background: white;
-
-  border-radius: 14px;
-
-  padding: 10px;
-
-  cursor: pointer;
-
-  transition: .2s;
-
-  box-shadow:
-    0 4px 10px rgba(0,0,0,0.05);
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 20px;
 }
 
+.product-card {
+  background: #fff;
+  border-radius: 14px;
+  padding: 16px;
+  cursor: pointer;
+  box-shadow: var(--card-shadow);
+  transition: transform var(--transition-speed), box-shadow var(--transition-speed);
+}
+
+.product-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+}
 
 /* =============================
    LOJA FECHADA
 ============================= */
-
 .store-closed {
-
-  filter: grayscale(.7);
-  opacity: .75;
-
+  filter: grayscale(0.7);
+  opacity: 0.75;
 }
 
 .store-closed .product-card {
-
   pointer-events: none;
-
 }
 
 /* =============================
    MODAL LOJA FECHADA
 ============================= */
-
 .closed-modal {
-
   position: fixed;
   inset: 0;
-
-  background: rgba(0,0,0,.6);
+  background: rgba(0,0,0,0.6);
   backdrop-filter: blur(6px);
-
   display: flex;
   justify-content: center;
   align-items: center;
-
   z-index: 1000;
-
 }
 
 .closed-box {
-
   background: #fff;
-
   padding: 34px 28px;
-
   border-radius: 22px;
-
   width: 90%;
   max-width: 380px;
-
   text-align: center;
-
-  box-shadow:
-    0 20px 40px rgba(0,0,0,.15);
-
-  animation: modalFade .3s;
-
+  box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+  animation: modalFade 0.3s;
 }
 
 .closed-box h2 {
-
   margin-bottom: 10px;
-
   font-size: 22px;
-
-  color: #ff6b00;
-
+  color: var(--primary-color);
 }
 
 .closed-box p {
-
-  color: #666;
+  color: var(--subtext-color);
   font-size: 14px;
-
 }
 
 .closed-box button {
-
   margin-top: 20px;
-
   padding: 12px 22px;
-
   border-radius: 14px;
-
   border: none;
-
-  background: linear-gradient(
-    135deg,
-    #ff6b00,
-    #ff8c00
-  );
-
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
   color: white;
-
   font-weight: 600;
-
   cursor: pointer;
-
-  transition: .2s;
-
+  transition: transform var(--transition-speed);
 }
 
 .closed-box button:hover {
-
   transform: translateY(-2px);
-
 }
 
 @keyframes modalFade {
-
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 /* =============================
    RESPONSIVO
 ============================= */
-
 @media (max-width: 1024px) {
-
   .categories-container {
     max-width: 900px;
   }
-
 }
 
 @media (max-width: 768px) {
-
   .categories-container {
     padding: 18px 16px 100px;
   }
 
   .product-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
   }
-
 }

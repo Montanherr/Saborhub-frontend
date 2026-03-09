@@ -26,7 +26,11 @@ const DAY_MAP = {
 };
 
 function isStoreOpen(company) {
-  if (!company?.openingTime || !company?.closingTime || !Array.isArray(company?.workingDays)) {
+  if (
+    !company?.openingTime ||
+    !company?.closingTime ||
+    !Array.isArray(company?.workingDays)
+  ) {
     return false;
   }
 
@@ -34,7 +38,9 @@ function isStoreOpen(company) {
   const currentDay = now.getDay();
   const currentMinutes = now.getHours() * 60 + now.getMinutes();
 
-  const openToday = company.workingDays.some(day => DAY_MAP[day] === currentDay);
+  const openToday = company.workingDays.some(
+    (day) => DAY_MAP[day] === currentDay,
+  );
   if (!openToday) return false;
 
   const [openH, openM] = company.openingTime.split(":").map(Number);
@@ -49,9 +55,8 @@ function isStoreOpen(company) {
 }
 
 export default function CategoriesScreen() {
-
   const { companySlug } = useParams();
-  const [, forceUpdate] = useReducer(x => x + 1, 0);
+  const [, forceUpdate] = useReducer((x) => x + 1, 0);
 
   const [company, setCompany] = useState(null);
   const [categories, setCategories] = useState([]);
@@ -70,273 +75,187 @@ export default function CategoriesScreen() {
     return () => clearInterval(interval);
   }, []);
 
-  // carregar cardápio
   useEffect(() => {
-
     if (!companySlug) return;
 
     async function loadMenu() {
-
       try {
-
         setLoading(true);
 
+        // 1️⃣ Pegar dados da empresa
         const companyData = await companyService.getBySlug(companySlug);
-
         if (!companyData) throw new Error("Empresa não encontrada");
 
-        const [
-          categoriesData,
-          mostSoldData,
-          productsData
-        ] = await Promise.all([
-          categoryService.getCategories(companyData.id),
-          productService.getMostSoldProducts(companyData.id),
-          productService.getNewProducts(companyData.id),
-          productService.getProductsByCompany(companyData.id),
-        ]);
+        // 2️⃣ Pegar categorias, produtos mais vendidos e todos os produtos
+        const [categoriesData, mostSoldData, allProductsData] =
+          await Promise.all([
+            categoryService.getCategories(companyData.id),
+            productService.getMostSoldProducts(companyData.id),
+            productService.getProductsByCompany(companyData.id),
+          ]);
 
+        // 3️⃣ Agrupar produtos por categoria
         const grouped = {};
-
-        categoriesData.forEach(cat => {
-          grouped[cat.id] = productsData.filter(
-            p => p.categoryId === cat.id
+        categoriesData.forEach((cat) => {
+          grouped[cat.id] = allProductsData.filter(
+            (p) => p.categoryId === cat.id,
           );
         });
 
+        // 4️⃣ Atualizar estados
         setCompany(companyData);
         setCategories(categoriesData);
         setMostSold(mostSoldData || []);
         setProductsByCategory(grouped);
-
       } catch (err) {
-
         console.error("Erro ao carregar cardápio:", err);
-
       } finally {
-
         setLoading(false);
-
       }
-
     }
 
     loadMenu();
-
   }, [companySlug]);
 
   // websocket atualização produtos
   useEffect(() => {
-
     if (!company?.id) return;
 
     socket.emit("join_company", company.id);
 
-    const updateProduct = product => {
-
+    const updateProduct = (product) => {
       if (!product?.categoryId) return;
 
-      setProductsByCategory(prev => {
-
+      setProductsByCategory((prev) => {
         const updated = { ...prev };
 
         const list = updated[product.categoryId] || [];
 
-        updated[product.categoryId] = list.map(p =>
-          p.id === product.id ? { ...p, ...product } : p
+        updated[product.categoryId] = list.map((p) =>
+          p.id === product.id ? { ...p, ...product } : p,
         );
 
         return updated;
-
       });
-
     };
 
     socket.on("product_updated", updateProduct);
     socket.on("product_availability_updated", updateProduct);
 
     return () => {
-
       socket.off("product_updated", updateProduct);
       socket.off("product_availability_updated", updateProduct);
-
     };
-
   }, [company]);
 
   const openNow = isStoreOpen(company);
 
-  const addToOrder = product => {
-
+  const addToOrder = (product) => {
     if (!openNow || !product?.available) {
       setShowClosedModal(true);
       return;
     }
 
-    setOrderItems(prev => {
-
-      const exists = prev.find(i => i.id === product.id);
+    setOrderItems((prev) => {
+      const exists = prev.find((i) => i.id === product.id);
 
       if (exists) {
-
-        return prev.map(i =>
-          i.id === product.id
-            ? { ...i, quantity: i.quantity + 1 }
-            : i
+        return prev.map((i) =>
+          i.id === product.id ? { ...i, quantity: i.quantity + 1 } : i,
         );
-
       }
 
       return [...prev, { ...product, quantity: 1 }];
-
     });
 
     setShowOrderModal(true);
-
   };
 
-  const scrollToCategory = id => {
-
+  const scrollToCategory = (id) => {
     const element = document.getElementById(`category-${id}`);
 
     if (element) {
       element.scrollIntoView({
         behavior: "smooth",
-        block: "start"
+        block: "start",
       });
     }
-
   };
 
   return (
-
     <div className={`categories-container ${!openNow ? "store-closed" : ""}`}>
-
-      {company && (
-        <StoreHeader
-          company={company}
-          openNow={openNow}
-        />
-      )}
+      {company && <StoreHeader company={company} openNow={openNow} />}
 
       {loading ? (
-
         <p className="loading">Carregando cardápio...</p>
-
       ) : (
-
         <>
-
           {/* MENU DE CATEGORIAS */}
 
           <div className="categories-menu">
-
-            {categories.map(cat => (
-
-              <button
-                key={cat.id}
-                onClick={() => scrollToCategory(cat.id)}
-              >
+            {categories.map((cat) => (
+              <button key={cat.id} onClick={() => scrollToCategory(cat.id)}>
                 {cat.name}
               </button>
-
             ))}
-
           </div>
 
           {/* SEÇÕES ESPECIAIS */}
 
-          <MostSoldSection
-            products={mostSold}
-            onAdd={addToOrder}
-          />
-
+          <MostSoldSection products={mostSold} onAdd={addToOrder} />
 
           {/* LISTA DE CATEGORIAS */}
 
           <div className="categories-sections">
-
-            {categories.map(category => {
-
+            {categories.map((category) => {
               const products = productsByCategory[category.id] || [];
 
               if (!products.length) return null;
 
               return (
-
                 <section
                   key={category.id}
                   id={`category-${category.id}`}
                   className="category-section"
                 >
-
-                  <h2 className="category-title">
-                    {category.name}
-                  </h2>
+                  <h2 className="category-title">{category.name}</h2>
 
                   <div className="product-grid">
-
-                    {products.map(product => (
-
+                    {products.map((product) => (
                       <ProductCard
                         key={product.id}
                         product={product}
                         onAdd={addToOrder}
                       />
-
                     ))}
-
                   </div>
-
                 </section>
-
               );
-
             })}
-
           </div>
-
         </>
-
       )}
 
       {showOrderModal && (
-
         <OrdersModal
           company={company}
           items={orderItems}
           setItems={setOrderItems}
           close={() => setShowOrderModal(false)}
         />
-
       )}
 
       {showClosedModal && (
-
         <div className="closed-modal">
-
           <div className="closed-box">
-
             <h2>🔒 Restaurante fechado</h2>
 
-            <p>
-              Estamos fora do horário de funcionamento.
-            </p>
+            <p>Estamos fora do horário de funcionamento.</p>
 
-            <button
-              onClick={() => setShowClosedModal(false)}
-            >
-              Entendi
-            </button>
-
+            <button onClick={() => setShowClosedModal(false)}>Entendi</button>
           </div>
-
         </div>
-
       )}
-
     </div>
-
   );
-
 }
