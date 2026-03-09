@@ -280,3 +280,86 @@
     flex-direction: column;
   }
 }
+/* ===== CU PONS DISPONÍVEIS ===== */
+.available-coupons {
+  margin-top: 15px;
+}
+
+.coupon-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px dashed #ff7a00; /* laranja profissional */
+  border-radius: var(--card-radius);
+  padding: 12px;
+  margin-bottom: 10px;
+  background: #fff8f2; /* fundo leve */
+  transition: all 0.2s ease;
+}
+
+.coupon-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 122, 0, 0.15);
+}
+
+.coupon-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.coupon-name {
+  font-weight: 700;
+  color: #ff7a00; /* laranja */
+}
+
+.coupon-desc {
+  font-size: 13px;
+  color: #555;
+}
+
+.coupon-min {
+  font-size: 12px;
+  color: #777;
+}
+
+.apply-coupon-btn {
+  border: none;
+  background: #ff7a00;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.apply-coupon-btn:hover {
+  background: #fb923c; /* laranja mais claro */
+}
+
+/* ===== CUPOM APLICADO ===== */
+.coupon-applied {
+  margin-top: 8px;
+  font-size: 14px;
+  color: #2e7d32; /* verde sucesso */
+  font-weight: 600;
+}
+
+/* ===== CUPOM DESABILITADO ===== */
+.coupon-disabled {
+  background: #f3f4f6; /* cinza leve */
+  border: 1px dashed #d1d5db; /* borda cinza */
+  color: #9ca3af; /* texto cinza */
+}
+
+.coupon-disabled .coupon-name,
+.coupon-disabled .coupon-desc,
+.coupon-disabled .coupon-min {
+  color: #9ca3af; /* cinza uniforme */
+}
+
+.coupon-disabled .apply-coupon-btn {
+  background-color: #d1d5db !important; /* botão cinza */
+  cursor: not-allowed;
+}

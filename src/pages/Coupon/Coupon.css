@@ -1,0 +1,252 @@
+/* ==============================
+   CONTAINER
+============================== */
+
+.coupon-container {
+  padding: 30px;
+  background: #ffffff;
+  animation: fadeIn 0.25s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ==============================
+   HEADER
+============================== */
+
+.coupon-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+}
+
+.coupon-header h1 {
+  font-size: 26px;
+  font-weight: 700;
+  color: #f97316;
+  letter-spacing: -0.5px;
+}
+
+/* ==============================
+   CREATE BUTTON
+============================== */
+
+.btn-create {
+  background: linear-gradient(135deg,#f97316,#fb923c);
+  color: #fff;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 12px rgba(249,115,22,0.25);
+}
+
+.btn-create:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(249,115,22,0.35);
+}
+
+/* ==============================
+   TABLE WRAPPER
+============================== */
+
+.coupon-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  border-radius: 14px;
+  border: 1px solid #ffe7d6;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.05);
+}
+
+/* ==============================
+   TABLE
+============================== */
+
+.coupon-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 720px;
+}
+
+/* HEADER */
+
+.coupon-table thead {
+  background: linear-gradient(135deg,#f97316,#fb923c);
+  color: white;
+}
+
+.coupon-table th {
+  padding: 14px;
+  font-size: 14px;
+  font-weight: 600;
+  text-align: center;
+}
+
+/* BODY */
+
+.coupon-table td {
+  padding: 14px;
+  text-align: center;
+  border-bottom: 1px solid #fff2e8;
+  font-size: 14px;
+}
+
+/* CODE */
+
+.coupon-code {
+  font-weight: 700;
+  color: #f97316;
+}
+
+/* HOVER */
+
+.coupon-table tbody tr {
+  transition: background 0.2s ease;
+}
+
+.coupon-table tbody tr:hover {
+  background: #fff7f1;
+}
+
+/* ==============================
+   STATUS BADGE
+============================== */
+
+.status {
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.status.active {
+  background: #fff4ed;
+  color: #f97316;
+}
+
+.status.inactive {
+  background: #fff1f2;
+  color: #f97316;
+  opacity: 0.6;
+}
+
+/* ==============================
+   ACTION BUTTONS
+============================== */
+
+.actions {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.btn {
+  border: none;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+/* EDIT */
+
+.btn.edit {
+  background: #f97316;
+  color: white;
+}
+
+.btn.edit:hover {
+  background: #ea580c;
+  transform: translateY(-1px);
+}
+
+/* TOGGLE */
+
+.btn.toggle {
+  background: #fff4ed;
+  color: #f97316;
+  border: 1px solid #f97316;
+}
+
+.btn.toggle:hover {
+  background: #f97316;
+  color: white;
+}
+
+/* DELETE */
+
+.btn.delete {
+  background: #fff4ed;
+  color: #f97316;
+  border: 1px solid #f97316;
+}
+
+.btn.delete:hover {
+  background: #f97316;
+  color: white;
+}
+
+/* ==============================
+   EMPTY STATE
+============================== */
+
+.coupon-empty {
+  padding: 40px;
+  text-align: center;
+  color: #f97316;
+  font-weight: 500;
+}
+
+/* ==============================
+   LOADING
+============================== */
+
+.coupon-loading {
+  color: #f97316;
+  font-weight: 500;
+}
+
+/* ==============================
+   RESPONSIVE
+============================== */
+
+@media (max-width: 768px) {
+
+  .coupon-container {
+    padding: 20px;
+  }
+
+  .coupon-header {
+    flex-direction: column;
+    gap: 12px;
+    align-items: flex-start;
+  }
+
+  .coupon-header h1 {
+    font-size: 22px;
+  }
+
+  .coupon-table {
+    min-width: 620px;
+  }
+
+  .btn-create {
+    width: 100%;
+  }
+
+}

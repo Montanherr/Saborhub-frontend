@@ -1,0 +1,49 @@
+/* TABS */
+
+.coupon-tabs{
+display:flex;
+gap:10px;
+margin-bottom:20px;
+}
+
+.tab{
+padding:8px 16px;
+border-radius:8px;
+border:1px solid #f97316;
+background:white;
+color:#f97316;
+cursor:pointer;
+font-weight:600;
+}
+
+.tab.active{
+background:#f97316;
+color:white;
+}
+
+/* FORM */
+
+.coupon-form{
+max-width:500px;
+display:flex;
+flex-direction:column;
+gap:15px;
+}
+
+.form-group{
+display:flex;
+flex-direction:column;
+}
+
+.form-group label{
+font-weight:600;
+margin-bottom:4px;
+color:#f97316;
+}
+
+.form-group input,
+.form-group select{
+padding:10px;
+border-radius:6px;
+border:1px solid #f97316;
+}

@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 import { socket } from "../../socket/socket";
 
 import CategoryForm from "./CategoryForm";
+import Coupon from "../Coupon/CouponPages";
 import ProductForm from "./ProductForm";
 import MenuPreview from "./MenuPreview";
 import Tabs from "./Tabs";
@@ -56,7 +57,6 @@ export default function MenuCreate() {
 
       // 🔥 força atualização visual
       setPreviewKey((prev) => prev + 1);
-
     } catch (err) {
       console.error(err);
       toast.error("Erro ao carregar menu");
@@ -142,9 +142,7 @@ export default function MenuCreate() {
       formData.append("promotion", productData.promotion ? "1" : "0");
       formData.append(
         "promotion_value",
-        productData.promotion
-          ? Number(productData.promotion_value || 0)
-          : 0
+        productData.promotion ? Number(productData.promotion_value || 0) : 0,
       );
       formData.append("promotion_type", "fixed");
 
@@ -164,7 +162,6 @@ export default function MenuCreate() {
 
       setEditingProduct(null);
       setActiveTab("preview");
-
     } catch (err) {
       console.error(err);
       toast.error("Erro ao salvar produto");
@@ -176,15 +173,16 @@ export default function MenuCreate() {
   ====================== */
   return (
     <div className="menu-create-container">
-      <h1>Painel Administrativo</h1>
+      <h1>Painel SaborHub</h1>
 
       <Tabs
         activeTab={activeTab}
         onChange={setActiveTab}
         tabs={[
-          { id: "preview", label: "🧾 Preview do Menu" },
-          { id: "menu", label: "⚙️ Gerenciar Menu" },
-          { id: "companies", label: "🏢 Empresas" },
+          { id: "preview", label: "Pré Menu" },
+          { id: "menu", label: "Menu" },
+          { id: "companies", label: " Minha Empresa" },
+          { id: "coupons", label: "Cupons" },
         ]}
       />
 
@@ -194,7 +192,7 @@ export default function MenuCreate() {
           <p className="loading">Carregando menu...</p>
         ) : (
           <MenuPreview
-            key={previewKey}   // 🔥 força re-render
+            key={previewKey} // 🔥 força re-render
             categories={categories}
             products={products}
             mostSold={mostSold}
@@ -241,6 +239,13 @@ export default function MenuCreate() {
           <CompanyPage />
         </div>
       )}
+
+      {/* CUPONS */}
+   {activeTab === "coupons" && (
+  <div className="coupons-tab">
+    <Coupon companyId={loggedCompanyId} />
+  </div>
+)}
     </div>
   );
 }

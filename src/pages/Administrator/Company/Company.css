@@ -1,35 +1,53 @@
 :root {
   --primary: #f59e0b;
   --primary-dark: #d97706;
+
   --bg: #ffffff;
+  --soft-bg: #fafafa;
+
   --border: #e5e7eb;
+
   --text: #1f2937;
   --muted: #6b7280;
+
   --radius: 14px;
-  --soft-bg: #fafafa;
+
+  --shadow-soft: 0 6px 18px rgba(0,0,0,0.06);
+  --shadow-medium: 0 12px 32px rgba(0,0,0,0.08);
 }
 
 /* =========================
-   CONTAINER FORM
+   CONTAINER
 ========================= */
+
 .company-form {
+
   background: var(--bg);
+
   border-radius: var(--radius);
-  padding: 32px;
-  max-width: 1100px;
+
+  padding: 34px;
+
+  max-width: 1050px;
+
   margin: auto;
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08);
+
+  box-shadow: var(--shadow-medium);
+
+  transition: 0.25s;
+
 }
 
 /* =========================
    HEADER
 ========================= */
+
 .form-header {
   margin-bottom: 32px;
 }
 
 .form-header h2 {
-  font-size: 1.7rem;
+  font-size: 1.65rem;
   font-weight: 700;
   color: var(--text);
 }
@@ -43,34 +61,46 @@
 /* =========================
    SEÇÕES
 ========================= */
+
 .form-section {
-  margin-bottom: 36px;
+  margin-bottom: 34px;
 }
 
 .form-section h3 {
-  font-size: 1.2rem;
+  font-size: 1.15rem;
   font-weight: 600;
   margin-bottom: 18px;
   color: var(--text);
 }
 
 /* =========================
-   GRID PRINCIPAL (FORM + FOTO)
+   GRID PRINCIPAL
 ========================= */
+
 .form-layout {
+
   display: grid;
-  grid-template-columns: 1fr 320px;
-  gap: 32px;
+
+  grid-template-columns: 1fr 260px;
+
+  gap: 34px;
+
   align-items: flex-start;
+
 }
 
 /* =========================
-   GRID DE CAMPOS
+   GRID CAMPOS
 ========================= */
+
 .form-grid {
+
   display: grid;
+
   grid-template-columns: repeat(2, 1fr);
+
   gap: 20px;
+
 }
 
 .field {
@@ -86,67 +116,129 @@
   font-size: 0.85rem;
   margin-bottom: 6px;
   color: var(--muted);
+  font-weight: 500;
 }
+
+/* =========================
+   INPUTS
+========================= */
 
 .field input,
 .field select {
-  padding: 14px 16px;
+
+  padding: 13px 14px;
+
   border-radius: 10px;
+
   border: 1px solid var(--border);
-  font-size: 0.95rem;
+
+  font-size: 0.94rem;
+
   background: var(--bg);
+
   transition: border 0.2s, box-shadow 0.2s;
+
 }
 
 .field input:focus,
 .field select:focus {
+
   outline: none;
+
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2);
+
+  box-shadow: 0 0 0 3px rgba(245,158,11,0.2);
+
 }
 
 /* =========================
-   UPLOAD DE IMAGEM
+   UPLOAD IMAGEM
 ========================= */
+
 .image-upload {
+
   background: var(--soft-bg);
+
   border: 1px dashed var(--border);
+
   border-radius: var(--radius);
-  padding: 20px;
+
+  padding: 18px;
+
   text-align: center;
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  gap: 12px;
+
 }
 
+/* FOTO MENOR NO DESKTOP */
+
 .image-upload img {
+
   width: 100%;
-  height: 200px;
+
+  max-width: 200px;
+
+  height: 140px;
+
   object-fit: contain;
-  border-radius: 12px;
+
+  border-radius: 10px;
+
   background: #fff;
-  margin-bottom: 14px;
+
 }
 
 .image-placeholder {
-  height: 200px;
-  border-radius: 12px;
+
+  width: 200px;
+
+  height: 140px;
+
+  border-radius: 10px;
+
   background: #f3f4f6;
+
   color: var(--muted);
+
   display: flex;
+
   align-items: center;
+
   justify-content: center;
-  font-size: 0.9rem;
-  margin-bottom: 14px;
+
+  font-size: 0.85rem;
+
 }
 
+/* =========================
+   BOTÃO UPLOAD
+========================= */
+
 .upload-btn {
-  display: inline-block;
-  padding: 12px 18px;
+
+  padding: 10px 16px;
+
   background: var(--primary);
+
   color: #fff;
+
   border-radius: 10px;
-  font-size: 0.9rem;
+
+  font-size: 0.85rem;
+
   font-weight: 600;
+
   cursor: pointer;
-  transition: background 0.2s;
+
+  transition: 0.2s;
+
 }
 
 .upload-btn:hover {
@@ -154,8 +246,9 @@
 }
 
 /* =========================
-   CHECKBOXES
+   CHECKBOX
 ========================= */
+
 .checkbox {
   display: flex;
   align-items: center;
@@ -165,66 +258,20 @@
 }
 
 .checkbox-grid {
+
   display: grid;
+
   grid-template-columns: repeat(3, 1fr);
+
   gap: 10px;
+
   margin-top: 12px;
+
 }
 
 /* =========================
-   AÇÕES
+   LINKS
 ========================= */
-.form-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 12px;
-  margin-top: 32px;
-}
-
-button {
-  border: none;
-  border-radius: 12px;
-  padding: 14px 22px;
-  font-size: 0.95rem;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-button.primary {
-  background: var(--primary);
-  color: #fff;
-}
-
-button.primary:hover {
-  background: var(--primary-dark);
-}
-
-button.secondary {
-  background: #f3f4f6;
-  color: var(--text);
-}
-
-button.secondary:hover {
-  background: #e5e7eb;
-}
-
-.company-form .form-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 12px;
-}
-
-.image-upload {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.image-upload img {
-  max-width: 100%;
-  height: auto;
-  border-radius: 8px;
-}
 
 .link-field {
   display: flex;
@@ -237,26 +284,104 @@ button.secondary:hover {
   min-width: 150px;
 }
 
-@media (max-width: 600px) {
-  .form-grid {
-    grid-template-columns: 1fr;
-  }
-  .link-field {
-    flex-direction: column;
-  }
-  .link-field button {
-    width: 100%;
-  }
-}
-
+/* =========================
+   STATUS
+========================= */
 
 .status-badge {
+
   margin-top: 8px;
+
   display: inline-block;
+
   padding: 6px 12px;
+
   border-radius: 999px;
+
   font-size: 0.75rem;
+
   font-weight: 700;
+
+}
+
+.status-badge.open {
+
+  background: #dcfce7;
+
+  color: #166534;
+
+}
+
+.status-badge.closed {
+
+  background: #fee2e2;
+
+  color: #991b1b;
+
+}
+
+/* =========================
+   AÇÕES
+========================= */
+
+.form-actions {
+
+  display: flex;
+
+  justify-content: flex-end;
+
+  gap: 12px;
+
+  margin-top: 32px;
+
+}
+
+button {
+
+  border: none;
+
+  border-radius: 12px;
+
+  padding: 13px 20px;
+
+  font-size: 0.95rem;
+
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: 0.2s;
+
+}
+
+button.primary {
+
+  background: var(--primary);
+
+  color: #fff;
+
+}
+
+button.primary:hover {
+
+  background: var(--primary-dark);
+
+  transform: translateY(-1px);
+
+}
+
+button.secondary {
+
+  background: #f3f4f6;
+
+  color: var(--text);
+
+}
+
+button.secondary:hover {
+
+  background: #e5e7eb;
+
 }
 
 button:disabled {
@@ -264,53 +389,70 @@ button:disabled {
   cursor: not-allowed;
 }
 
-
-.status-badge.open {
-  background: #dcfce7;
-  color: #166534;
-}
-
-.status-badge.closed {
-  background: #fee2e2;
-  color: #991b1b;
-}
-
-
 /* =========================
-   📱 RESPONSIVO
+   RESPONSIVO
 ========================= */
-@media (max-width: 1024px) {
-  .form-layout {
-    grid-template-columns: 1fr;
+
+@media (max-width:1024px){
+
+  .form-layout{
+
+    grid-template-columns:1fr;
+
   }
 
-  .image-upload {
-    max-width: 360px;
+  .image-upload{
+
+    max-width:280px;
+
   }
+
 }
 
-@media (max-width: 640px) {
-  .company-form {
-    padding: 22px;
+@media (max-width:640px){
+
+  .company-form{
+
+    padding:22px;
+
   }
 
-  .form-grid {
-    grid-template-columns: 1fr;
+  .form-grid{
+
+    grid-template-columns:1fr;
+
   }
 
-  .field.full {
-    grid-column: span 1;
+  .field.full{
+
+    grid-column:span 1;
+
   }
 
-  .checkbox-grid {
-    grid-template-columns: repeat(2, 1fr);
+  .checkbox-grid{
+
+    grid-template-columns:repeat(2,1fr);
+
   }
 
-  .form-actions {
-    flex-direction: column;
+  .form-actions{
+
+    flex-direction:column;
+
   }
 
-  button {
-    width: 100%;
+  button{
+
+    width:100%;
+
   }
+
+  .image-upload img{
+
+    max-width:220px;
+
+    height:auto;
+
+  }
+
 }

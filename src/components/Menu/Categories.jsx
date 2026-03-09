@@ -10,7 +10,6 @@ import StoreHeader from "../../components/Menu/StoreHeader/StoreHeader";
 import OrdersModal from "../../components/Modal/Order/Order";
 
 import MostSoldSection from "../../components/Menu/StoreHeader/MostSoldSection";
-import NewProductsSection from "../../components/Menu/StoreHeader/NewProductsSection";
 
 import { socket } from "../../socket/socket";
 
@@ -60,7 +59,6 @@ export default function CategoriesScreen() {
   const [loading, setLoading] = useState(true);
 
   const [mostSold, setMostSold] = useState([]);
-  const [newProducts, setNewProducts] = useState([]);
 
   const [orderItems, setOrderItems] = useState([]);
   const [showOrderModal, setShowOrderModal] = useState(false);
@@ -90,7 +88,6 @@ export default function CategoriesScreen() {
         const [
           categoriesData,
           mostSoldData,
-          newProductsData,
           productsData
         ] = await Promise.all([
           categoryService.getCategories(companyData.id),
@@ -110,7 +107,6 @@ export default function CategoriesScreen() {
         setCompany(companyData);
         setCategories(categoriesData);
         setMostSold(mostSoldData || []);
-        setNewProducts(newProductsData || []);
         setProductsByCategory(grouped);
 
       } catch (err) {
@@ -255,10 +251,6 @@ export default function CategoriesScreen() {
             onAdd={addToOrder}
           />
 
-          <NewProductsSection
-            products={newProducts}
-            onAdd={addToOrder}
-          />
 
           {/* LISTA DE CATEGORIAS */}
 

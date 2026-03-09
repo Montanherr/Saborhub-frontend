@@ -2,17 +2,21 @@ import { useState, useEffect, useRef } from "react";
 import orderService from "../../../services/orderService";
 import tableService from "../../../services/tableService";
 import tableAssignmentsService from "../../../services/tableAssignments";
-
+import couponService from "../../../services/couponService";
+import { FaTicketAlt } from "react-icons/fa";
+import toast from "react-hot-toast";
 import OrderStepper from "../../Order/OrderStepper";
 import TableCallModal from "./TableCallModal";
 import OrderReviewModal from "./OrderReviewModal";
 import OrderSuccessModal from "./OrderSuccessModal";
+
 import { socket } from "socket/socket";
 
 import "./Order.css";
 
 export default function OrdersModal({ company, items, setItems, close }) {
   const [step, setStep] = useState(0); // 0=dados | 1=revisão | 2=sucesso
+  const [disableCoupons, setDisableCoupons] = useState(false);
 
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
@@ -31,7 +35,9 @@ export default function OrdersModal({ company, items, setItems, close }) {
   const [audioUnlocked, setAudioUnlocked] = useState(false);
   const [needChange, setNeedChange] = useState(false);
   const [changeAmount, setChangeAmount] = useState("");
-
+  const [coupons, setCoupons] = useState([]);
+  const [discount, setDiscount] = useState(0);
+  const [appliedCoupon, setAppliedCoupon] = useState(null);
   const acceptedAudio = useRef(null);
 
   // Calcula preço final considerando promoção
@@ -55,6 +61,8 @@ export default function OrdersModal({ company, items, setItems, close }) {
     );
   };
 
+
+
   const handleDecrease = (id) => {
     setItems((prev) =>
       prev
@@ -76,6 +84,50 @@ export default function OrdersModal({ company, items, setItems, close }) {
     }
   }, [orderType, company?.id]);
 
+  useEffect(() => {
+    if (!company?.id) return;
+
+    async function loadCoupons() {
+      try {
+        const data = await couponService.getCoupons(company.id);
+        setCoupons(data || []);
+      } catch (err) {
+        console.error("Erro ao carregar cupons", err);
+      }
+    }
+
+    loadCoupons();
+  }, [company?.id]);
+
+  const handleApplyCoupon = async (coupon) => {
+    try {
+      const subtotal = items.reduce(
+        (sum, i) => sum + calculateFinalPrice(i) * i.quantity,
+        0,
+      );
+
+      const response = await couponService.applyCoupon({
+        companyId: company.id,
+        code: coupon.code,
+        subtotal,
+        phone, // envia o telefone para validação se necessário
+      });
+
+      // se a API retornou erro, exibe o toast específico
+      if (response.error) {
+        toast.error(response.error);
+        return;
+      }
+
+      // sucesso
+      setDiscount(Number(response.discount));
+      setAppliedCoupon(coupon);
+      toast.success(`Cupom ${coupon.code} aplicado 🎉`);
+    } catch (err) {
+      console.error(err);
+      toast.error("Erro inesperado ao aplicar o cupom");
+    }
+  };
   const handleCallWaiter = async () => {
     if (!selectedTable) return alert("Selecione uma mesa!");
     try {
@@ -132,7 +184,7 @@ export default function OrdersModal({ company, items, setItems, close }) {
         ? Number(company.delivery_fee)
         : 0;
 
-    const total = subtotal + deliveryFeeTotal;
+    const total = subtotal + deliveryFeeTotal - discount;
 
     const payload = {
       companyId: company.id,
@@ -231,7 +283,7 @@ export default function OrdersModal({ company, items, setItems, close }) {
       ? Number(company.delivery_fee)
       : 0;
 
-  const total = subtotal + deliveryFeeTotal;
+  const total = subtotal + deliveryFeeTotal - discount;
 
   return (
     <div className="orders-modal-backdrop">
@@ -289,6 +341,62 @@ export default function OrdersModal({ company, items, setItems, close }) {
                   value={address}
                   onChange={(e) => setAddress(e.target.value)}
                 />
+              )}
+              {coupons.length > 0 && (
+                <div className="available-coupons">
+                  <h4>Cupons disponíveis</h4>
+
+                  {coupons
+                    .filter(
+                      (coupon) =>
+                        !appliedCoupon || coupon.id !== appliedCoupon.id,
+                    ) // remove o cupom aplicado da lista
+                    .map((coupon) => {
+                      const isExpired =
+                        coupon.expires_at &&
+                        new Date(coupon.expires_at) < new Date();
+                      const isLimitReached =
+                        coupon.usage_limit &&
+                        coupon.usage_count >= coupon.usage_limit;
+
+                      // Se já existe um cupom aplicado, todos os outros ficam desabilitados
+                      const isDisabled =
+                        isExpired ||
+                        isLimitReached ||
+                        coupon.disabled ||
+                        (appliedCoupon && appliedCoupon.id !== coupon.id);
+
+                      return (
+                        <div
+                          key={coupon.id}
+                          className={`coupon-card ${isDisabled ? "coupon-disabled" : ""}`}
+                        >
+                          <div className="coupon-info">
+                            <span className="coupon-name">
+                              🎟 {coupon.code}
+                            </span>
+                            <span className="coupon-desc">
+                              {coupon.discount_type === "percent"
+                                ? `${coupon.discount_value}% OFF`
+                                : `R$ ${coupon.discount_value} OFF`}
+                            </span>
+                            <span className="coupon-min">
+                              Pedido mínimo R${" "}
+                              {Number(coupon.min_order_value).toFixed(2)}
+                            </span>
+                          </div>
+
+                          <button
+                            className="apply-coupon-btn"
+                            onClick={() => handleApplyCoupon(coupon)}
+                            disabled={isDisabled}
+                          >
+                            <FaTicketAlt />
+                          </button>
+                        </div>
+                      );
+                    })}
+                </div>
               )}
               <textarea
                 placeholder="Observações"
@@ -380,12 +488,20 @@ export default function OrdersModal({ company, items, setItems, close }) {
             onBack={() => setStep(0)}
             onConfirm={handleSubmit}
             onAddMore={() => {
-              close(); // apenas fecha o modal
+              close();
+              setDisableCoupons(true); // sinaliza que voltou do modal
             }}
             onIncrease={handleIncrease} // ✅ AGORA PASSA
             onDecrease={handleDecrease} // ✅ AGORA PASSA
             onRemove={handleRemove} // ✅ AGORA PASSA
             onClose={close}
+            // NOVO: props do cupom
+            appliedCoupon={appliedCoupon}
+            discount={discount}
+            coupons={coupons} // lista de cupons disponíveis
+            handleApplyCoupon={handleApplyCoupon}
+            phone={phone}
+            disableCoupons={disableCoupons} // NOVO: sinaliza para desabilitar
           />
         )}
 

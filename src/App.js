@@ -9,6 +9,8 @@ import { socket } from "../src/socket/socket"; // 2. Importe sua instância do s
 import "react-toastify/dist/ReactToastify.css";
 import "./App.css";
 import { initMercadoPago } from "@mercadopago/sdk-react";
+import { Toaster } from "react-hot-toast";
+
 
 function App() {
   // 3. Gerenciamento da conexão única do Socket
@@ -33,6 +35,7 @@ function App() {
   return (
     <>
       <ToastContainer />
+  <Toaster position="top-center" />
 
       <Router>
         <AuthProvider>

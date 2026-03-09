@@ -12,6 +12,7 @@ import Register from "../pages/Login/Register.jsx";
 import Tables from "../pages/Table/Table.jsx";
 import TrialExpired from "../pages/Plans/TrialExpired";
 import Administrator from "../pages/Administrator/Index";
+import Cupons from "../pages/Coupon/CouponPages";
 import Home from "../pages/Home/HomePublic";
 
 export default function AppRoutes() {
@@ -40,6 +41,15 @@ export default function AppRoutes() {
         element={
           <ProtectedRoute roles={["admin", "manager", "waiter"]}>
             <ReportsOrders />
+          </ProtectedRoute>
+        }
+      />
+
+        <Route
+        path="/coupons"
+        element={
+          <ProtectedRoute roles={["admin", "manager", "waiter"]}>
+            <Cupons />
           </ProtectedRoute>
         }
       />

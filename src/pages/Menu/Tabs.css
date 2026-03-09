@@ -1,26 +1,47 @@
 .tabs-container {
   display: flex;
-  gap: 12px;
+  gap: 10px;
   margin-bottom: 32px;
+  flex-wrap: wrap;
 }
 
+/* BOTÕES */
 .tab-btn {
-  padding: 10px 22px;
+  padding: 10px 20px;
   border-radius: 12px;
   border: 1px solid #e5e7eb;
-  background: #f9fafb;
+  background: #ffffff;
   cursor: pointer;
   font-weight: 600;
-  color: #374151;
+  font-size: 0.9rem;
+  color: #4b5563;
   transition: all 0.2s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
 }
 
+/* HOVER */
 .tab-btn:hover {
-  background: #f3f4f6;
+  background: #fff7ed;
+  border-color: #f59e0b;
+  color: #f59e0b;
 }
 
+/* ATIVO */
 .tab-btn.active {
-  background: #2563eb;
+  background: #f59e0b;
   color: #ffffff;
-  border-color: #2563eb;
+  border-color: #f59e0b;
+  box-shadow: 0 6px 14px rgba(245, 158, 11, 0.25);
+}
+
+/* RESPONSIVO */
+@media (max-width: 600px) {
+  .tabs-container {
+    gap: 8px;
+  }
+
+  .tab-btn {
+    flex: 1;
+    text-align: center;
+  }
 }

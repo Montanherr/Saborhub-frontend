@@ -38,8 +38,7 @@ export default function CompanyPage() {
     <div className="company-page">
       <header className="page-header">
         <div>
-          <h1>Empresas</h1>
-          <p>Gerencie os estabelecimentos cadastrados</p>
+          <h1>Meu estabelecimento</h1>
         </div>
       </header>
 
