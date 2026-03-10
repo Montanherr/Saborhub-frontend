@@ -5,23 +5,23 @@
   --primary-color: #ff6b00;
   --secondary-color: #ff8c00;
   --text-color: #1f1f1f;
-  --subtext-color: #666;
-  --bg-gradient: linear-gradient(to bottom, #fafafa, #f6f6f6);
-  --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --subtext-color: #6b6b6b;
+  --bg-gradient: linear-gradient(to bottom, #fafafa, #f5f5f5);
+  --card-shadow: 0 4px 14px rgba(0,0,0,0.06);
   --transition-speed: 0.25s;
 }
 
 /* =============================
-   CONTAINER PRINCIPAL
+   CONTAINER
 ============================= */
 .categories-container {
   width: 100%;
-  max-width: 1300px;
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 20px 24px 120px;
+  padding: 16px 18px 120px;
   min-height: 100vh;
   background: var(--bg-gradient);
-  font-family: 'Inter', sans-serif;
+  font-family: "Inter", sans-serif;
 }
 
 /* =============================
@@ -37,22 +37,22 @@
 }
 
 @keyframes pulse {
-  0%, 100% { opacity: 0.4; }
-  50% { opacity: 1; }
+  0%,100%{opacity:.4}
+  50%{opacity:1}
 }
 
 /* =============================
-   MENU DE CATEGORIAS
+   MENU CATEGORIAS
 ============================= */
 .categories-menu {
   position: sticky;
   top: 0;
-  z-index: 100;
+  z-index: 50;
   display: flex;
-  gap: 18px;
+  gap: 16px;
   overflow-x: auto;
   scrollbar-width: none;
-  padding: 14px 4px;
+  padding: 12px 2px;
   background: #fff;
   border-bottom: 1px solid #eee;
 }
@@ -67,66 +67,107 @@
   font-weight: 600;
   font-size: 14px;
   white-space: nowrap;
-  padding: 6px 4px;
+  padding: 8px 10px;
   cursor: pointer;
   color: #444;
-  transition: color var(--transition-speed);
+  border-radius: 8px;
+  transition: all var(--transition-speed);
 }
 
 .categories-menu button:hover {
+  background: #f3f3f3;
   color: var(--primary-color);
 }
 
 /* =============================
-   SEÇÕES DE CATEGORIAS
+   SEÇÕES
 ============================= */
 .categories-sections {
   display: flex;
   flex-direction: column;
-  gap: 50px;
-  margin-top: 30px;
+  gap: 40px;
+  margin-top: 24px;
 }
 
 .category-section {
-  scroll-margin-top: 90px;
+  scroll-margin-top: 80px;
 }
 
 .category-title {
-  font-size: 24px;
+  font-size: 22px;
   font-weight: 700;
-  margin-bottom: 20px;
+  margin-bottom: 16px;
   color: var(--text-color);
 }
 
 /* =============================
-   GRID DE PRODUTOS
+   GRID PRODUTOS
 ============================= */
 .product-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fill,minmax(230px,1fr));
+  gap: 18px;
 }
 
+/* =============================
+   CARD PRODUTO
+============================= */
 .product-card {
   background: #fff;
-  border-radius: 14px;
-  padding: 16px;
+  border-radius: 16px;
+  overflow: hidden;
   cursor: pointer;
   box-shadow: var(--card-shadow);
   transition: transform var(--transition-speed), box-shadow var(--transition-speed);
+  display: flex;
+  flex-direction: column;
 }
 
 .product-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+  transform: translateY(-4px);
+  box-shadow: 0 10px 24px rgba(0,0,0,0.08);
+}
+
+/* imagem */
+.product-image {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+}
+
+/* conteúdo */
+.product-info {
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.product-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-color);
+}
+
+.product-description {
+  font-size: 13px;
+  color: var(--subtext-color);
+  line-height: 1.4;
+}
+
+.product-price {
+  margin-top: 6px;
+  font-weight: 700;
+  color: var(--primary-color);
+  font-size: 15px;
 }
 
 /* =============================
    LOJA FECHADA
 ============================= */
 .store-closed {
-  filter: grayscale(0.7);
-  opacity: 0.75;
+  filter: grayscale(.6);
+  opacity: .7;
 }
 
 .store-closed .product-card {
@@ -134,13 +175,13 @@
 }
 
 /* =============================
-   MODAL LOJA FECHADA
+   MODAL
 ============================= */
 .closed-modal {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.6);
-  backdrop-filter: blur(6px);
+  background: rgba(0,0,0,.6);
+  backdrop-filter: blur(5px);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -149,18 +190,18 @@
 
 .closed-box {
   background: #fff;
-  padding: 34px 28px;
-  border-radius: 22px;
+  padding: 30px 26px;
+  border-radius: 18px;
   width: 90%;
-  max-width: 380px;
+  max-width: 360px;
   text-align: center;
   box-shadow: 0 20px 40px rgba(0,0,0,0.15);
-  animation: modalFade 0.3s;
+  animation: modalFade .3s;
 }
 
 .closed-box h2 {
   margin-bottom: 10px;
-  font-size: 22px;
+  font-size: 21px;
   color: var(--primary-color);
 }
 
@@ -171,40 +212,81 @@
 
 .closed-box button {
   margin-top: 20px;
-  padding: 12px 22px;
-  border-radius: 14px;
+  padding: 12px 20px;
+  border-radius: 12px;
   border: none;
-  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-  color: white;
+  background: linear-gradient(135deg,var(--primary-color),var(--secondary-color));
+  color: #fff;
   font-weight: 600;
   cursor: pointer;
-  transition: transform var(--transition-speed);
-}
-
-.closed-box button:hover {
-  transform: translateY(-2px);
 }
 
 @keyframes modalFade {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+  from{opacity:0;transform:translateY(20px)}
+  to{opacity:1;transform:translateY(0)}
 }
 
 /* =============================
-   RESPONSIVO
+   MOBILE
 ============================= */
-@media (max-width: 1024px) {
-  .categories-container {
-    max-width: 900px;
+@media (max-width:768px){
+
+  .categories-container{
+    padding:16px 12px 100px;
   }
+
+  /* lista estilo app mobile */
+  .product-grid{
+    grid-template-columns:1fr;
+    gap:12px;
+  }
+
+  .product-card{
+    flex-direction:row;
+    align-items:center;
+    padding:10px;
+  }
+
+  .product-image{
+    width:90px;
+    height:90px;
+    border-radius:12px;
+  }
+
+  .product-info{
+    padding:0 12px;
+  }
+
+  .product-name{
+    font-size:14px;
+  }
+
+  .product-description{
+    font-size:12px;
+  }
+
+  .product-price{
+    font-size:14px;
+  }
+
 }
 
-@media (max-width: 768px) {
-  .categories-container {
-    padding: 18px 16px 100px;
-  }
+.floating-cart {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #ff7a00;
+  color: white;
+  padding: 14px 22px;
+  border-radius: 30px;
+  font-weight: 600;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+  z-index: 999;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
 
-  .product-grid {
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-  }
+.floating-cart:hover {
+  transform: translateX(-50%) scale(1.05);
 }

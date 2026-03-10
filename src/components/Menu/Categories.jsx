@@ -62,7 +62,7 @@ export default function CategoriesScreen() {
   const [categories, setCategories] = useState([]);
   const [productsByCategory, setProductsByCategory] = useState({});
   const [loading, setLoading] = useState(true);
-
+  const [hasCustomerData, setHasCustomerData] = useState(false);
   const [mostSold, setMostSold] = useState([]);
 
   const [orderItems, setOrderItems] = useState([]);
@@ -167,8 +167,6 @@ export default function CategoriesScreen() {
 
       return [...prev, { ...product, quantity: 1 }];
     });
-
-    setShowOrderModal(true);
   };
 
   const scrollToCategory = (id) => {
@@ -235,13 +233,24 @@ export default function CategoriesScreen() {
           </div>
         </>
       )}
+      {/* CARRINHO FLUTUANTE */}
+      {orderItems.length > 0 && (
+        <div className="floating-cart" onClick={() => setShowOrderModal(true)}>
+          <div className="cart-left">
+            🛒 {orderItems.reduce((a, b) => a + b.quantity, 0)} itens
+          </div>
 
+          <div className="cart-right">Ver carrinho</div>
+        </div>
+      )}
       {showOrderModal && (
         <OrdersModal
           company={company}
           items={orderItems}
           setItems={setOrderItems}
           close={() => setShowOrderModal(false)}
+          initialStep={hasCustomerData ? 1 : 0}
+          setHasCustomerData={setHasCustomerData}
         />
       )}
 

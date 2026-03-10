@@ -1,7 +1,7 @@
 import "./OrderStepper.css";
 
 export default function OrderStepper({ step }) {
-  const steps = ["Dados", "Revisão", "Sucesso"];
+  const steps = ["Pedido", "Dados", "Carrinho"];
 
   return (
     <div className="order-stepper">

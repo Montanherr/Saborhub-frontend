@@ -1,5 +1,4 @@
 import "./OrderReviewModal.css";
-import { FaTicketAlt } from "react-icons/fa";
 import { Toaster } from "react-hot-toast";
 
 export default function OrderReviewModal({
@@ -10,7 +9,6 @@ export default function OrderReviewModal({
   calculateFinalPrice,
   loading,
   onConfirm,
-  onBack,
   onAddMore,
   onIncrease,
   onDecrease,
@@ -19,11 +17,10 @@ export default function OrderReviewModal({
   discount,
   coupons,
   handleApplyCoupon,
-  phone
+  phone,
 }) {
   const totalItems = items.reduce((acc, item) => acc + item.quantity, 0);
 
-  
   return (
     <>
       <Toaster position="top-right" />
@@ -74,46 +71,6 @@ export default function OrderReviewModal({
         })}
       </div>
 
-      {/* Cupons disponíveis */}
-      <div className="coupons-section">
-        <h4>Cupons disponíveis</h4>
-
-        {coupons
-          .filter(coupon => !appliedCoupon || coupon.id !== appliedCoupon.id) // remove cupom aplicado
-          .map((coupon) => {
-            const isExpired = coupon.expires_at && new Date(coupon.expires_at) < new Date();
-            const isLimitReached = coupon.usage_limit && coupon.usage_count >= coupon.usage_limit;
-            const isDisabled = isExpired || isLimitReached || coupon.disabled || (appliedCoupon && appliedCoupon.id);
-
-            return (
-              <div
-                key={coupon.id}
-                className={`coupon-card ${isDisabled ? "coupon-disabled" : ""}`}
-              >
-                <div className="coupon-info">
-                  <span className="coupon-name">🎟 {coupon.code}</span>
-                  <span className="coupon-desc">
-                    {coupon.discount_type === "percent"
-                      ? `${coupon.discount_value}% OFF`
-                      : `R$ ${coupon.discount_value} OFF`}
-                  </span>
-                  <span className="coupon-min">
-                    Pedido mínimo R$ {Number(coupon.min_order_value).toFixed(2)}
-                  </span>
-                </div>
-
-                <button
-                  className="apply-coupon-btn"
-                  onClick={() => handleApplyCoupon(coupon)}
-                  disabled={isDisabled}
-                >
-                  <FaTicketAlt />
-                </button>
-              </div>
-            );
-          })}
-      </div>
-
       {/* Resumo do pedido */}
       <div className="order-summary">
         <p>Subtotal: R$ {subtotal.toFixed(2)}</p>
@@ -123,7 +80,9 @@ export default function OrderReviewModal({
 
         {/* Mostra cupom aplicado */}
         {appliedCoupon && (
-          <p>Desconto ({appliedCoupon.code}): -R$ {discount.toFixed(2)}</p>
+          <p>
+            Desconto ({appliedCoupon.code}): -R$ {discount.toFixed(2)}
+          </p>
         )}
 
         {/* Total atualizado */}
@@ -134,19 +93,16 @@ export default function OrderReviewModal({
 
       {/* Ações do pedido */}
       <div className="order-actions">
-        <button className="btn cancel" onClick={onBack}>
-          Voltar
-        </button>
-
-        <button className="btn secondary" onClick={onAddMore}>
+   
+        <button
+          className="btn secondary"
+          onClick={() => {
+            onAddMore();
+          }}
+        >
           Adicionar mais itens
         </button>
-
-        <button
-          className="btn primary"
-          onClick={onConfirm}
-          disabled={loading}
-        >
+        <button className="btn primary" onClick={onConfirm} disabled={loading}>
           {loading ? "Enviando..." : "Confirmar Pedido"}
         </button>
       </div>

@@ -14,8 +14,15 @@ import { socket } from "socket/socket";
 
 import "./Order.css";
 
-export default function OrdersModal({ company, items, setItems, close }) {
-  const [step, setStep] = useState(0); // 0=dados | 1=revisão | 2=sucesso
+export default function OrdersModal({
+  company,
+  items,
+  setItems,
+  close,
+  initialStep = 0,
+  setHasCustomerData,
+}) {
+  const [step, setStep] = useState(initialStep);
   const [disableCoupons, setDisableCoupons] = useState(false);
 
   const [fullName, setFullName] = useState("");
@@ -61,8 +68,6 @@ export default function OrdersModal({ company, items, setItems, close }) {
     );
   };
 
-
-
   const handleDecrease = (id) => {
     setItems((prev) =>
       prev
@@ -76,6 +81,10 @@ export default function OrdersModal({ company, items, setItems, close }) {
   const handleRemove = (id) => {
     setItems((prev) => prev.filter((item) => item.id !== id));
   };
+
+  useEffect(() => {
+    setStep(initialStep);
+  }, [initialStep]);
 
   // ===================== MESA =====================
   useEffect(() => {
@@ -101,31 +110,71 @@ export default function OrdersModal({ company, items, setItems, close }) {
 
   const handleApplyCoupon = async (coupon) => {
     try {
+      if (appliedCoupon) {
+        toast.error("Já existe um cupom aplicado");
+        return;
+      }
+
+      if (!phone || phone.trim().length < 8) {
+        toast.error("Informe o telefone para usar cupom");
+        return;
+      }
+
       const subtotal = items.reduce(
         (sum, i) => sum + calculateFinalPrice(i) * i.quantity,
         0,
       );
 
+      // pedido mínimo
+      if (subtotal < Number(coupon.min_order_value)) {
+        toast.error(
+          `Pedido mínimo de R$ ${Number(coupon.min_order_value).toFixed(2)}`,
+        );
+        return;
+      }
+
+      // expiração
+      if (coupon.expires_at && new Date(coupon.expires_at) < new Date()) {
+        toast.error("Este cupom expirou");
+        return;
+      }
+
+      // limite de uso
+      if (coupon.usage_limit && coupon.usage_count >= coupon.usage_limit) {
+        toast.error("Este cupom atingiu o limite de uso");
+        return;
+      }
+
+      // validação no backend (uso por telefone etc)
       const response = await couponService.applyCoupon({
         companyId: company.id,
         code: coupon.code,
         subtotal,
-        phone, // envia o telefone para validação se necessário
+        phone,
       });
 
-      // se a API retornou erro, exibe o toast específico
-      if (response.error) {
+      if (response?.error) {
         toast.error(response.error);
         return;
       }
 
-      // sucesso
+      if (!response?.success) {
+        toast.error("Cupom inválido");
+        return;
+      }
+
       setDiscount(Number(response.discount));
       setAppliedCoupon(coupon);
+
       toast.success(`Cupom ${coupon.code} aplicado 🎉`);
     } catch (err) {
       console.error(err);
-      toast.error("Erro inesperado ao aplicar o cupom");
+
+      if (err?.response?.data?.error) {
+        toast.error(err.response.data.error);
+      } else {
+        toast.error("Erro inesperado ao aplicar o cupom");
+      }
     }
   };
   const handleCallWaiter = async () => {
@@ -147,6 +196,20 @@ export default function OrdersModal({ company, items, setItems, close }) {
   useEffect(() => {
     acceptedAudio.current = new Audio("/sounds/accept.mp3");
     acceptedAudio.current.preload = "auto";
+  }, []);
+
+  useEffect(() => {
+    const saved = localStorage.getItem("customerData");
+
+    if (saved) {
+      const data = JSON.parse(saved);
+
+      setFullName(data.fullName || "");
+      setPhone(data.phone || "");
+      setAddress(data.address || "");
+      setOrderType(data.orderType || "delivery");
+      setPaymentMethod(data.paymentMethod || "dinheiro");
+    }
   }, []);
 
   useEffect(() => {
@@ -186,6 +249,18 @@ export default function OrdersModal({ company, items, setItems, close }) {
 
     const total = subtotal + deliveryFeeTotal - discount;
 
+    // 🔥 SALVA DADOS DO CLIENTE
+    localStorage.setItem(
+      "customerData",
+      JSON.stringify({
+        fullName,
+        phone,
+        address,
+        orderType,
+        paymentMethod,
+      }),
+    );
+
     const payload = {
       companyId: company.id,
       fullName,
@@ -202,6 +277,7 @@ export default function OrdersModal({ company, items, setItems, close }) {
       delivery_fee: deliveryFeeTotal,
       total,
       orderType,
+      couponCode: appliedCoupon?.code,
       items: items.map((i) => ({
         productId: i.id,
         quantity: i.quantity,
@@ -219,27 +295,75 @@ export default function OrdersModal({ company, items, setItems, close }) {
         const companyPhone = company.phone.startsWith("55")
           ? company.phone
           : "55" + company.phone;
-        let msg = `📦 *Novo Pedido*\n\n🧾 Código: ${order.code}\n\n`;
+
+        let msg = `📦 *NOVO PEDIDO*\n`;
+        msg += `🧾 Código: ${order.code}\n`;
+        msg += `━━━━━━━━━━━━━━━\n\n`;
+
+        msg += `🍔 *ITENS DO PEDIDO*\n`;
+
         items.forEach((i) => {
-          const price = calculateFinalPrice(i).toFixed(2);
-          msg += `• ${i.name} x${i.quantity} = R$ ${price}`;
-          msg += "\n";
+          const price = calculateFinalPrice(i);
+          const totalItem = price * i.quantity;
+
+          msg += `• ${i.name}\n`;
+          msg += `  ${i.quantity}x R$ ${price.toFixed(2)} = R$ ${totalItem.toFixed(2)}\n`;
         });
-        msg += `\n💰 *Subtotal:* R$ ${subtotal.toFixed(2)}\n`;
-        if (deliveryFeeTotal > 0)
-          msg += `💵 *Taxa de entrega:* R$ ${deliveryFeeTotal.toFixed(2)}\n`;
-        msg += `💳 *Total:* R$ ${total.toFixed(2)}\n`;
-        msg += `👤 Cliente: ${fullName}\n📞 Telefone: ${phone}\n`;
-        if (orderType === "delivery") msg += `📍 Endereço: ${address}\n`;
-        msg += `\n💳 *Pagamento:* ${paymentMethod}\n`;
-        if (paymentMethod === "dinheiro") {
-          if (needChange && changeAmount)
-            msg += `💵 Troco para: R$ ${changeAmount}\n`;
-          else msg += `💵 Não precisa de troco\n`;
+
+        msg += `\n━━━━━━━━━━━━━━━\n`;
+        msg += `💰 *RESUMO*\n`;
+
+        msg += `Subtotal: R$ ${subtotal.toFixed(2)}\n`;
+
+        if (deliveryFeeTotal > 0) {
+          msg += `Taxa de entrega: R$ ${deliveryFeeTotal.toFixed(2)}\n`;
         }
-        if (observations) msg += `\n📝 Observações: ${observations}\n`;
-        if (additionalInfo)
-          msg += `ℹ️ Informações adicionais: ${additionalInfo}\n`;
+
+        // Cupom
+        if (appliedCoupon) {
+          msg += `Cupom: ${appliedCoupon.code}`;
+
+          if (appliedCoupon.discount_type === "percent") {
+            msg += ` (${appliedCoupon.discount_value}% OFF)\n`;
+          } else {
+            msg += ` (R$ ${appliedCoupon.discount_value} OFF)\n`;
+          }
+
+          msg += `Desconto: -R$ ${Number(discount).toFixed(2)}\n`;
+        }
+
+        const finalTotal = subtotal + deliveryFeeTotal - (discount || 0);
+
+        msg += `\n💳 *TOTAL: R$ ${finalTotal.toFixed(2)}*\n`;
+
+        msg += `\n━━━━━━━━━━━━━━━\n`;
+        msg += `👤 *CLIENTE*\n`;
+
+        msg += `Nome: ${fullName}\n`;
+        msg += `Telefone: ${phone}\n`;
+
+        if (orderType === "delivery") {
+          msg += `Endereço: ${address}\n`;
+        }
+
+        msg += `\n💳 *PAGAMENTO*\n`;
+        msg += `${paymentMethod}\n`;
+
+        if (paymentMethod === "dinheiro") {
+          if (needChange && changeAmount) {
+            msg += `Troco para: R$ ${changeAmount}\n`;
+          } else {
+            msg += `Não precisa de troco\n`;
+          }
+        }
+
+        if (observations) {
+          msg += `\n📝 *Observações*\n${observations}\n`;
+        }
+
+        if (additionalInfo) {
+          msg += `\nℹ️ *Informações adicionais*\n${additionalInfo}\n`;
+        }
 
         window.open(
           `https://wa.me/${companyPhone}?text=${encodeURIComponent(msg)}`,
@@ -342,60 +466,102 @@ export default function OrdersModal({ company, items, setItems, close }) {
                   onChange={(e) => setAddress(e.target.value)}
                 />
               )}
-              {coupons.length > 0 && (
+              {coupons.length > 0 && !appliedCoupon && (
                 <div className="available-coupons">
                   <h4>Cupons disponíveis</h4>
 
-                  {coupons
-                    .filter(
-                      (coupon) =>
-                        !appliedCoupon || coupon.id !== appliedCoupon.id,
-                    ) // remove o cupom aplicado da lista
-                    .map((coupon) => {
-                      const isExpired =
-                        coupon.expires_at &&
-                        new Date(coupon.expires_at) < new Date();
-                      const isLimitReached =
-                        coupon.usage_limit &&
-                        coupon.usage_count >= coupon.usage_limit;
+                  {coupons.map((coupon) => {
+                    const now = new Date();
 
-                      // Se já existe um cupom aplicado, todos os outros ficam desabilitados
-                      const isDisabled =
-                        isExpired ||
-                        isLimitReached ||
-                        coupon.disabled ||
-                        (appliedCoupon && appliedCoupon.id !== coupon.id);
+                    const isExpired =
+                      coupon.expires_at && new Date(coupon.expires_at) < now;
 
-                      return (
-                        <div
-                          key={coupon.id}
-                          className={`coupon-card ${isDisabled ? "coupon-disabled" : ""}`}
-                        >
-                          <div className="coupon-info">
-                            <span className="coupon-name">
-                              🎟 {coupon.code}
-                            </span>
-                            <span className="coupon-desc">
-                              {coupon.discount_type === "percent"
-                                ? `${coupon.discount_value}% OFF`
-                                : `R$ ${coupon.discount_value} OFF`}
-                            </span>
-                            <span className="coupon-min">
-                              Pedido mínimo R${" "}
-                              {Number(coupon.min_order_value).toFixed(2)}
-                            </span>
-                          </div>
+                    const isLimitReached =
+                      coupon.usage_limit &&
+                      coupon.usage_count >= coupon.usage_limit;
 
-                          <button
-                            className="apply-coupon-btn"
-                            onClick={() => handleApplyCoupon(coupon)}
-                            disabled={isDisabled}
-                          >
-                            <FaTicketAlt />
-                          </button>
+                    const subtotal = items.reduce(
+                      (sum, item) =>
+                        sum + calculateFinalPrice(item) * item.quantity,
+                      0,
+                    );
+
+                    const isMinOrder =
+                      subtotal < Number(coupon.min_order_value);
+
+                    const alreadyUsed = coupon.usages?.some(
+                      (u) => u.phone === phone,
+                    );
+
+                    const isDisabled =
+                      isExpired ||
+                      isLimitReached ||
+                      isMinOrder ||
+                      alreadyUsed ||
+                      coupon.disabled;
+
+                    return (
+                      <div
+                        key={coupon.id}
+                        className={`coupon-card ${
+                          isDisabled ? "coupon-disabled" : ""
+                        }`}
+                      >
+                        <div className="coupon-info">
+                          <span className="coupon-name">🎟 {coupon.code}</span>
+
+                          <span className="coupon-desc">
+                            {coupon.discount_type === "percent"
+                              ? `${coupon.discount_value}% OFF`
+                              : `R$ ${coupon.discount_value} OFF`}
+                          </span>
+
+                          <span className="coupon-min">
+                            Pedido mínimo R${" "}
+                            {Number(coupon.min_order_value).toFixed(2)}
+                          </span>
+
+                          {isExpired && (
+                            <span className="coupon-warning">
+                              Cupom expirado
+                            </span>
+                          )}
+
+                          {isLimitReached && (
+                            <span className="coupon-warning">
+                              Cupom esgotado
+                            </span>
+                          )}
+
+                          {isMinOrder && (
+                            <span className="coupon-warning">
+                              Pedido mínimo não atingido
+                            </span>
+                          )}
+
+                          {alreadyUsed && (
+                            <span className="coupon-warning">
+                              Você já utilizou este cupom
+                            </span>
+                          )}
+
+                          {appliedCoupon && (
+                            <div className="coupon-applied">
+                              🎟 Cupom {appliedCoupon.code} aplicado
+                            </div>
+                          )}
                         </div>
-                      );
-                    })}
+
+                        <button
+                          className="apply-coupon-btn"
+                          onClick={() => handleApplyCoupon(coupon)}
+                          disabled={isDisabled}
+                        >
+                          <FaTicketAlt />
+                        </button>
+                      </div>
+                    );
+                  })}
                 </div>
               )}
               <textarea
@@ -469,7 +635,13 @@ export default function OrdersModal({ company, items, setItems, close }) {
               <button className="btn cancel" onClick={close}>
                 Fechar
               </button>
-              <button className="btn primary" onClick={() => setStep(1)}>
+              <button
+                className="btn primary"
+                onClick={() => {
+                  setHasCustomerData(true);
+                  setStep(1);
+                }}
+              >
                 Revisar Pedido
               </button>
             </div>
@@ -485,7 +657,7 @@ export default function OrdersModal({ company, items, setItems, close }) {
             total={total}
             calculateFinalPrice={calculateFinalPrice}
             loading={loading}
-            onBack={() => setStep(0)}
+            onBack={() => setStep(1)}
             onConfirm={handleSubmit}
             onAddMore={() => {
               close();
