@@ -39,9 +39,7 @@ export default function OrdersList() {
       const updatedOrder = await orderService.updateOrder(orderId, { status });
 
       setOrders((prev) =>
-        prev.map((order) =>
-          order.id === orderId ? updatedOrder : order
-        )
+        prev.map((order) => (order.id === orderId ? updatedOrder : order)),
       );
     } catch (err) {
       console.error(err);
@@ -57,7 +55,7 @@ export default function OrdersList() {
     return orders.filter((order) =>
       String(order.code || order.id)
         .toLowerCase()
-        .includes(search.toLowerCase())
+        .includes(search.toLowerCase()),
     );
   }, [orders, search]);
 
@@ -82,19 +80,15 @@ export default function OrdersList() {
       ) : (
         <div className="orders-grid">
           {filteredOrders.map((order) => (
-            <div key={order.id} className="order-card">
+            <div key={order.id} className={`order-card status-${order.status}`}>
               <div className="order-top">
-                <span className="order-code">
-                  #{order.code || order.id}
-                </span>
+                <span className="order-code">#{order.code || order.id}</span>
 
                 <select
                   className={`order-status status-${order.status}`}
                   value={order.status}
                   disabled={updatingId === order.id}
-                  onChange={(e) =>
-                    handleStatusChange(order.id, e.target.value)
-                  }
+                  onChange={(e) => handleStatusChange(order.id, e.target.value)}
                 >
                   {STATUS_OPTIONS.map((opt) => (
                     <option key={opt.value} value={opt.value}>

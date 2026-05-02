@@ -1,15 +1,6 @@
 /* =============================
    VARIÁVEIS GLOBAIS
-============================= */
-:root {
-  --primary-color: #ff6b00;
-  --secondary-color: #ff8c00;
-  --text-color: #1f1f1f;
-  --subtext-color: #6b6b6b;
-  --bg-gradient: linear-gradient(to bottom, #fafafa, #f5f5f5);
-  --card-shadow: 0 4px 14px rgba(0,0,0,0.06);
-  --transition-speed: 0.25s;
-}
+
 
 /* =============================
    CONTAINER

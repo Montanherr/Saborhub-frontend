@@ -1,142 +1,170 @@
+/* PAGE */
 .orders-page {
-  padding: 24px;
-  max-width: 1200px;
-  margin: 0 auto;
+  padding: 20px;
+  background: #f9fafb;
+  min-height: 100vh;
 }
 
+/* HEADER */
 .orders-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 24px;
-  gap: 16px;
-  flex-wrap: wrap;
+  margin-bottom: 20px;
 }
 
 .orders-header h2 {
-  font-size: 26px;
-  color: #333;
+  font-size: 24px;
+  font-weight: 600;
 }
 
 .orders-header input {
   padding: 10px 14px;
-  border-radius: 8px;
+  border-radius: 10px;
   border: 1px solid #ddd;
-  min-width: 260px;
-  font-size: 15px;
+  outline: none;
+  width: 250px;
+  transition: 0.2s;
 }
 
+.orders-header input:focus {
+  border-color: #ff7a00;
+}
+
+/* GRID */
 .orders-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 20px;
+  gap: 16px;
 }
 
+/* CARD */
 .order-card {
   background: #fff;
-  border-radius: 14px;
+  border-radius: 16px;
   padding: 16px;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  transition: transform 0.2s ease;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+  transition: 0.2s;
+  position: relative;
 }
 
 .order-card:hover {
-  transform: translateY(-4px);
+  transform: translateY(-3px);
 }
 
+/* STATUS BORDER */
+.order-card::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 5px;
+  border-radius: 16px 0 0 16px;
+}
+
+/* cores por status */
+.status-pending::before {
+  background: #ff7a00;
+}
+.status-preparation::before {
+  background: #f59e0b;
+}
+.status-finished::before {
+  background: #10b981;
+}
+.status-delivered::before {
+  background: #6b7280;
+}
+
+/* TOP */
 .order-top {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 12px;
 }
 
 .order-code {
   font-weight: bold;
-  font-size: 15px;
-}
-
-.order-status {
-  padding: 4px 10px;
-  border-radius: 999px;
-  font-size: 13px;
-  font-weight: 600;
-  text-transform: capitalize;
-}
-
-/* Status colors */
-.status-pending {
-  background: #fff3cd;
-  color: #856404;
-}
-
-.status-preparing {
-  background: #cce5ff;
-  color: #004085;
-}
-
-.status-finished {
-  background: #d4edda;
-  color: #155724;
-}
-
-.status-canceled {
-  background: #f8d7da;
-  color: #721c24;
-}
-
-.order-body p {
-  margin: 6px 0;
   font-size: 14px;
-  color: #444;
 }
 
-.order-footer {
-  margin-top: 12px;
-  font-size: 13px;
-  color: #777;
-  text-align: right;
+/* STATUS SELECT */
+.order-status {
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: none;
+  font-weight: 600;
+  font-size: 12px;
+  cursor: pointer;
 }
 
-.orders-loading,
-.orders-empty {
-  text-align: center;
-  font-size: 18px;
-  color: #666;
-  margin-top: 60px;
-}
-
-/* ===== MOBILE ===== */
-@media (max-width: 600px) {
-  .orders-header {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .orders-header input {
-    width: 100%;
-  }
-}
-
+/* cores do select */
 .status-pending {
-  background: #fff3cd;
-  color: #856404;
+  background: #fff3e8;
+  color: #ff7a00;
 }
 
 .status-preparation {
-  background: #cce5ff;
-  color: #004085;
+  background: #fef3c7;
+  color: #b45309;
 }
 
 .status-finished {
-  background: #d4edda;
-  color: #155724;
+  background: #d1fae5;
+  color: #065f46;
 }
 
 .status-delivered {
-  background: #e2e3e5;
-  color: #383d41;
+  background: #e5e7eb;
+  color: #374151;
+}
+
+/* BODY */
+.order-body {
+  margin: 12px 0;
+}
+
+.order-body p {
+  font-size: 13px;
+  margin-bottom: 5px;
+  color: #444;
+}
+
+/* FOOTER */
+.order-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 10px;
+  font-size: 12px;
+  color: #777;
+}
+
+/* BUTTON */
+.details-btn {
+  background: #ff7a00;
+  color: #fff;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.details-btn:hover {
+  background: #e66900;
+}
+
+/* EMPTY */
+.orders-empty {
+  text-align: center;
+  margin-top: 40px;
+  color: #888;
+}
+
+/* LOADING */
+.orders-loading {
+  text-align: center;
+  padding: 40px;
 }

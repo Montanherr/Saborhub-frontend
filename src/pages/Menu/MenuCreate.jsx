@@ -6,6 +6,7 @@ import { socket } from "../../socket/socket";
 
 import CategoryForm from "./CategoryForm";
 import Coupon from "../Coupon/CouponPages";
+import Additional from "../Menu/Additional/Additional";
 import ProductForm from "./ProductForm";
 import MenuPreview from "./MenuPreview";
 import Tabs from "./Tabs";
@@ -179,8 +180,9 @@ export default function MenuCreate() {
         activeTab={activeTab}
         onChange={setActiveTab}
         tabs={[
-          { id: "preview", label: "Pré Menu" },
-          { id: "menu", label: "Menu" },
+          { id: "preview", label: "Pré Cardápio" },
+          { id: "menu", label: "Cardápio" },
+          { id: "additionals", label: "Adicionais" },
           { id: "companies", label: " Minha Empresa" },
           { id: "coupons", label: "Cupons" },
         ]}
@@ -241,11 +243,17 @@ export default function MenuCreate() {
       )}
 
       {/* CUPONS */}
-   {activeTab === "coupons" && (
-  <div className="coupons-tab">
-    <Coupon companyId={loggedCompanyId} />
-  </div>
-)}
+      {activeTab === "coupons" && (
+        <div className="coupons-tab">
+          <Coupon companyId={loggedCompanyId} />
+        </div>
+      )}
+
+      {activeTab === "additionals" && (
+        <div className="additionals-tab">
+          <Additional companyId={loggedCompanyId} />
+        </div>
+      )}
     </div>
   );
 }

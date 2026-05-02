@@ -1,0 +1,85 @@
+.additional-container {
+  max-width: 600px;
+  margin: 30px auto;
+}
+
+/* FORM */
+.additional-form {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.additional-form input {
+  flex: 1;
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+}
+
+.additional-form button {
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  background: linear-gradient(135deg, #ff7a00, #ff9f43);
+  color: #fff;
+  font-weight: 600;
+}
+
+/* LISTA */
+.additional-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.additional-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  padding: 14px;
+  border-radius: 12px;
+  background: #fff;
+
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+}
+
+.additional-card .info {
+  display: flex;
+  flex-direction: column;
+}
+
+.additional-card span {
+  font-size: 0.9rem;
+  color: #6b7280;
+}
+
+/* AÇÕES */
+.actions {
+  display: flex;
+  gap: 8px;
+}
+
+.edit-btn {
+  background: #facc15;
+  border: none;
+  border-radius: 8px;
+  padding: 6px 10px;
+  cursor: pointer;
+}
+
+.delete-btn {
+  background: #ef4444;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 6px 10px;
+  cursor: pointer;
+}
+
+.empty {
+  text-align: center;
+  color: #999;
+}

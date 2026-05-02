@@ -9,7 +9,7 @@ import OrderStepper from "../../Order/OrderStepper";
 import TableCallModal from "./TableCallModal";
 import OrderReviewModal from "./OrderReviewModal";
 import OrderSuccessModal from "./OrderSuccessModal";
-
+import CustomizeModal from "./Customize";
 import { socket } from "socket/socket";
 
 import "./Order.css";
@@ -24,7 +24,6 @@ export default function OrdersModal({
 }) {
   const [step, setStep] = useState(initialStep);
   const [disableCoupons, setDisableCoupons] = useState(false);
-
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
@@ -32,7 +31,7 @@ export default function OrdersModal({
   const [additionalInfo, setAdditionalInfo] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("dinheiro");
   const [loading, setLoading] = useState(false);
-
+  const [customizingItem, setCustomizingItem] = useState(null);
   const [orderType, setOrderType] = useState("delivery"); // delivery | pickup | table
   const [tables, setTables] = useState([]);
   const [selectedTable, setSelectedTable] = useState(null);
@@ -49,35 +48,50 @@ export default function OrdersModal({
 
   // Calcula preço final considerando promoção
   const calculateFinalPrice = (item) => {
-    const price = Number(item.price);
-    if (!item.promotion) return price;
+    let price = Number(item.price);
 
-    if (item.promotion_type === "percentage") {
-      return Math.max(price - (price * Number(item.promotion_value)) / 100, 0);
+    if (item.promotion) {
+      if (item.promotion_type === "percentage") {
+        price -= (price * Number(item.promotion_value)) / 100;
+      } else {
+        price -= Number(item.promotion_value);
+      }
     }
 
-    // Promoção fixa
-    return Number(item.promotion_value) || price;
+    // 🔥 ESSENCIAL
+    const additionalsTotal = (item.additionals || []).reduce(
+      (acc, add) => acc + add.price * add.quantity,
+      0,
+    );
+
+    return Math.max(price + additionalsTotal, 0);
   };
 
-  const handleIncrease = (id) => {
+  const handleCustomize = (item) => {
+    setCustomizingItem(item);
+  };
+
+  const handleIncrease = (uniqueId) => {
     setItems((prev) =>
       prev.map((item) =>
-        item.id === id ? { ...item, quantity: item.quantity + 1 } : item,
+        item.uniqueId === uniqueId
+          ? { ...item, quantity: item.quantity + 1 }
+          : item,
       ),
     );
   };
 
-  const handleDecrease = (id) => {
+  const handleDecrease = (uniqueId) => {
     setItems((prev) =>
       prev
         .map((item) =>
-          item.id === id ? { ...item, quantity: item.quantity - 1 } : item,
+          item.uniqueId === uniqueId
+            ? { ...item, quantity: item.quantity - 1 }
+            : item,
         )
         .filter((item) => item.quantity > 0),
     );
   };
-
   const handleRemove = (id) => {
     setItems((prev) => prev.filter((item) => item.id !== id));
   };
@@ -177,6 +191,7 @@ export default function OrdersModal({
       }
     }
   };
+
   const handleCallWaiter = async () => {
     if (!selectedTable) return alert("Selecione uma mesa!");
     try {
@@ -308,8 +323,18 @@ export default function OrdersModal({
 
           msg += `• ${i.name}\n`;
           msg += `  ${i.quantity}x R$ ${price.toFixed(2)} = R$ ${totalItem.toFixed(2)}\n`;
-        });
 
+          // 🔥 ADICIONAIS
+          if (i.additionals && i.additionals.length > 0) {
+            msg += `  Adicionais:\n`;
+
+            i.additionals.forEach((add) => {
+              msg += `    + ${add.quantity}x ${add.name} (R$ ${(add.price * add.quantity).toFixed(2)})\n`;
+            });
+          }
+
+          msg += `\n`; // espaço entre itens
+        });
         msg += `\n━━━━━━━━━━━━━━━\n`;
         msg += `💰 *RESUMO*\n`;
 
@@ -411,224 +436,210 @@ export default function OrdersModal({
 
   return (
     <div className="orders-modal-backdrop">
-      <div className="orders-modal" style={{ maxWidth: "600px" }}>
+      <div className="orders-modal">
         <OrderStepper step={step} />
 
         {/* ===== ETAPA 0 – DADOS ===== */}
         {step === 0 && (
           <>
-            <h3>Seu Pedido - {company.fantasyName}</h3>
-            <div className="order-type">
-              <label>
+            <h3>Seu Pedido</h3>
+            <p
+              style={{
+                margin: "-2px 0 0",
+                fontSize: "0.82rem",
+                color: "var(--text-muted)",
+                fontFamily: "var(--font-body)",
+                paddingLeft: 24,
+                paddingRight: 24,
+              }}
+            >
+              {company.fantasyName}
+            </p>
+
+            <div style={{ paddingLeft: 24, paddingRight: 24 }}>
+              {/* Tipo de pedido */}
+              <div className="order-type" style={{ marginTop: 20 }}>
+                {[
+                  { value: "delivery", label: "🛵  Entrega" },
+                  { value: "pickup", label: "🏪  Retirada" },
+                  { value: "table", label: "🍽️  Na mesa" },
+                ].map(({ value, label }) => (
+                  <label key={value}>
+                    <input
+                      type="radio"
+                      value={value}
+                      checked={orderType === value}
+                      onChange={(e) => setOrderType(e.target.value)}
+                    />
+                    {label}
+                  </label>
+                ))}
+              </div>
+
+              {/* Campos */}
+              <div className="order-fields">
                 <input
-                  type="radio"
-                  value="delivery"
-                  checked={orderType === "delivery"}
-                  onChange={(e) => setOrderType(e.target.value)}
+                  placeholder="Nome completo"
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
                 />
-                Entrega
-              </label>
-              <label>
                 <input
-                  type="radio"
-                  value="pickup"
-                  checked={orderType === "pickup"}
-                  onChange={(e) => setOrderType(e.target.value)}
+                  placeholder="Telefone"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
                 />
-                Retirada
-              </label>
-              <label>
-                <input
-                  type="radio"
-                  value="table"
-                  checked={orderType === "table"}
-                  onChange={(e) => setOrderType(e.target.value)}
-                />
-                Na mesa
-              </label>
-            </div>
+                {orderType === "delivery" && (
+                  <input
+                    placeholder="Endereço de entrega"
+                    value={address}
+                    onChange={(e) => setAddress(e.target.value)}
+                  />
+                )}
 
-            <div className="order-fields">
-              <input
-                placeholder="Nome completo"
-                value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
-              />
-              <input
-                placeholder="Telefone"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-              />
-              {orderType === "delivery" && (
-                <input
-                  placeholder="Endereço"
-                  value={address}
-                  onChange={(e) => setAddress(e.target.value)}
-                />
-              )}
-              {coupons.length > 0 && !appliedCoupon && (
-                <div className="available-coupons">
-                  <h4>Cupons disponíveis</h4>
+                {/* Cupons disponíveis */}
+                {coupons.length > 0 && !appliedCoupon && (
+                  <div className="available-coupons">
+                    <h4>Cupons disponíveis</h4>
 
-                  {coupons.map((coupon) => {
-                    const now = new Date();
+                    {coupons.map((coupon) => {
+                      const now = new Date();
+                      const isExpired =
+                        coupon.expires_at && new Date(coupon.expires_at) < now;
+                      const isLimitReached =
+                        coupon.usage_limit &&
+                        coupon.usage_count >= coupon.usage_limit;
+                      const subtotalCalc = items.reduce(
+                        (sum, item) =>
+                          sum + calculateFinalPrice(item) * item.quantity,
+                        0,
+                      );
+                      const isMinOrder =
+                        subtotalCalc < Number(coupon.min_order_value);
+                      const alreadyUsed = coupon.usages?.some(
+                        (u) => u.phone === phone,
+                      );
+                      const isDisabled =
+                        isExpired ||
+                        isLimitReached ||
+                        isMinOrder ||
+                        alreadyUsed ||
+                        coupon.disabled;
 
-                    const isExpired =
-                      coupon.expires_at && new Date(coupon.expires_at) < now;
-
-                    const isLimitReached =
-                      coupon.usage_limit &&
-                      coupon.usage_count >= coupon.usage_limit;
-
-                    const subtotal = items.reduce(
-                      (sum, item) =>
-                        sum + calculateFinalPrice(item) * item.quantity,
-                      0,
-                    );
-
-                    const isMinOrder =
-                      subtotal < Number(coupon.min_order_value);
-
-                    const alreadyUsed = coupon.usages?.some(
-                      (u) => u.phone === phone,
-                    );
-
-                    const isDisabled =
-                      isExpired ||
-                      isLimitReached ||
-                      isMinOrder ||
-                      alreadyUsed ||
-                      coupon.disabled;
-
-                    return (
-                      <div
-                        key={coupon.id}
-                        className={`coupon-card ${
-                          isDisabled ? "coupon-disabled" : ""
-                        }`}
-                      >
-                        <div className="coupon-info">
-                          <span className="coupon-name">🎟 {coupon.code}</span>
-
-                          <span className="coupon-desc">
-                            {coupon.discount_type === "percent"
-                              ? `${coupon.discount_value}% OFF`
-                              : `R$ ${coupon.discount_value} OFF`}
-                          </span>
-
-                          <span className="coupon-min">
-                            Pedido mínimo R${" "}
-                            {Number(coupon.min_order_value).toFixed(2)}
-                          </span>
-
-                          {isExpired && (
-                            <span className="coupon-warning">
-                              Cupom expirado
-                            </span>
-                          )}
-
-                          {isLimitReached && (
-                            <span className="coupon-warning">
-                              Cupom esgotado
-                            </span>
-                          )}
-
-                          {isMinOrder && (
-                            <span className="coupon-warning">
-                              Pedido mínimo não atingido
-                            </span>
-                          )}
-
-                          {alreadyUsed && (
-                            <span className="coupon-warning">
-                              Você já utilizou este cupom
-                            </span>
-                          )}
-
-                          {appliedCoupon && (
-                            <div className="coupon-applied">
-                              🎟 Cupom {appliedCoupon.code} aplicado
-                            </div>
-                          )}
-                        </div>
-
-                        <button
-                          className="apply-coupon-btn"
-                          onClick={() => handleApplyCoupon(coupon)}
-                          disabled={isDisabled}
+                      return (
+                        <div
+                          key={coupon.id}
+                          className={`coupon-card${isDisabled ? " coupon-disabled" : ""}`}
                         >
-                          <FaTicketAlt />
-                        </button>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-              <textarea
-                placeholder="Observações"
-                value={observations}
-                onChange={(e) => setObservations(e.target.value)}
-              />
-              <textarea
-                placeholder="Informações adicionais"
-                value={additionalInfo}
-                onChange={(e) => setAdditionalInfo(e.target.value)}
-              />
+                          <div className="coupon-info">
+                            <span className="coupon-name">
+                              🎟 {coupon.code}
+                            </span>
+                            <span className="coupon-desc">
+                              {coupon.discount_type === "percent"
+                                ? `${coupon.discount_value}% OFF`
+                                : `R$ ${coupon.discount_value} OFF`}
+                            </span>
+                            <span className="coupon-min">
+                              Mínimo R${" "}
+                              {Number(coupon.min_order_value).toFixed(2)}
+                            </span>
+                            {isExpired && (
+                              <span className="coupon-warning">
+                                Cupom expirado
+                              </span>
+                            )}
+                            {isLimitReached && (
+                              <span className="coupon-warning">
+                                Cupom esgotado
+                              </span>
+                            )}
+                            {isMinOrder && (
+                              <span className="coupon-warning">
+                                Pedido mínimo não atingido
+                              </span>
+                            )}
+                            {alreadyUsed && (
+                              <span className="coupon-warning">
+                                Você já utilizou este cupom
+                              </span>
+                            )}
+                            {appliedCoupon && (
+                              <div className="coupon-applied">
+                                🎟 Cupom {appliedCoupon.code} aplicado
+                              </div>
+                            )}
+                          </div>
+                          <button
+                            className="apply-coupon-btn"
+                            onClick={() => handleApplyCoupon(coupon)}
+                            disabled={isDisabled}
+                            title="Aplicar cupom"
+                          >
+                            <FaTicketAlt />
+                          </button>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
 
-              {orderType !== "table" && (
-                <div className="payment-section">
-                  <h4>Forma de pagamento</h4>
-                  <label>
-                    <input
-                      type="radio"
-                      value="dinheiro"
-                      checked={paymentMethod === "dinheiro"}
-                      onChange={(e) => setPaymentMethod(e.target.value)}
-                    />
-                    Dinheiro
-                  </label>
-                  <label>
-                    <input
-                      type="radio"
-                      value="cartao"
-                      checked={paymentMethod === "cartao"}
-                      onChange={(e) => setPaymentMethod(e.target.value)}
-                    />
-                    Cartão
-                  </label>
-                  <label>
-                    <input
-                      type="radio"
-                      value="pix"
-                      checked={paymentMethod === "pix"}
-                      onChange={(e) => setPaymentMethod(e.target.value)}
-                    />
-                    Pix
-                  </label>
+                {/* Observações */}
+                <textarea
+                  placeholder="Observações (ex: sem cebola, ponto da carne…)"
+                  value={observations}
+                  onChange={(e) => setObservations(e.target.value)}
+                />
+                <textarea
+                  placeholder="Informações adicionais"
+                  value={additionalInfo}
+                  onChange={(e) => setAdditionalInfo(e.target.value)}
+                />
 
-                  {paymentMethod === "dinheiro" && (
-                    <div className="change-section">
-                      <label className="change-checkbox">
+                {/* Pagamento */}
+                {orderType !== "table" && (
+                  <div className="payment-section">
+                    <h4>Forma de pagamento</h4>
+
+                    {[
+                      { value: "dinheiro", label: "💵  Dinheiro" },
+                      { value: "cartao", label: "💳  Cartão" },
+                      { value: "pix", label: "⚡  Pix" },
+                    ].map(({ value, label }) => (
+                      <label key={value}>
                         <input
-                          type="checkbox"
-                          checked={needChange}
-                          onChange={(e) => setNeedChange(e.target.checked)}
+                          type="radio"
+                          value={value}
+                          checked={paymentMethod === value}
+                          onChange={(e) => setPaymentMethod(e.target.value)}
                         />
-                        Precisa de troco?
+                        {label}
                       </label>
-                      {needChange && (
-                        <input
-                          type="number"
-                          placeholder="Troco para quanto? Ex: 100"
-                          value={changeAmount}
-                          onChange={(e) => setChangeAmount(e.target.value)}
-                          min="0"
-                        />
-                      )}
-                    </div>
-                  )}
-                </div>
-              )}
+                    ))}
+
+                    {paymentMethod === "dinheiro" && (
+                      <div className="change-section">
+                        <label className="change-checkbox">
+                          <input
+                            type="checkbox"
+                            checked={needChange}
+                            onChange={(e) => setNeedChange(e.target.checked)}
+                          />
+                          Precisa de troco?
+                        </label>
+                        {needChange && (
+                          <input
+                            type="number"
+                            placeholder="Troco para quanto? Ex: 100"
+                            value={changeAmount}
+                            onChange={(e) => setChangeAmount(e.target.value)}
+                            min="0"
+                          />
+                        )}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
 
             <div className="order-actions">
@@ -642,7 +653,7 @@ export default function OrdersModal({
                   setStep(1);
                 }}
               >
-                Revisar Pedido
+                Revisar Pedido →
               </button>
             </div>
           </>
@@ -652,28 +663,28 @@ export default function OrdersModal({
         {step === 1 && (
           <OrderReviewModal
             items={items}
+            onCustomize={handleCustomize} // 👈 ESSENCIAL
             subtotal={subtotal}
             deliveryFeeTotal={deliveryFeeTotal}
             total={total}
             calculateFinalPrice={calculateFinalPrice}
             loading={loading}
-            onBack={() => setStep(1)}
+            onBack={() => setStep(0)}
             onConfirm={handleSubmit}
             onAddMore={() => {
               close();
-              setDisableCoupons(true); // sinaliza que voltou do modal
+              setDisableCoupons(true);
             }}
-            onIncrease={handleIncrease} // ✅ AGORA PASSA
-            onDecrease={handleDecrease} // ✅ AGORA PASSA
-            onRemove={handleRemove} // ✅ AGORA PASSA
+            onIncrease={handleIncrease}
+            onDecrease={handleDecrease}
+            onRemove={handleRemove}
             onClose={close}
-            // NOVO: props do cupom
             appliedCoupon={appliedCoupon}
             discount={discount}
-            coupons={coupons} // lista de cupons disponíveis
+            coupons={coupons}
             handleApplyCoupon={handleApplyCoupon}
             phone={phone}
-            disableCoupons={disableCoupons} // NOVO: sinaliza para desabilitar
+            disableCoupons={disableCoupons}
           />
         )}
 
@@ -683,6 +694,22 @@ export default function OrdersModal({
             onClose={() => {
               setItems([]);
               close();
+            }}
+          />
+        )}
+
+        {/* 🔥 AQUI — DENTRO DO RETURN */}
+        {customizingItem && (
+          <CustomizeModal
+            item={customizingItem}
+            companyId={company.id}
+            onClose={() => setCustomizingItem(null)}
+            onSave={(updatedItem) => {
+              setItems((prev) =>
+                prev.map((i) => (i.id === updatedItem.id ? updatedItem : i)),
+              );
+
+              setCustomizingItem(null);
             }}
           />
         )}

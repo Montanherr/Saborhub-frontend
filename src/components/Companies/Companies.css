@@ -1,40 +1,30 @@
-/* =========================
-   VARIÁVEIS (iFood Style)
-========================= */
-:root {
-  --primary: #ea1d2c;          /* vermelho iFood */
-  --primary-hover: #c51723;
-  --bg: #f8f8f8;
-  --card-bg: #ffffff;
-  --text-main: #1f2937;
-  --text-muted: #6b7280;
-  --border-light: #ececec;
 
-  --radius-lg: 16px;
-  --radius-md: 12px;
-  --shadow-sm: 0 2px 8px rgba(0,0,0,0.06);
-  --shadow-md: 0 10px 28px rgba(0,0,0,0.12);
+/* =========================
+   BASE
+========================= */
+body {
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
 }
 
 /* =========================
    CONTAINER
 ========================= */
 .companies-container {
-  padding: 24px 16px 40px;
+  padding: 28px 18px 50px;
   max-width: 1200px;
   margin: auto;
-  background: var(--bg);
 }
 
 /* =========================
-   TÍTULO
+   HEADER / TÍTULO
 ========================= */
 .companies-title {
-  font-size: 1.8rem;
+  font-size: 1.9rem;
   font-weight: 800;
-  margin-bottom: 24px;
   color: var(--text-main);
-  text-align: left;
+  margin-bottom: 28px;
+  letter-spacing: -0.3px;
 }
 
 /* =========================
@@ -42,8 +32,8 @@
 ========================= */
 .restaurant-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 22px;
 }
 
 /* =========================
@@ -56,20 +46,42 @@
   border: 1px solid var(--border-light);
   box-shadow: var(--shadow-sm);
   cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  position: relative;
+
+  transition: var(--transition);
 }
 
+/* hover mais suave e moderno */
 .restaurant-card:hover {
-  transform: translateY(-4px);
+  transform: translateY(-6px) scale(1.01);
   box-shadow: var(--shadow-md);
+}
+
+/* efeito de brilho leve no hover */
+.restaurant-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    120deg,
+    transparent 0%,
+    rgba(255,255,255,0.4) 50%,
+    transparent 100%
+  );
+  opacity: 0;
+  transition: var(--transition);
+}
+
+.restaurant-card:hover::after {
+  opacity: 1;
 }
 
 /* =========================
    IMAGEM
 ========================= */
 .image-wrapper {
-  background: #fafafa;
-  padding: 12px;
+  background: linear-gradient(180deg, #fafafa, #f0f0f0);
+  padding: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -80,13 +92,19 @@
   height: 130px;
   object-fit: contain;
   border-radius: var(--radius-md);
+
+  transition: transform 0.3s ease;
+}
+
+.restaurant-card:hover .restaurant-image {
+  transform: scale(1.05);
 }
 
 /* =========================
    INFO
 ========================= */
 .restaurant-info {
-  padding: 12px 14px 16px;
+  padding: 14px 16px 18px;
 }
 
 .restaurant-info h3 {
@@ -94,58 +112,98 @@
   font-weight: 700;
   color: var(--text-main);
   margin-bottom: 6px;
+
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .restaurant-meta {
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   color: var(--text-muted);
   line-height: 1.4;
-  margin-bottom: 4px;
+  margin-bottom: 6px;
 }
 
 /* =========================
-   STATUS
+   STATUS (Badge moderno)
 ========================= */
 .status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
   margin-top: 6px;
-  font-size: 0.75rem;
-  font-weight: 600;
+  padding: 4px 8px;
+
+  font-size: 0.7rem;
+  font-weight: 700;
+
+  border-radius: 999px;
 }
 
+.status::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+/* aberto */
 .status.open {
+  background: rgba(22, 163, 74, 0.1);
   color: #16a34a;
 }
 
+.status.open::before {
+  background: #16a34a;
+}
+
+/* fechado */
 .status.closed {
+  background: rgba(234, 29, 44, 0.1);
   color: var(--primary);
+}
+
+.status.closed::before {
+  background: var(--primary);
 }
 
 /* =========================
    PAGINAÇÃO
 ========================= */
 .pagination {
-  margin-top: 32px;
+  margin-top: 36px;
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 14px;
+  gap: 16px;
 }
 
 .pagination button {
   background: var(--primary);
   border: none;
   color: #fff;
+
   font-size: 0.85rem;
   font-weight: 700;
-  padding: 8px 12px;
-  border-radius: 10px;
+
+  padding: 10px 14px;
+  border-radius: 12px;
+
   cursor: pointer;
-  transition: background 0.2s, transform 0.15s;
+
+  transition: var(--transition);
 }
 
 .pagination button:hover:not(:disabled) {
   background: var(--primary-hover);
-  transform: translateY(-1px);
+  transform: translateY(-2px);
+}
+
+.pagination button:active:not(:disabled) {
+  transform: scale(0.96);
 }
 
 .pagination button:disabled {
@@ -157,65 +215,69 @@
    RESPONSIVO
 ========================= */
 @media (max-width: 768px) {
+  .companies-container {
+    padding: 20px 14px 40px;
+  }
+
   .companies-title {
-    font-size: 1.4rem;
+    font-size: 1.5rem;
   }
 
   .restaurant-grid {
     grid-template-columns: repeat(2, 1fr);
-    gap: 14px;
+    gap: 16px;
   }
 
   .restaurant-image {
     height: 110px;
   }
-
-  .restaurant-meta {
-    font-size: 0.75rem;
-  }
 }
 
 /* =========================
-   SKELETON
+   SKELETON LOADING
 ========================= */
 .skeleton {
   pointer-events: none;
 }
 
 .skeleton-box {
-  height: 150px;
+  height: 160px;
   border-radius: var(--radius-lg);
+
   background: linear-gradient(
     90deg,
-    #ededed 25%,
-    #f5f5f5 37%,
-    #ededed 63%
+    #e5e7eb 25%,
+    #f3f4f6 37%,
+    #e5e7eb 63%
   );
+
   background-size: 400% 100%;
-  animation: shimmer 1.4s ease infinite;
+  animation: shimmer 1.2s ease infinite;
 }
 
 .skeleton-line {
   height: 14px;
-  margin-top: 8px;
+  margin-top: 10px;
   border-radius: 8px;
+
   background: linear-gradient(
     90deg,
-    #ededed 25%,
-    #f5f5f5 37%,
-    #ededed 63%
+    #e5e7eb 25%,
+    #f3f4f6 37%,
+    #e5e7eb 63%
   );
+
   background-size: 400% 100%;
-  animation: shimmer 1.4s ease infinite;
+  animation: shimmer 1.2s ease infinite;
 }
 
 .skeleton-line.title {
-  width: 65%;
+  width: 70%;
   height: 18px;
 }
 
 .skeleton-line.short {
-  width: 40%;
+  width: 45%;
 }
 
 @keyframes shimmer {

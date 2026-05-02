@@ -13,6 +13,11 @@ import Tables from "../pages/Table/Table.jsx";
 import TrialExpired from "../pages/Plans/TrialExpired";
 import Administrator from "../pages/Administrator/Index";
 import Cupons from "../pages/Coupon/CouponPages";
+import Additional from "../pages/Menu/Additional/Additional";
+import Customize from "../components/Modal/Order/Customize";
+import OrderTracking from "../components/Modal/Order/OrderTracking";
+
+
 import Home from "../pages/Home/HomePublic";
 
 export default function AppRoutes() {
@@ -23,13 +28,24 @@ export default function AppRoutes() {
       <Route path="/register" element={<Register />} />
       <Route path="/companies" element={<Companies />} />
       <Route path="/trial-expired" element={<TrialExpired />} />
+      <Route path="/trial-expired" element={<TrialExpired />} />
+      <Route path="/customize" element={<Customize  />} />
+      <Route path="/tracking" element={<OrderTracking  />} />
 
-   
       <Route
         path="/reports"
         element={
           <ProtectedRoute roles={["admin", "manager"]}>
             <Reports />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/additional"
+        element={
+          <ProtectedRoute roles={["admin", "manager"]}>
+            <Additional />
           </ProtectedRoute>
         }
       />
@@ -45,7 +61,7 @@ export default function AppRoutes() {
         }
       />
 
-        <Route
+      <Route
         path="/coupons"
         element={
           <ProtectedRoute roles={["admin", "manager", "waiter"]}>

@@ -36,16 +36,15 @@ export default function CategoryForm({
           placeholder="Nome da categoria"
           required
         />
-        <button type="submit">
-          {editingCategory ? "Salvar Alterações" : "Salvar Categoria"} {/* Texto do botão dependendo do estado */}
+        <button type="submit" className="btn primary">
+          {editingCategory ? "Salvar Alterações" : "Salvar Categoria"}
         </button>
 
-        {/* Se estivermos editando, mostra o botão de cancelar */}
         {editingCategory && (
           <button
             type="button"
-            className="cancel-btn"
-            onClick={onCancelEdit} // Chama a função de cancelamento
+            className="btn secondary"
+            onClick={onCancelEdit}
           >
             Cancelar
           </button>

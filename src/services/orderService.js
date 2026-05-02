@@ -56,6 +56,18 @@ const orderService = {
     }
   },
   
+trackOrder: async (code) => {
+  try {
+    const response = await api.get(`/orders/${code}`);
+    return response.data;
+  } catch (error) {
+    console.error(
+      "Erro ao rastrear pedido:",
+      error.response?.data || error.message
+    );
+    throw error;
+  }
+},
 
   deleteOrder: async (id) => {
     try {

@@ -1,6 +1,6 @@
 import { useEffect, useState, useReducer } from "react";
 import { useParams } from "react-router-dom";
-
+import { v4 as uuidv4 } from "uuid";
 import categoryService from "../../services/categoriesService";
 import companyService from "../../services/companyService";
 import productService from "../../services/productService";
@@ -150,24 +150,21 @@ export default function CategoriesScreen() {
 
   const openNow = isStoreOpen(company);
 
-  const addToOrder = (product) => {
-    if (!openNow || !product?.available) {
-      setShowClosedModal(true);
-      return;
-    }
+const addToOrder = (product) => {
+  if (!openNow || !product?.available) {
+    setShowClosedModal(true);
+    return;
+  }
 
-    setOrderItems((prev) => {
-      const exists = prev.find((i) => i.id === product.id);
-
-      if (exists) {
-        return prev.map((i) =>
-          i.id === product.id ? { ...i, quantity: i.quantity + 1 } : i,
-        );
-      }
-
-      return [...prev, { ...product, quantity: 1 }];
-    });
+  const newItem = {
+    ...product,
+    quantity: 1,
+    uniqueId: uuidv4(), // 🔥 chave única
+    additionals: [],
   };
+
+  setOrderItems((prev) => [...prev, newItem]);
+};
 
   const scrollToCategory = (id) => {
     const element = document.getElementById(`category-${id}`);

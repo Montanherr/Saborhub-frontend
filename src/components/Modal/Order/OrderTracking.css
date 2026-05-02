@@ -1,0 +1,230 @@
+/* FUNDO */
+.tracking-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #ff7a00, #ff9a3c);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+/* CARD */
+.card {
+  background: #fff;
+  width: 100%;
+  max-width: 420px;
+  border-radius: 20px;
+  padding: 25px;
+  box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+  text-align: center;
+  animation: fadeIn 0.5s ease;
+}
+
+h2 {
+  margin-bottom: 5px;
+}
+
+.status {
+  color: #ff7a00;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+/* 🛵 CENA */
+.delivery-scene {
+  position: relative;
+  height: 140px;
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+
+/* estrada */
+.road {
+  position: absolute;
+  bottom: 20px;
+  width: 100%;
+  height: 6px;
+  background: repeating-linear-gradient(
+    to right,
+    #333,
+    #333 25px,
+    #fff 25px,
+    #fff 50px
+  );
+}
+
+/* motoqueiro */
+.rider {
+  position: absolute;
+  bottom: 25px;
+  left: -150px;
+  width: 120px;
+  height: 80px;
+  animation: ride 4s linear infinite;
+}
+
+/* capacete */
+.helmet {
+  position: absolute;
+  width: 26px;
+  height: 26px;
+  background: #ff7a00;
+  border-radius: 50%;
+  top: 5px;
+  left: 40px;
+}
+
+/* corpo */
+.body {
+  position: absolute;
+  width: 35px;
+  height: 20px;
+  background: #222;
+  border-radius: 10px;
+  top: 28px;
+  left: 35px;
+}
+
+/* moto */
+.bike {
+  position: absolute;
+  width: 120px;
+  height: 50px;
+  bottom: 0;
+}
+
+/* rodas */
+.wheel {
+  width: 22px;
+  height: 22px;
+  background: #111;
+  border-radius: 50%;
+  position: absolute;
+  bottom: 0;
+  animation: spin 0.6s linear infinite;
+}
+
+.front {
+  right: 10px;
+}
+
+.back {
+  left: 10px;
+}
+
+/* estrutura */
+.frame {
+  position: absolute;
+  width: 70px;
+  height: 10px;
+  background: #ff7a00;
+  top: 15px;
+  left: 25px;
+  border-radius: 6px;
+}
+
+/* caixa */
+.box {
+  position: absolute;
+  width: 28px;
+  height: 28px;
+  background: #fff;
+  border: 2px solid #ff7a00;
+  border-radius: 6px;
+  top: -18px;
+  right: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* animação */
+@keyframes ride {
+  from {
+    left: -150px;
+  }
+  to {
+    left: 100%;
+  }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* TIMELINE */
+.timeline {
+  margin-top: 20px;
+  text-align: left;
+}
+
+.step {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+  opacity: 0.4;
+}
+
+.step.active {
+  opacity: 1;
+}
+
+.circle {
+  width: 12px;
+  height: 12px;
+  background: #ddd;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+.step.active .circle {
+  background: #ff7a00;
+}
+
+/* ITENS */
+.items {
+  margin-top: 20px;
+  text-align: left;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.icon {
+  font-size: 22px;
+}
+
+/* TOTAL */
+.total {
+  margin-top: 20px;
+  font-weight: bold;
+  text-align: right;
+}
+
+/* animação entrada */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* RESPONSIVO */
+@media (max-width: 480px) {
+  .card {
+    padding: 20px;
+  }
+
+  .delivery-scene {
+    height: 110px;
+  }
+}
