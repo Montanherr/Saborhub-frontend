@@ -269,9 +269,12 @@ export default function CompanyForm({
           </div>
 
           {/* Campo somente visualização */}
-          <div className="field">
+          <div className="field field--toggle">
             <label>Bloqueado</label>
-            <input type="checkbox" checked={form.isBlocked} disabled />
+            <span className={`company-toggle ${form.isBlocked ? "is-active" : ""}`}>
+              <input type="checkbox" checked={form.isBlocked} disabled />
+              {form.isBlocked ? "Estabelecimento bloqueado" : "Estabelecimento ativo"}
+            </span>
           </div>
         </div>
       </section>

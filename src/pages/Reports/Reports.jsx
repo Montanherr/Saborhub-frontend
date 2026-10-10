@@ -23,6 +23,7 @@ export default function DashboardReports() {
 
   const [summary, setSummary] = useState(null);
   const [categoryData, setCategoryData] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [startDate, setStartDate] = useState(
     new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10)
   );
@@ -30,6 +31,7 @@ export default function DashboardReports() {
 
   // 🔹 Carregar relatórios da API
 const loadReports = useCallback(async () => {
+  setLoading(true);
   try {
     const summaryRes = await reportsService.getSummary(companyId, startDate, endDate);
     const categoryRes = await reportsService.getByCategory(companyId, startDate, endDate);
@@ -41,6 +43,8 @@ const loadReports = useCallback(async () => {
     })));
   } catch (err) {
     console.error(err);
+  } finally {
+    setLoading(false);
   }
 }, [companyId, startDate, endDate]);
 
@@ -129,52 +133,77 @@ useEffect(() => {
 
   return (
     <div className="dashboard-container">
-      <h1>📊 Relatórios</h1>
+      <header className="reports-header">
+        <div>
+          <span className="reports-eyebrow">VISÃO DO NEGÓCIO</span>
+          <h1>Relatórios</h1>
+          <p>Acompanhe o desempenho do seu estabelecimento.</p>
+        </div>
+        <span className="reports-period">Período selecionado</span>
+      </header>
 
       {/* Filtro de datas */}
       <div className="date-filter">
-        <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
-        <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
-        <button onClick={loadReports}>Filtrar</button>
+        <label>
+          <span>De</span>
+          <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
+        </label>
+        <label>
+          <span>Até</span>
+          <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
+        </label>
+        <button onClick={loadReports} disabled={loading}>
+          {loading ? "Atualizando..." : "Atualizar relatório"}
+        </button>
       </div>
 
       {/* Export Buttons */}
       <div className="export-buttons">
-        <button onClick={exportPDF}>Exportar PDF</button>
-        <button onClick={exportExcel}>Exportar Excel</button>
+        <button onClick={exportPDF} disabled={loading || !summary}>Exportar PDF</button>
+        <button onClick={exportExcel} disabled={loading || !summary}>Exportar Excel</button>
       </div>
 
       {/* KPIs */}
       <div className="kpi-grid">
         <div className="kpi-card">
-          <span>Pedidos</span>
-          <strong>{summary?.totalOrders ?? "--"}</strong>
+          <span className="kpi-label">Pedidos</span>
+          <strong>{loading ? <i className="value-skeleton" /> : (summary?.totalOrders ?? "--")}</strong>
         </div>
 
         <div className="kpi-card">
-          <span>Faturamento</span>
-          <strong>R$ {Number(summary?.totalRevenue || 0).toFixed(2)}</strong>
+          <span className="kpi-label">Faturamento</span>
+          <strong>{loading ? <i className="value-skeleton" /> : `R$ ${Number(summary?.totalRevenue || 0).toFixed(2)}`}</strong>
         </div>
 
         <div className="kpi-card">
-          <span>Ticket Médio</span>
-          <strong>R$ {Number(summary?.averageTicket || 0).toFixed(2)}</strong>
+          <span className="kpi-label">Ticket Médio</span>
+          <strong>{loading ? <i className="value-skeleton" /> : `R$ ${Number(summary?.averageTicket || 0).toFixed(2)}`}</strong>
         </div>
       </div>
 
       {/* GRÁFICOS */}
       <div className="charts-grid">
         <div className="chart-card">
-          <h3>Pedidos por Categoria</h3>
-          <ResponsiveContainer width="100%" height={260}>
-            <BarChart data={categoryData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="name" />
-              <YAxis />
-              <Tooltip />
-              <Bar dataKey="pedidos" fill="#ff6a00" radius={[6, 6, 0, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
+          <div className="chart-heading">
+            <div>
+              <span className="chart-kicker">DESEMPENHO</span>
+              <h3>Pedidos por categoria</h3>
+            </div>
+            <span className="chart-unit">Pedidos</span>
+          </div>
+          {loading ? (
+            <div className="chart-skeleton" aria-label="Carregando gráfico" />
+          ) : (
+            <ResponsiveContainer width="100%" height={260}>
+              <BarChart data={categoryData}>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                <XAxis dataKey="name" axisLine={false} tickLine={false} />
+                <YAxis axisLine={false} tickLine={false} />
+                <Tooltip />
+                <Bar dataKey="pedidos" fill="#ff7a00" radius={[6, 6, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          )}
         </div>
       </div>
     </div>

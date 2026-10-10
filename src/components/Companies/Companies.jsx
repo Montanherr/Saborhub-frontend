@@ -131,7 +131,14 @@ export default function Companies() {
 
   return (
     <div className="companies-container">
-      <h2 className="companies-title">Restaurantes</h2>
+      <header className="companies-hero">
+        <div>
+          <span className="companies-eyebrow">CARDÁPIOS DIGITAIS</span>
+          <h2 className="companies-title">Encontre seu estabelecimento</h2>
+          <p>Confira os restaurantes cadastrados e acesse o cardápio em poucos toques.</p>
+        </div>
+        {!loading && <span className="companies-count">{restaurants.length} {restaurants.length === 1 ? "empresa disponível" : "empresas disponíveis"}</span>}
+      </header>
 
       <div className="restaurant-grid">
         {loading ? (
@@ -145,7 +152,8 @@ export default function Companies() {
             const imageSrc = r.image || getRestaurantLogo(r.fantasyName);
 
             return (
-              <div
+              <button
+                type="button"
                 key={r.id}
                 className="restaurant-card"
                 onClick={() => handleViewMenu(r)}
@@ -175,8 +183,9 @@ export default function Companies() {
                   <p className="restaurant-meta">
                     📅 {formatWorkingDays(r.workingDays)}
                   </p>
+                  <span className="restaurant-action">Ver cardápio <span aria-hidden="true">→</span></span>
                 </div>
-              </div>
+              </button>
             );
           })
         )}

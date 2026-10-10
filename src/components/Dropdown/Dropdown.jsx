@@ -23,6 +23,7 @@ export default function Dropdown({ title, items }) {
       <button
         className="dropdown-btn"
         onClick={() => setOpen(!open)}
+        aria-expanded={open}
       >
         {title} ▾
       </button>

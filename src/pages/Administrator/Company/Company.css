@@ -456,3 +456,136 @@ button:disabled {
   }
 
 }
+
+.company-loading {
+  max-width: 1050px;
+  min-height: 420px;
+  margin: auto;
+  padding: 34px;
+  border: 1px solid #edf0f3;
+  border-radius: var(--radius);
+  background: #fff;
+  box-shadow: var(--shadow-medium);
+}
+
+.company-loading__head span,
+.company-loading__body span {
+  display: block;
+  position: relative;
+  overflow: hidden;
+  height: 16px;
+  border-radius: 8px;
+  background: #eef1f5;
+}
+
+.company-loading__head span:first-child { width: 230px; height: 28px; margin-bottom: 12px; }
+.company-loading__head span:last-child { width: 330px; margin-bottom: 34px; }
+.company-loading__body { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
+.company-loading__body span { height: 48px; }
+.company-loading__head span::after,
+.company-loading__body span::after {
+  position: absolute;
+  inset: 0;
+  content: "";
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.75), transparent);
+  animation: company-skeleton-shimmer 1.35s infinite;
+}
+
+@keyframes company-skeleton-shimmer { to { transform: translateX(100%); } }
+
+@media (max-width: 640px) {
+  .company-loading { min-height: 520px; padding: 22px; }
+  .company-loading__head span:last-child { width: 85%; }
+  .company-loading__body { grid-template-columns: 1fr; gap: 14px; }
+}
+
+/* Página de empresa: área de leitura confortável e sem estouro horizontal. */
+.company-page,
+.companies-tab,
+.page-section {
+  width: min(100%, 1050px);
+  min-width: 0;
+  margin-inline: auto;
+}
+
+.company-page { padding-bottom: 24px; }
+.company-page .page-header { margin: 0 0 18px; }
+.company-page .page-header h1 { color: var(--text); font-size: clamp(1.35rem, 3vw, 1.85rem); }
+
+.company-form.card {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: clamp(18px, 3vw, 34px);
+}
+
+.company-form .form-section {
+  padding: clamp(16px, 2.4vw, 24px);
+  border: 1px solid #edf0f3;
+  border-radius: 16px;
+  background: #fff;
+}
+
+.company-form .form-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.company-form .field { min-width: 0; }
+.company-form .form-section:first-of-type .image-upload { max-width: 360px; margin-inline: auto; }
+
+.field--toggle { justify-content: flex-end; }
+.company-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  min-height: 46px;
+  padding: 0 13px;
+  border: 1px solid #d1fae5;
+  border-radius: 10px;
+  color: #166534;
+  background: #f0fdf4;
+  font-size: .88rem;
+  font-weight: 600;
+}
+.company-toggle input {
+  width: 16px;
+  min-width: 16px;
+  height: 16px;
+  margin: 0;
+  padding: 0;
+  accent-color: #16a34a;
+}
+.company-toggle.is-active { border-color: #fecaca; color: #991b1b; background: #fef2f2; }
+
+.company-form .working-days {
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px solid #edf0f3;
+}
+.company-form .working-days > label { color: var(--muted); font-size: .85rem; font-weight: 600; }
+.company-form .checkbox-grid .checkbox {
+  min-height: 40px;
+  padding: 0 11px;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  background: #fafafa;
+}
+
+.company-form .form-actions {
+  position: sticky;
+  bottom: 12px;
+  z-index: 2;
+  padding: 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, .94);
+  box-shadow: 0 8px 24px rgba(15, 23, 42, .08);
+}
+
+@media (max-width: 640px) {
+  .company-form.card { padding: 14px; }
+  .company-page .page-header { padding-inline: 4px; }
+  .company-form .form-section { margin-bottom: 16px; border-radius: 13px; }
+  .company-form .form-grid { grid-template-columns: 1fr; gap: 14px; }
+  .company-form .field.full { grid-column: span 1; }
+  .company-form .checkbox-grid { gap: 8px; }
+  .company-form .form-actions { bottom: 6px; padding: 10px; }
+}

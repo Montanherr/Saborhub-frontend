@@ -66,6 +66,7 @@ export default function Header() {
             setOpen(!open);
           }}
           aria-label="Abrir menu"
+          aria-expanded={open}
         >
           ☰
         </button>

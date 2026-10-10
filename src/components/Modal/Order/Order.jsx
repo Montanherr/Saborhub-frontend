@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import orderService from "../../../services/orderService";
-import tableService from "../../../services/tableService";
+import publicTableService from "../../../services/tablePublic";
 import tableAssignmentsService from "../../../services/tableAssignments";
 import couponService from "../../../services/couponService";
 import { FaTicketAlt } from "react-icons/fa";
@@ -34,6 +34,8 @@ export default function OrdersModal({
   const [customizingItem, setCustomizingItem] = useState(null);
   const [orderType, setOrderType] = useState("delivery"); // delivery | pickup | table
   const [tables, setTables] = useState([]);
+  const [tablesLoading, setTablesLoading] = useState(false);
+  const [tablesError, setTablesError] = useState("");
   const [selectedTable, setSelectedTable] = useState(null);
   const [calling, setCalling] = useState(false);
   const [callSuccess, setCallSuccess] = useState(false);
@@ -45,6 +47,8 @@ export default function OrdersModal({
   const [discount, setDiscount] = useState(0);
   const [appliedCoupon, setAppliedCoupon] = useState(null);
   const acceptedAudio = useRef(null);
+  const callingAudio = useRef(null);
+  const acceptanceNotified = useRef(false);
 
   // Calcula preço final considerando promoção
   const calculateFinalPrice = (item) => {
@@ -102,10 +106,44 @@ export default function OrdersModal({
 
   // ===================== MESA =====================
   useEffect(() => {
-    if (orderType === "table" && company?.id) {
-      tableService.getAll(company.id).then(setTables).catch(console.error);
-    }
+    if (orderType !== "table" || !company?.id) return;
+
+    let active = true;
+    const loadTables = async () => {
+      setTablesLoading(true);
+      setTablesError("");
+      try {
+        const data = await publicTableService.getAll(company.id);
+        if (active) setTables(data || []);
+      } catch (error) {
+        console.error("Erro ao carregar mesas públicas:", error);
+        if (active) setTablesError("Não foi possível carregar as mesas. Tente novamente.");
+      } finally {
+        if (active) setTablesLoading(false);
+      }
+    };
+
+    loadTables();
+    return () => { active = false; };
   }, [orderType, company?.id]);
+
+  useEffect(() => {
+    if (!company?.id) return;
+
+    const joinCompany = () => {
+      socket.emit("join_company", { companyId: company.id });
+    };
+
+    socket.on("connect", joinCompany);
+
+    if (socket.connected) {
+      joinCompany();
+    } else {
+      socket.connect();
+    }
+
+    return () => socket.off("connect", joinCompany);
+  }, [company?.id]);
 
   useEffect(() => {
     if (!company?.id) return;
@@ -198,6 +236,8 @@ export default function OrdersModal({
       setCalling(true);
       setAudioUnlocked(true);
 
+      callingAudio.current?.play().catch(() => {});
+
       await tableAssignmentsService.callWaiter(selectedTable, company.id);
       setCallSuccess(true);
       setTimeout(() => setCallSuccess(false), 3000);
@@ -211,7 +251,13 @@ export default function OrdersModal({
   useEffect(() => {
     acceptedAudio.current = new Audio("/sounds/accept.mp3");
     acceptedAudio.current.preload = "auto";
+    callingAudio.current = new Audio("/sounds/calling.mp3");
+    callingAudio.current.preload = "auto";
   }, []);
+
+  useEffect(() => {
+    acceptanceNotified.current = false;
+  }, [selectedTable]);
 
   useEffect(() => {
     const saved = localStorage.getItem("customerData");
@@ -232,7 +278,8 @@ export default function OrdersModal({
 
     const handleSocketUpdate = (data) => {
       if (Number(data.id) !== Number(selectedTable)) return;
-      if (data.status === "occupied") {
+      if (data.status === "service" && !acceptanceNotified.current) {
+        acceptanceNotified.current = true;
         if (audioUnlocked && acceptedAudio.current) {
           acceptedAudio.current
             .play()
@@ -410,6 +457,8 @@ export default function OrdersModal({
     return (
       <TableCallModal
         tables={tables}
+        loading={tablesLoading}
+        error={tablesError}
         selectedTable={selectedTable}
         setSelectedTable={setSelectedTable}
         calling={calling}
@@ -444,6 +493,7 @@ export default function OrdersModal({
           <>
             <h3>Seu Pedido</h3>
             <p
+              className="order-subtitle"
               style={{
                 margin: "-2px 0 0",
                 fontSize: "0.82rem",
@@ -456,7 +506,7 @@ export default function OrdersModal({
               {company.fantasyName}
             </p>
 
-            <div style={{ paddingLeft: 24, paddingRight: 24 }}>
+            <div className="order-form-content" style={{ paddingLeft: 24, paddingRight: 24 }}>
               {/* Tipo de pedido */}
               <div className="order-type" style={{ marginTop: 20 }}>
                 {[

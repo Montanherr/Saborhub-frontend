@@ -1,290 +1,139 @@
-
-/* =========================
-   BASE
-========================= */
-body {
-  background: var(--bg);
-  -webkit-font-smoothing: antialiased;
-}
-
-/* =========================
-   CONTAINER
-========================= */
 .companies-container {
-  padding: 28px 18px 50px;
-  max-width: 1200px;
-  margin: auto;
+  width: min(100%, 1120px);
+  padding: 34px 24px 64px;
+  margin: 0 auto;
 }
 
-/* =========================
-   HEADER / TÍTULO
-========================= */
 .companies-title {
-  font-size: 1.9rem;
-  font-weight: 800;
+  position: relative;
+  margin: 0 0 28px;
   color: var(--text-main);
-  margin-bottom: 28px;
-  letter-spacing: -0.3px;
+  font-size: clamp(1.6rem, 3vw, 2rem);
+  font-weight: 800;
+  letter-spacing: -.05em;
 }
 
-/* =========================
-   GRID
-========================= */
+.companies-hero { display: flex; align-items: flex-end; justify-content: space-between; gap: 20px; margin-bottom: 28px; }
+.companies-eyebrow { color: var(--primary-orange); font-size: .72rem; font-weight: 800; letter-spacing: .12em; }
+.companies-hero .companies-title { margin: 6px 0 7px; }
+.companies-hero p { margin: 0; color: var(--text-muted); font-size: .9rem; }
+.companies-count { flex: 0 0 auto; padding: 8px 12px; color: var(--primary-orange-active); font-size: .76rem; font-weight: 800; background: var(--primary-soft); border-radius: 999px; }
+
+.companies-title::after {
+  display: block;
+  width: 38px;
+  height: 4px;
+  margin-top: 11px;
+  content: '';
+  background: var(--primary-orange);
+  border-radius: 99px;
+}
+
 .restaurant-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 22px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px 28px;
 }
 
-/* =========================
-   CARD
-========================= */
 .restaurant-card {
-  background: var(--card-bg);
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-  border: 1px solid var(--border-light);
-  box-shadow: var(--shadow-sm);
-  cursor: pointer;
-  position: relative;
-
-  transition: var(--transition);
-}
-
-/* hover mais suave e moderno */
-.restaurant-card:hover {
-  transform: translateY(-6px) scale(1.01);
-  box-shadow: var(--shadow-md);
-}
-
-/* efeito de brilho leve no hover */
-.restaurant-card::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    120deg,
-    transparent 0%,
-    rgba(255,255,255,0.4) 50%,
-    transparent 100%
-  );
-  opacity: 0;
-  transition: var(--transition);
-}
-
-.restaurant-card:hover::after {
-  opacity: 1;
-}
-
-/* =========================
-   IMAGEM
-========================= */
-.image-wrapper {
-  background: linear-gradient(180deg, #fafafa, #f0f0f0);
-  padding: 14px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.restaurant-image {
-  width: 100%;
-  height: 130px;
-  object-fit: contain;
+  display: grid;
+  grid-template-columns: 86px minmax(0, 1fr);
+  gap: 14px;
+  min-width: 0;
+  padding: 10px 0;
+  background: transparent;
+  border: 0;
   border-radius: var(--radius-md);
-
-  transition: transform 0.3s ease;
-}
-
-.restaurant-card:hover .restaurant-image {
-  transform: scale(1.05);
-}
-
-/* =========================
-   INFO
-========================= */
-.restaurant-info {
-  padding: 14px 16px 18px;
-}
-
-.restaurant-info h3 {
-  font-size: 0.95rem;
-  font-weight: 700;
-  color: var(--text-main);
-  margin-bottom: 6px;
-
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.restaurant-meta {
-  font-size: 0.78rem;
-  color: var(--text-muted);
-  line-height: 1.4;
-  margin-bottom: 6px;
-}
-
-/* =========================
-   STATUS (Badge moderno)
-========================= */
-.status {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-
-  margin-top: 6px;
-  padding: 4px 8px;
-
-  font-size: 0.7rem;
-  font-weight: 700;
-
-  border-radius: 999px;
-}
-
-.status::before {
-  content: "";
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-}
-
-/* aberto */
-.status.open {
-  background: rgba(22, 163, 74, 0.1);
-  color: #16a34a;
-}
-
-.status.open::before {
-  background: #16a34a;
-}
-
-/* fechado */
-.status.closed {
-  background: rgba(234, 29, 44, 0.1);
-  color: var(--primary);
-}
-
-.status.closed::before {
-  background: var(--primary);
-}
-
-/* =========================
-   PAGINAÇÃO
-========================= */
-.pagination {
-  margin-top: 36px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 16px;
-}
-
-.pagination button {
-  background: var(--primary);
-  border: none;
-  color: #fff;
-
-  font-size: 0.85rem;
-  font-weight: 700;
-
-  padding: 10px 14px;
-  border-radius: 12px;
-
   cursor: pointer;
-
-  transition: var(--transition);
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  transition: transform var(--transition), background var(--transition);
 }
 
-.pagination button:hover:not(:disabled) {
-  background: var(--primary-hover);
+.restaurant-card:hover {
+  background: var(--primary-soft);
   transform: translateY(-2px);
 }
 
-.pagination button:active:not(:disabled) {
-  transform: scale(0.96);
+.restaurant-card:focus-visible { outline-offset: 5px; }
+
+.image-wrapper {
+  position: relative;
+  display: grid;
+  width: 86px;
+  height: 86px;
+  place-items: center;
+  padding: 7px;
+  overflow: hidden;
+  background: var(--card-bg);
+  border: 1px solid var(--border-light);
+  border-radius: 15px;
+  box-shadow: var(--shadow-sm);
 }
 
-.pagination button:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
+.image-wrapper::after {
+  position: absolute;
+  right: -22px;
+  bottom: -28px;
+  width: 72px;
+  height: 72px;
+  content: '';
+  background: var(--primary-soft);
+  border-radius: 50%;
 }
 
-/* =========================
-   RESPONSIVO
-========================= */
-@media (max-width: 768px) {
-  .companies-container {
-    padding: 20px 14px 40px;
-  }
-
-  .companies-title {
-    font-size: 1.5rem;
-  }
-
-  .restaurant-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 16px;
-  }
-
-  .restaurant-image {
-    height: 110px;
-  }
+.restaurant-image {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 10px;
+  transition: transform .3s ease;
 }
 
-/* =========================
-   SKELETON LOADING
-========================= */
-.skeleton {
-  pointer-events: none;
+.restaurant-card:hover .restaurant-image { transform: scale(1.06); }
+.restaurant-info { min-width: 0; padding: 4px 4px 3px 0; }
+.restaurant-info h3 { margin: 0 0 9px; overflow: hidden; color: var(--text-main); font-size: .92rem; font-weight: 800; line-height: 1.25; text-overflow: ellipsis; white-space: nowrap; }
+.restaurant-meta { display: flex; align-items: flex-start; gap: 5px; margin: 0 0 6px; overflow: hidden; color: var(--text-muted); font-size: .72rem; line-height: 1.25; text-overflow: ellipsis; white-space: nowrap; }
+.restaurant-meta:last-child { margin-bottom: 0; }
+.restaurant-action { display: inline-flex; gap: 6px; margin-top: 9px; color: var(--primary-orange-active); font-size: .74rem; font-weight: 800; }
+
+.loading { grid-column: 1 / -1; padding: 64px 20px; margin: 0; color: var(--text-muted); font-size: .9rem; font-weight: 600; text-align: center; }
+
+.pagination { display: flex; align-items: center; justify-content: center; gap: 14px; margin-top: 34px; color: var(--text-muted); font-size: .82rem; font-weight: 700; }
+.pagination button { display: grid; width: 36px; height: 36px; place-items: center; color: var(--primary-orange-active); background: var(--card-bg); border: 1px solid var(--border); border-radius: 50%; cursor: pointer; transition: var(--transition); }
+.pagination button:hover:not(:disabled) { color: #fff; background: var(--primary-orange); border-color: var(--primary-orange); transform: translateY(-2px); }
+.pagination button:disabled { color: var(--text-soft); background: var(--bg); cursor: not-allowed; opacity: .7; }
+
+.skeleton { pointer-events: none; }
+.skeleton-box, .skeleton-line { background: linear-gradient(90deg, var(--border-light) 25%, var(--bg) 37%, var(--border-light) 63%); background-size: 400% 100%; animation: shimmer 1.2s ease infinite; }
+.skeleton-box { width: 86px; height: 86px; border-radius: 15px; }
+.skeleton-line { width: 100%; height: 11px; margin-top: 10px; border-radius: 8px; }
+.skeleton-line.title { width: 72%; height: 16px; margin-top: 5px; }
+.skeleton-line.short { width: 48%; }
+@keyframes shimmer { 0% { background-position: 100% 0; } 100% { background-position: 0 0; } }
+
+@media (max-width: 900px) {
+  .restaurant-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px 24px; }
 }
 
-.skeleton-box {
-  height: 160px;
-  border-radius: var(--radius-lg);
-
-  background: linear-gradient(
-    90deg,
-    #e5e7eb 25%,
-    #f3f4f6 37%,
-    #e5e7eb 63%
-  );
-
-  background-size: 400% 100%;
-  animation: shimmer 1.2s ease infinite;
+@media (max-width: 600px) {
+  .companies-container { width: 100%; padding: 24px 16px 44px; }
+  .companies-title { margin-bottom: 22px; }
+  .companies-hero { align-items: flex-start; flex-direction: column; gap: 12px; margin-bottom: 22px; }
+  .companies-hero .companies-title { margin-bottom: 6px; }
+  .restaurant-grid { grid-template-columns: 1fr; gap: 8px; }
+  .restaurant-card { grid-template-columns: 78px minmax(0, 1fr); gap: 13px; padding: 10px 8px; }
+  .image-wrapper, .skeleton-box { width: 78px; height: 78px; }
+  .restaurant-info { padding-top: 3px; }
 }
 
-.skeleton-line {
-  height: 14px;
-  margin-top: 10px;
-  border-radius: 8px;
-
-  background: linear-gradient(
-    90deg,
-    #e5e7eb 25%,
-    #f3f4f6 37%,
-    #e5e7eb 63%
-  );
-
-  background-size: 400% 100%;
-  animation: shimmer 1.2s ease infinite;
-}
-
-.skeleton-line.title {
-  width: 70%;
-  height: 18px;
-}
-
-.skeleton-line.short {
-  width: 45%;
-}
-
-@keyframes shimmer {
-  0% {
-    background-position: 100% 0;
-  }
-  100% {
-    background-position: 0 0;
-  }
+@media (max-width: 360px) {
+  .companies-container { padding-right: 12px; padding-left: 12px; }
+  .restaurant-card { grid-template-columns: 70px minmax(0, 1fr); gap: 11px; }
+  .image-wrapper, .skeleton-box { width: 70px; height: 70px; }
+  .restaurant-info h3 { font-size: .86rem; }
+  .restaurant-meta { font-size: .68rem; }
 }

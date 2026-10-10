@@ -3,7 +3,7 @@ import api from "./api";
 const publicTableService = {
   getAll: async (companyId) => {
     try {
-      const response = await api.get("/public", {
+      const response = await api.get("/tables/public", {
         params: { companyId },
       });
       return response.data;

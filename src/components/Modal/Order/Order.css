@@ -363,3 +363,50 @@
   background-color: #d1d5db !important; /* botão cinza */
   cursor: not-allowed;
 }
+
+/* Cupons no checkout */
+.available-coupons { padding: 14px; margin-top: 10px; background: var(--bg, #f7f8fa); border: 1px solid var(--border-light, #eef0f3); border-radius: var(--radius-md, 12px); }
+.available-coupons h4 { margin: 0 0 10px; color: var(--text-main, #18212f); font-size: .82rem; }
+.coupon-card { align-items: center; padding: 11px; margin-bottom: 8px; background: var(--card-bg, #fff); border: 1px solid var(--border-light, #eef0f3); border-radius: var(--radius-md, 12px); transition: var(--transition, 180ms ease); }
+.coupon-card:last-child { margin-bottom: 0; }
+.coupon-card:hover { border-color: var(--primary-wash, #ffedd5); box-shadow: var(--shadow-sm, 0 2px 8px rgba(16,24,40,.06)); transform: translateY(-1px); }
+.coupon-name { color: var(--primary-orange-active, #cc6300); font-size: .8rem; font-weight: 800; }
+.coupon-desc { margin-top: 3px; color: var(--text-main, #18212f); font-size: .76rem; font-weight: 800; }
+.coupon-min, .coupon-warning { margin-top: 3px; color: var(--text-muted, #667085); font-size: .68rem; }
+.coupon-warning { color: var(--danger, #dc2626); }
+.apply-coupon-btn { display: grid; min-width: 34px; min-height: 34px; place-items: center; padding: 7px 10px; color: var(--card-bg, #fff); background: var(--primary-orange, #ff7a00); border: 0; border-radius: 9px; cursor: pointer; transition: var(--transition, 180ms ease); }
+.apply-coupon-btn:hover:not(:disabled) { background: var(--primary-orange-hover, #e66f00); transform: translateY(-1px); }
+.coupon-disabled { opacity: .58; filter: grayscale(.2); }
+@media (max-width: 480px) { .available-coupons { padding: 11px; } .coupon-card { gap: 8px; } .apply-coupon-btn { min-width: 32px; } }
+
+/* Checkout visual refinements */
+.orders-modal {
+  width: min(100%, 820px);
+  max-width: 820px;
+  max-height: 95vh;
+  padding: 24px 0 0;
+  overflow-x: hidden;
+  background: var(--card-bg, #fff);
+  border: 1px solid var(--border-light, #eef0f3);
+  border-radius: 20px;
+  box-shadow: var(--shadow-lg, 0 20px 50px rgba(16,24,40,.14));
+}
+
+.orders-modal > .order-stepper { padding: 0 28px; }
+.orders-modal > h3 { padding: 0 28px; margin: 0 0 8px; color: var(--text-main, #18212f); font-size: 1.45rem; font-weight: 800; }
+.orders-modal .order-subtitle { padding: 0 28px !important; margin: 0 0 6px !important; color: var(--text-muted, #667085) !important; font-size: .8rem !important; }
+.order-form-content { padding: 0 28px !important; }
+.order-form-content::before { display: block; margin: 22px 0 12px; color: var(--text-main, #18212f); content: 'Como você deseja receber?'; font-size: .82rem; font-weight: 800; }
+.order-type { gap: 8px; margin: 0 0 18px !important; }
+.order-type label { display: flex; flex: 1; align-items: center; justify-content: center; min-height: 48px; padding: 10px 8px; color: var(--text-main, #18212f); font-size: .78rem; font-weight: 700; background: var(--bg, #f7f8fa); border: 1px solid var(--border-light, #eef0f3); border-radius: 11px; transition: var(--transition, 180ms ease); }
+.order-type label:hover, .order-type label:has(input:checked) { color: var(--primary-orange-active, #cc6300); background: var(--primary-soft, #fff6ed); border-color: var(--primary-wash, #ffedd5); transform: translateY(-1px); }
+.order-fields { display: flex; flex-direction: column; gap: 4px; }
+.order-fields input, .order-fields select, .order-fields textarea { margin: 0; padding: 13px 14px; color: var(--text-main, #18212f); background: var(--bg, #f7f8fa); border-color: var(--border); border-radius: 11px; }
+.order-fields input:focus, .order-fields select:focus, .order-fields textarea:focus { border-color: var(--primary-orange, #ff7a00); box-shadow: 0 0 0 4px rgba(255,122,0,.12); }
+.order-actions { padding: 16px 28px 24px; margin-top: 22px; background: var(--card-bg, #fff); border-top: 1px solid var(--border-light, #eef0f3); }
+.order-actions .btn { min-height: 46px; border-radius: 11px; }
+.order-actions .btn.primary { background: var(--primary-orange, #ff7a00); box-shadow: 0 8px 18px rgba(255,122,0,.22); }
+.order-actions .btn.primary:hover { background: var(--primary-orange-hover, #e66f00); }
+.order-actions .btn.cancel { background: var(--bg, #f7f8fa); border: 1px solid var(--border); }
+@media (max-width: 860px) { .orders-modal { width: 100%; max-width: 100%; } }
+@media (max-width: 480px) { .orders-modal { max-height: 96dvh; padding-top: 20px; border-radius: 18px 18px 0 0; } .orders-modal > .order-stepper, .orders-modal > h3, .orders-modal .order-subtitle, .order-form-content { padding-right: 18px !important; padding-left: 18px !important; } .order-type label { min-height: 44px; font-size: .74rem; } .order-actions { padding: 14px 18px 18px; } }

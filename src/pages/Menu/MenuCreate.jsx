@@ -15,6 +15,26 @@ import CompanyPage from "../Administrator/Company/CompanyPage";
 
 import "./MenuCreate.css";
 
+function MenuLoading() {
+  return (
+    <div className="menu-loading" role="status" aria-label="Carregando menu">
+      <div className="skeleton menu-loading__title" />
+      <div className="skeleton menu-loading__line" />
+      <div className="menu-loading__grid">
+        {[1, 2, 3].map((item) => (
+          <div className="menu-loading__card" key={item}>
+            <div className="skeleton menu-loading__image" />
+            <div className="skeleton menu-loading__text menu-loading__text--wide" />
+            <div className="skeleton menu-loading__text" />
+            <div className="skeleton menu-loading__price" />
+          </div>
+        ))}
+      </div>
+      <span className="menu-loading__label">Carregando seu cardápio...</span>
+    </div>
+  );
+}
+
 export default function MenuCreate() {
   const [activeTab, setActiveTab] = useState("preview");
 
@@ -174,7 +194,17 @@ export default function MenuCreate() {
   ====================== */
   return (
     <div className="menu-create-container">
-      <h1>Painel SaborHub</h1>
+      <header className="menu-create-header">
+        <div>
+          <span className="menu-create-eyebrow">GESTÃO DO ESTABELECIMENTO</span>
+          <h1>Painel SaborHub</h1>
+          <p>Organize seu cardápio e mantenha sua loja sempre atualizada.</p>
+        </div>
+        <div className="menu-create-status" aria-label="Painel online">
+          <span className="menu-create-status__dot" />
+          Painel online
+        </div>
+      </header>
 
       <Tabs
         activeTab={activeTab}
@@ -191,7 +221,7 @@ export default function MenuCreate() {
       {/* PREVIEW */}
       {activeTab === "preview" &&
         (loading ? (
-          <p className="loading">Carregando menu...</p>
+          <MenuLoading />
         ) : (
           <MenuPreview
             key={previewKey} // 🔥 força re-render

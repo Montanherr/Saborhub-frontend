@@ -5,6 +5,7 @@ import "./Company.css";
 
 export default function CompanyPage() {
   const [editingCompany, setEditingCompany] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   const loadCompanies = async () => {
     try {
@@ -16,6 +17,8 @@ export default function CompanyPage() {
       }
     } catch (error) {
       console.error("Erro ao carregar empresas:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -43,12 +46,27 @@ export default function CompanyPage() {
       </header>
 
       <section className="page-section">
-        <CompanyForm
-          onCreate={handleCreate}
-          onUpdate={handleUpdate}
-          editingCompany={editingCompany}
-          cancelEdit={() => setEditingCompany(null)}
-        />
+        {loading ? (
+          <div className="company-loading" role="status" aria-label="Carregando empresa">
+            <div className="company-loading__head">
+              <span />
+              <span />
+            </div>
+            <div className="company-loading__body">
+              <span />
+              <span />
+              <span />
+              <span />
+            </div>
+          </div>
+        ) : (
+          <CompanyForm
+            onCreate={handleCreate}
+            onUpdate={handleUpdate}
+            editingCompany={editingCompany}
+            cancelEdit={() => setEditingCompany(null)}
+          />
+        )}
       </section>
     </div>
   );

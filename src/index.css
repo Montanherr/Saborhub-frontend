@@ -1,30 +1,43 @@
-/* Importa fonte moderna e premium */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
-
-body {
-  margin: 0;
-  padding: 0;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
-    Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-  
- 
-  
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-
-  /* melhora legibilidade geral */
-  letter-spacing: -0.2px;
-}
-
-code {
-  font-family: 'Fira Code', 'source-code-pro', Menlo, Monaco, Consolas,
-    'Courier New', monospace;
-  font-size: 0.95rem;
-}
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
 :root {
   --primary-orange: #ff7a00;
   --primary-orange-hover: #e66f00;
   --primary-orange-active: #cc6300;
-
+  --primary: var(--primary-orange);
+  --primary-hover: var(--primary-orange-hover);
+  --primary-dark: var(--primary-orange-active);
+  --primary-soft: #fff6ed;
+  --primary-wash: #ffedd5;
+  --bg: #f7f8fa;
+  --card-bg: #ffffff;
+  --text-main: #18212f;
+  --text-muted: #667085;
+  --text-soft: #98a2b3;
+  --border: #e4e7ec;
+  --border-light: #eef0f3;
+  --success: #16a34a;
+  --danger: #dc2626;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --shadow-sm: 0 2px 8px rgba(16, 24, 40, .06);
+  --shadow-md: 0 12px 30px rgba(16, 24, 40, .10);
+  --shadow-lg: 0 20px 50px rgba(16, 24, 40, .14);
+  --transition: 180ms ease;
 }
+
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+html, body, #root { width: 100%; max-width: 100%; min-height: 100%; overflow-x: hidden; }
+body { margin: 0; min-width: 320px; color: var(--text-main); font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); -webkit-font-smoothing: antialiased; }
+img, svg, video, canvas { display: block; max-width: 100%; }
+button, input, select, textarea { font: inherit; }
+input, select, textarea { max-width: 100%; }
+button, a { -webkit-tap-highlight-color: transparent; }
+:focus-visible { outline: 3px solid rgba(255, 122, 0, .32); outline-offset: 3px; }
+::selection { color: var(--primary-orange-active); background: var(--primary-wash); }
+code { font-family: 'Fira Code', 'Source Code Pro', Consolas, monospace; }
+
+@media (max-width: 600px) { body { font-size: 15px; } }
+@media (hover: none) { button, a { touch-action: manipulation; } }

@@ -54,6 +54,23 @@ function isStoreOpen(company) {
     : currentMinutes >= openMinutes || currentMinutes <= closeMinutes;
 }
 
+function MenuSkeleton() {
+  return (
+    <div className="menu-skeleton" role="status" aria-label="Carregando cardápio">
+      <div className="menu-skeleton__store">
+        <span className="menu-skeleton__logo" />
+        <div><span className="menu-skeleton__title" /><span className="menu-skeleton__line" /></div>
+      </div>
+      <div className="menu-skeleton__chips">{[1, 2, 3, 4].map((item) => <span key={item} />)}</div>
+      <span className="menu-skeleton__search" />
+      <span className="menu-skeleton__heading" />
+      <div className="menu-skeleton__products">
+        {[1, 2, 3, 4].map((item) => <div className="menu-skeleton__product" key={item}><span /><div><i /><i /><b /></div></div>)}
+      </div>
+    </div>
+  );
+}
+
 export default function CategoriesScreen() {
   const { companySlug } = useParams();
   const [, forceUpdate] = useReducer((x) => x + 1, 0);
@@ -64,6 +81,8 @@ export default function CategoriesScreen() {
   const [loading, setLoading] = useState(true);
   const [hasCustomerData, setHasCustomerData] = useState(false);
   const [mostSold, setMostSold] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [categoryPages, setCategoryPages] = useState({});
 
   const [orderItems, setOrderItems] = useState([]);
   const [showOrderModal, setShowOrderModal] = useState(false);
@@ -177,12 +196,24 @@ const addToOrder = (product) => {
     }
   };
 
+  const changeCategoryPage = (categoryId, nextPage) => {
+    setCategoryPages((previous) => ({
+      ...previous,
+      [categoryId]: nextPage,
+    }));
+
+    document.getElementById(`category-${categoryId}`)?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  };
+
   return (
     <div className={`categories-container ${!openNow ? "store-closed" : ""}`}>
       {company && <StoreHeader company={company} openNow={openNow} />}
 
       {loading ? (
-        <p className="loading">Carregando cardápio...</p>
+        <MenuSkeleton />
       ) : (
         <>
           {/* MENU DE CATEGORIAS */}
@@ -195,6 +226,30 @@ const addToOrder = (product) => {
             ))}
           </div>
 
+          <div className="menu-toolbar">
+            <div className="menu-toolbar__intro">
+              <span>EXPLORE O CARDÁPIO</span>
+              <strong>{searchTerm ? "Resultados da busca" : "Escolha seus favoritos"}</strong>
+            </div>
+            <label className="menu-search">
+              <span aria-hidden="true">⌕</span>
+              <input
+                type="search"
+                placeholder="Buscar no cardápio"
+                value={searchTerm}
+                onChange={(event) => {
+                  setSearchTerm(event.target.value);
+                  setCategoryPages({});
+                }}
+              />
+            </label>
+            {searchTerm && (
+              <button className="clear-search" onClick={() => setSearchTerm("")}>
+                Limpar busca
+              </button>
+            )}
+          </div>
+
           {/* SEÇÕES ESPECIAIS */}
 
           <MostSoldSection products={mostSold} onAdd={addToOrder} />
@@ -204,8 +259,24 @@ const addToOrder = (product) => {
           <div className="categories-sections">
             {categories.map((category) => {
               const products = productsByCategory[category.id] || [];
+              const normalizedSearch = searchTerm.trim().toLowerCase();
+              const filteredProducts = normalizedSearch
+                ? products.filter((product) =>
+                    [product.name, product.description]
+                      .filter(Boolean)
+                      .some((value) => String(value).toLowerCase().includes(normalizedSearch)),
+                  )
+                : products;
 
-              if (!products.length) return null;
+              if (!filteredProducts.length) return null;
+
+              const productsPerPage = 6;
+              const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
+              const currentPage = Math.min(categoryPages[category.id] || 1, totalPages);
+              const visibleProducts = filteredProducts.slice(
+                (currentPage - 1) * productsPerPage,
+                currentPage * productsPerPage,
+              );
 
               return (
                 <section
@@ -216,7 +287,7 @@ const addToOrder = (product) => {
                   <h2 className="category-title">{category.name}</h2>
 
                   <div className="product-grid">
-                    {products.map((product) => (
+                    {visibleProducts.map((product) => (
                       <ProductCard
                         key={product.id}
                         product={product}
@@ -224,9 +295,32 @@ const addToOrder = (product) => {
                       />
                     ))}
                   </div>
+
+                  {totalPages > 1 && (
+                    <div className="category-pagination" aria-label={`Paginação de ${category.name}`}>
+                      <button
+                        onClick={() => changeCategoryPage(category.id, currentPage - 1)}
+                        disabled={currentPage === 1}
+                        aria-label="Página anterior"
+                      >
+                        ←
+                      </button>
+                      <span>{currentPage} / {totalPages}</span>
+                      <button
+                        onClick={() => changeCategoryPage(category.id, currentPage + 1)}
+                        disabled={currentPage === totalPages}
+                        aria-label="Próxima página"
+                      >
+                        →
+                      </button>
+                    </div>
+                  )}
                 </section>
               );
             })}
+            {!categories.some((category) => (productsByCategory[category.id] || []).some((product) => [product.name, product.description].filter(Boolean).some((value) => String(value).toLowerCase().includes(searchTerm.trim().toLowerCase())))) && searchTerm && (
+              <div className="menu-empty-search">Nenhum produto encontrado para “{searchTerm}”.</div>
+            )}
           </div>
         </>
       )}

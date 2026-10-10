@@ -1,5 +1,12 @@
 export default function UserTable({ users, loading, onEdit, onDelete }) {
-  if (loading) return <p>Carregando usuários...</p>;
+  if (loading) {
+    return (
+      <div className="users-table-loading" role="status" aria-label="Carregando usuários">
+        <span className="users-loading-title" />
+        {[1, 2, 3].map((item) => <span className="users-loading-row" key={item} />)}
+      </div>
+    );
+  }
 
   return (
     <div className="table-wrapper">

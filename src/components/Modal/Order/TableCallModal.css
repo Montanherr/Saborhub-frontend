@@ -1,150 +1,68 @@
-/* TableCallModal.css */
-
-/* Reset & Base */
-.orders-modal-backdrop * {
-  box-sizing: border-box;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-}
-
-/* BACKDROP - Glassmorphism suave */
-.orders-modal-backdrop {
-  position: fixed;
-  inset: 0;
-  background: rgba(31, 41, 55, 0.75); /* Fundo escuro suave */
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  display: flex;
-  justify-content: center;
+.table-call-backdrop {
   align-items: center;
-  z-index: 1000;
-  padding: 20px;
-  animation: fadeIn 0.3s ease-out;
+  padding: clamp(12px, 3vw, 28px);
 }
 
-/* MODAL */
-.orders-modal {
-  position: relative;
-  background: #27303f; /* Card escuro elegante */
-  color: #e5e7eb;
-  border-radius: 16px;
-  padding: 32px;
-  width: 100%;
-  max-width: 400px;
-  max-height: 90vh;
+.table-call-modal {
+  width: min(100%, 680px);
+  max-height: min(88vh, 720px);
   overflow-y: auto;
-  box-shadow: 0 10px 15px rgba(0,0,0,0.15);
-  border: 1px solid rgba(255,255,255,0.05);
-  animation: modalSlideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  padding: clamp(22px, 4vw, 36px);
+  color: #eef2ff;
+  background: #27303f;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 22px;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.35);
 }
 
-/* ANIMAÇÕES */
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+.table-call-modal__header { text-align: center; margin-bottom: 24px; }
+.table-call-modal__eyebrow { color: #fbbf24; font-size: .72rem; font-weight: 800; letter-spacing: .12em; }
+.table-call-modal h3 { margin: 6px 0 8px; color: #fff; font-size: clamp(1.45rem, 4vw, 2rem); }
+.table-call-modal__header p { margin: 0; color: #b8c2d6; }
+
+.table-call-modal__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(115px, 1fr));
+  gap: 12px;
+  margin-bottom: 22px;
 }
 
-@keyframes modalSlideUp {
-  from { opacity: 0; transform: translateY(30px) scale(0.98); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
-}
-
-/* TÍTULO */
-.orders-modal h3 {
-  text-align: center;
-  font-size: 1.75rem;
-  font-weight: 800;
-  margin-bottom: 24px;
-  background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  letter-spacing: -0.025em;
-}
-
-/* SELECT MESA */
-.orders-modal select {
-  width: 100%;
-  padding: 12px 16px;
-  margin-bottom: 20px;
-  border-radius: 12px;
-  border: 1px solid rgba(255,255,255,0.1);
+.table-call-card {
+  display: grid;
+  min-height: 124px;
+  padding: 14px;
+  place-items: center;
+  border: 1px solid #43516b;
+  border-radius: 16px;
+  color: #eef2ff;
   background: #323a4b;
-  color: #e5e7eb;
-  font-size: 1rem;
-  transition: all 0.3s ease;
-}
-
-.orders-modal select:focus {
-  outline: none;
-  border-color: #f59e0b;
-  background: #2b3446;
-  box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.1);
-}
-
-/* BOTÃO CHAMAR GARÇOM */
-.call-waiter-btn {
-  width: 100%;
-  background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%);
-  color: #1f2937;
-  padding: 16px;
-  border-radius: 12px;
-  font-weight: 700;
-  font-size: 1.1rem;
-  border: none;
   cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(245,158,11,0.3);
-  margin-bottom: 16px;
+  transition: transform 160ms ease, border-color 160ms ease, background 160ms ease;
 }
 
-.call-waiter-btn:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(245,158,11,0.35);
+.table-call-card:hover:not(:disabled), .table-call-card.is-selected { transform: translateY(-2px); border-color: #fbbf24; background: #3d4860; }
+.table-call-card.is-selected { box-shadow: 0 0 0 3px rgba(251, 191, 36, .2); }
+.table-call-card.is-unavailable { opacity: .52; cursor: not-allowed; }
+.table-call-card__number { font-size: 1.7rem; font-weight: 800; line-height: 1; }
+.table-call-card__label { color: #b8c2d6; font-size: .78rem; }
+.table-call-card__status { margin-top: 6px; font-size: .7rem; font-weight: 700; }
+.table-call-card__status--available { color: #5eead4; }
+.table-call-card__status--calling, .table-call-card__status--service, .table-call-card__status--occupied { color: #fbbf24; }
+
+.table-call-modal__message {
+  padding: 28px 16px;
+  margin-bottom: 20px;
+  text-align: center;
+  color: #cbd5e1;
+  background: rgba(255, 255, 255, .05);
+  border-radius: 14px;
 }
 
-.call-waiter-btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-  filter: grayscale(0.5);
-}
+.table-call-modal__message--error { color: #fecaca; background: rgba(239, 68, 68, .12); }
+.table-call-modal .call-waiter-btn, .table-call-modal .btn.cancel { width: 100%; margin: 0 0 10px; }
 
-.call-waiter-btn.loading {
-  background: #384357;
-  color: #94a3b8;
-  cursor: progress;
-}
-
-.call-waiter-btn.success {
-  background: #22c55e;
-  color: #fff;
-  cursor: default;
-}
-
-/* BOTÃO FECHAR */
-.btn.cancel {
-  width: 100%;
-  padding: 14px 0;
-  border-radius: 12px;
-  font-weight: 600;
-  font-size: 1rem;
-  cursor: pointer;
-  border: 1px solid rgba(255,255,255,0.15);
-  background: transparent;
-  color: #94a3b8;
-  transition: all 0.3s ease;
-}
-
-.btn.cancel:hover {
-  background: rgba(255,255,255,0.05);
-  color: #e5e7eb;
-}
-
-/* RESPONSIVIDADE */
 @media (max-width: 480px) {
-  .orders-modal {
-    padding: 24px 20px;
-    border-radius: 16px 16px 0 0;
-    position: fixed;
-    bottom: 0;
-    max-height: 95vh;
-  }
+  .table-call-backdrop { align-items: end; padding: 0; }
+  .table-call-modal { max-height: 90vh; border-radius: 22px 22px 0 0; }
+  .table-call-modal__grid { grid-template-columns: repeat(2, 1fr); }
 }

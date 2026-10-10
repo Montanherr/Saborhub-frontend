@@ -10,7 +10,7 @@ export default function UserPage() {
   const [users, setUsers] = useState([]);
   const [companies, setCompanies] = useState([]);
   const [editingUser, setEditingUser] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
 const loadData = async () => {
   try {
@@ -56,7 +56,14 @@ const loadData = async () => {
 
   return (
     <div className="user-page">
-      <h2>Cadastro de Usuários</h2>
+      <header className="user-page-header">
+        <div>
+          <span className="user-page-eyebrow">ADMINISTRAÇÃO</span>
+          <h2>Cadastro de usuários</h2>
+          <p>Gerencie os acessos e as permissões da sua equipe.</p>
+        </div>
+        <span className="user-page-count">{users.length} usuário(s)</span>
+      </header>
 
       <UserForm
         companies={companies}

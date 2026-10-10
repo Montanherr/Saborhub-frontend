@@ -107,6 +107,10 @@ export default function ProductCard({ product, onAdd }) {
           src={product.image || "/assets/default-product.png"}
           alt={product.name}
           loading="lazy"
+          onError={(event) => {
+            event.currentTarget.onerror = null;
+            event.currentTarget.src = "/images/restaurant-placeholder.png";
+          }}
         />
       </div>
     </article>

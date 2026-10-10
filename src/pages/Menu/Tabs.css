@@ -1,13 +1,14 @@
 .tabs-container {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 10px;
   margin-bottom: 32px;
-  flex-wrap: wrap;
 }
 
 /* BOTÕES */
 .tab-btn {
   padding: 10px 20px;
+  min-height: 48px;
   border-radius: 12px;
   border: 1px solid #e5e7eb;
   background: #ffffff;
@@ -37,11 +38,20 @@
 /* RESPONSIVO */
 @media (max-width: 600px) {
   .tabs-container {
+    display: flex;
+    grid-template-columns: none;
     gap: 8px;
+    margin-bottom: 24px;
+    padding: 2px 1px 8px;
+    overflow-x: auto;
+    scrollbar-width: none;
   }
+  .tabs-container::-webkit-scrollbar { display: none; }
 
   .tab-btn {
-    flex: 1;
+    flex: 0 0 auto;
+    min-width: max-content;
+    padding: 10px 14px;
     text-align: center;
   }
 }

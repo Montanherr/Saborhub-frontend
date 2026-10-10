@@ -60,13 +60,25 @@ export default function OrdersList() {
   }, [orders, search]);
 
   if (loading) {
-    return <div className="orders-loading">Carregando pedidos...</div>;
+    return (
+      <div className="orders-loading" role="status" aria-label="Carregando pedidos">
+        <div className="orders-loading__title" />
+        <div className="orders-loading__grid">
+          {[1, 2, 3].map((item) => <div className="orders-loading__card" key={item} />)}
+        </div>
+      </div>
+    );
   }
 
   return (
     <div className="orders-page">
       <header className="orders-header">
-        <h2>Pedidos</h2>
+        <div>
+          <span className="orders-eyebrow">ACOMPANHAMENTO DE VENDAS</span>
+          <h2>Pedidos</h2>
+          <p>Consulte pedidos recentes e atualize o andamento.</p>
+        </div>
+        <span className="orders-count">{filteredOrders.length} pedido(s)</span>
         <input
           type="text"
           placeholder="Buscar por código ou ID do pedido"

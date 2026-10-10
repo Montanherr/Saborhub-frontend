@@ -30,9 +30,7 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     if (!user) return;
 
-    socket.connect();
-
-    const onConnect = () => {
+    const joinCompany = () => {
       socket.emit("join_company", {
         companyId: user.companyId,
         userId: user.id,
@@ -40,10 +38,16 @@ export function AuthProvider({ children }) {
       });
     };
 
-    socket.on("connect", onConnect);
+    socket.on("connect", joinCompany);
+
+    if (socket.connected) {
+      joinCompany();
+    } else {
+      socket.connect();
+    }
 
     return () => {
-      socket.off("connect", onConnect);
+      socket.off("connect", joinCompany);
       socket.disconnect();
     };
   }, [user]);
